@@ -816,8 +816,16 @@ void WriteHist(string RootFile){
     elecZVert->GetYaxis()->SetTitle("Counts");
 	elecZVert->Write();
     
+    ZVertDiff->GetXaxis()->SetTitle(" #Delta Z (cm)");
+    ZVertDiff->GetYaxis()->SetTitle("Particle");
 	ZVertDiff->Write();
+    
+    Beta_VS_Momentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    Beta_VS_Momentum->GetYaxis()->SetTitle("#beta");
 	Beta_VS_Momentum->Write();
+
+    TotalMomentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    TotalMomentum->GetYaxis()->SetTitle("Particle");
 	TotalMomentum->Write();
     
     OpAng_2Photons->GetXaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
@@ -832,8 +840,17 @@ void WriteHist(string RootFile){
     OpAng_elecPhoton2->GetYaxis()->SetTitle("Counts");
     OpAng_elecPhoton2->Write();
     
-    for(i=0; i<myPartList.Get_nPartLabel(); i++) Theta_VS_Phi[i]->Write();
-    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++) Xvert_VS_Yvert[i]->Write();
+    for(i=0; i<myPartList.Get_nPartLabel(); i++){
+        Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
+        Theta_VS_Phi[i]->GetYaxis()->SetTitle("#phi (deg.)");
+        Theta_VS_Phi[i]->Write();
+    }
+    
+    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
+        Xvert_VS_Yvert[i]->GetXaxis()->SetTitle("X vertex (cm)");
+        Xvert_VS_Yvert[i]->GetYaxis()->SetTitle("Y vertex (cm)");
+        Xvert_VS_Yvert[i]->Write();
+    }
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
         LongMom[i]->GetXaxis()->SetTitle("#omega Longitudinal Momentum (GeV/c)");
@@ -852,15 +869,44 @@ void WriteHist(string RootFile){
         IM2Photons_OpAng_ElecPhoton_Cut[i]->GetYaxis()->SetTitle("Counts");
         IM2Photons_OpAng_ElecPhoton_Cut[i]->Write();
 
+        OpAng_VS_IM2Photons[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        OpAng_VS_IM2Photons[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
 		OpAng_VS_IM2Photons[i]->Write();
-		OpAng_VS_E[i]->Write();
+        
+        OpAng_VS_E[i]->GetXaxis()->SetTitle("#pi^{0} Total Energy (GeV)");
+        OpAng_VS_E[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
+        OpAng_VS_E[i]->Write();
+        
+        OpAng_VS_E_MassPi0Cut[i]->GetXaxis()->SetTitle("#pi^{0} Total Energy (GeV)");
+        OpAng_VS_E_MassPi0Cut[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
         OpAng_VS_E_MassPi0Cut[i]->Write();
-		IM2Photons_VS_IMOmega[i]->Write();
-		Q2_VS_IMOmega[i]->Write();
+		
+        IM2Photons_VS_IMOmega[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        IM2Photons_VS_IMOmega[i]->Write();
+		
+        Q2_VS_IMOmega[i]->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
+        Q2_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        Q2_VS_IMOmega[i]->Write();
+        
+        Pt_VS_IMOmega[i]->GetXaxis()->SetTitle("Transverse Momentum (GeV/c)");
+        Pt_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
 		Pt_VS_IMOmega[i]->Write();
+
+        Pl_VS_IMOmega[i]->GetXaxis()->SetTitle("Longitudinal Momentum (GeV/c)");
+        Pl_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
 		Pl_VS_IMOmega[i]->Write();
-		OpAng_VS_IMOmega[i]->Write();
+		
+        OpAng_VS_IMOmega[i]->GetXaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        OpAng_VS_IMOmega[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
+        OpAng_VS_IMOmega[i]->Write();
+        
+        MissMom[i]->GetXaxis()->SetTitle("Missing Momentum (GeV/c)");
+        MissMom[i]->GetYaxis()->SetTitle("Counts");
 		MissMom[i]->Write();
+        
+        MMsq[i]->GetXaxis()->SetTitle("Missing Mass Squared (GeV/c)^{2}");
+        MMsq[i]->GetYaxis()->SetTitle("Counts");
 		MMsq[i]->Write();
 
         IMOmega[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
