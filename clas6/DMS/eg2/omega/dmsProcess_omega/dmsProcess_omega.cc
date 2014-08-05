@@ -330,6 +330,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutQSquared;
     bool cutOpAng_ElecPhoton1;
     bool cutOpAng_ElecPhoton2;
+    bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq;
@@ -372,6 +373,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutQSquared = false;
         cutOpAng_ElecPhoton1 = false;
         cutOpAng_ElecPhoton2 = false;
+        cutsAll = false;
         
         // get the first electron lorentz vector and vertex
 		TLorentzVector elec = reader.getLorentzVector(ID_ELECTRON, 0, MASS_ELECTRON);
@@ -500,11 +502,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutOpAng_ElecPhoton2 = myCuts.Check_OpAng_ElecPhoton(elecPhoton2Angle);
         
         IM2Photons[Vz_index]->Fill(TwoPhoton.M()); // inv. mass of 2 photons
+		IMOmega[Vz_index]->Fill(Omega.M()); // inv. mass of pi+ pi- 2 photons
 		if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
 			IM2Photons_OpAng_ElecPhoton_Cut[Vz_index]->Fill(TwoPhoton.M());
+            IMOmega_OpAng_ElecPhoton_Cut[Vz_index]->Fill(Omega.M());
 		}
-        
-		IMOmega[Vz_index]->Fill(Omega.M());
 		if(cutPi0Mass) {
             OpAng_VS_E_MassPi0Cut[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle);
 			IMOmega_MassPi0Cut[Vz_index]->Fill(Omega.M());
@@ -515,7 +517,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		if(cutQSquared) {
 			IMOmega_QsqCut[Vz_index]->Fill(Omega.M());
 		}
-		if(cutZDiff_ElectronNPion && cutZDiff_ElectronPPion && cutPi0Mass){
+        cutsAll = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion && cutPi0Mass && cutQSquared && cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2);
+		if(cutsAll){
 			IMOmega_AllCuts[Vz_index]->Fill(Omega.M());
 		}
         
@@ -632,6 +635,10 @@ void BookHist(){
     char hname[100];
 	char htitle[100];
     
+    Int nIMomega = 250;
+    double IMomegaLo = 0.0;
+    double IMomegaHi = 2.5;
+    
     DetectedParticles myDetPart;
     ParticleList myPartList;
     EG2Target myTgt;
@@ -711,23 +718,23 @@ void BookHist(){
         
 		sprintf(hname,"IM2Photons_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #pi^{0} vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		IM2Photons_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0, 1., 200, 0, 2.5);
+		IM2Photons_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"Q2_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Q2 vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		Q2_VS_IMOmega[i] = new TH2D(hname, htitle, 100, -4., 0., 200, 0, 2.5);
+		Q2_VS_IMOmega[i] = new TH2D(hname, htitle, 100, -4., 0., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"Pt_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Omega Trans. Mom. vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		Pt_VS_IMOmega[i] = new TH2D(hname, htitle, 500, 0., 5., 200, 0, 2.5);
+		Pt_VS_IMOmega[i] = new TH2D(hname, htitle, 500, 0., 5., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"Pl_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Omega Long. Mom. vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		Pl_VS_IMOmega[i] = new TH2D(hname, htitle, 500, 0., 5., 200, 0, 2.5);
+		Pl_VS_IMOmega[i] = new TH2D(hname, htitle, 500, 0., 5., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"OpAng_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Opening Angle vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		OpAng_VS_IMOmega[i] = new TH2D(hname, htitle, 200, 0, 2.5, 100, 0., 100.);
+		OpAng_VS_IMOmega[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 100, 0., 100.);
         
 		sprintf(hname,"MissMom_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Missing Momentum, %s",myTgt.Get_Label(i).c_str());
@@ -739,23 +746,27 @@ void BookHist(){
         
 		sprintf(hname,"IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		IMOmega[i] = new TH1D(hname, htitle, 200, 0, 2.5);
-        
+		IMOmega[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+
+        sprintf(hname,"IMOmega_OpAng_ElecPhoton_Cut_%s",myTgt.Get_Label(i).c_str());
+		sprintf(htitle,"Reconstructed Mass of #omega - e^{-} #gamma Opening Angle Cut, %s",myTgt.Get_Label(i).c_str());
+		IMOmega_OpAng_ElecPhoton_Cut[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+
 		sprintf(hname,"IMOmega_MassPi0Cut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - Pi0 Mass Cut, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_MassPi0Cut[i] = new TH1D(hname, htitle, 200, 0, 2.5);
+		IMOmega_MassPi0Cut[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"IMOmega_ZVertCut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - Z Vertex Cut, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_ZVertCut[i] = new TH1D(hname, htitle, 200, 0, 2.5);
+		IMOmega_ZVertCut[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
 
         sprintf(hname,"IMOmega_QsqCut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - Q^{2} Cut, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_QsqCut[i] = new TH1D(hname, htitle, 200, 0, 2.5);
+		IMOmega_QsqCut[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
         
         sprintf(hname,"IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_AllCuts[i] = new TH1D(hname, htitle, 200, 0, 2.5);
+		IMOmega_AllCuts[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
 	}
     
     for(i=0; i<MAX_SECTORS; i++){
@@ -823,6 +834,7 @@ void WriteHist(string RootFile){
 		MissMom[i]->Write();
 		MMsq[i]->Write();
 		IMOmega[i]->Write();
+		IMOmega_OpAng_ElecPhoton_Cut[i]->Write();
 		IMOmega_MassPi0Cut[i]->Write();
 		IMOmega_ZVertCut[i]->Write();
 		IMOmega_QsqCut[i]->Write();

@@ -54,6 +54,7 @@ TH2D *OpAng_VS_IMOmega[3];
 TH1D *MissMom[3];
 TH1D *MMsq[3];
 TH1D *IMOmega[3];
+TH1D *IMOmega_OpAng_ElecPhoton_Cut[3];
 TH1D *IMOmega_MassPi0Cut[3];
 TH1D *IMOmega_ZVertCut[3];
 TH1D *IMOmega_QsqCut[3];
