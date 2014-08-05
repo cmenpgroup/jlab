@@ -635,7 +635,7 @@ void BookHist(){
     char hname[100];
 	char htitle[100];
     
-    int nIMomega = 250;
+    int nIMomega = 125;
     double IMomegaLo = 0.0;
     double IMomegaHi = 2.5;
     
@@ -838,6 +838,9 @@ void WriteHist(string RootFile){
 		IMOmega_MassPi0Cut[i]->Write();
 		IMOmega_ZVertCut[i]->Write();
 		IMOmega_QsqCut[i]->Write();
+        
+        IMOmega_AllCuts[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_AllCuts[i]->GetYaxis()->SetTitle("Counts");
         IMOmega_AllCuts[i]->Write();
 	}
     
