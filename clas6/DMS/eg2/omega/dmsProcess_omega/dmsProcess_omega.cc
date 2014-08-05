@@ -238,9 +238,14 @@ EG2Cuts::EG2Cuts()
     
     RangeZdiff_ElecPip.push_back(-2.0); // Lower limit on z vertex difference with electron (in cm)
     RangeZdiff_ElecPip.push_back(2.0); // Upper limit on z vertex difference with electron (in cm)
- 
-    RangeMassPi0.push_back(0.0); // Lower limit on pi0 mass (in Gev/c^2)
-    RangeMassPi0.push_back(0.3); // Upper limit on pi0 mass (in Gev/c^2)
+
+    double pi0Centroid = 0.134;
+    double pi0Width = 0.025;
+    double pi0Nsigmas = 3.0;
+    double pi0MLo = pi0Centroid - pi0Nsigmas*pi0Width;
+    double pi0MHi = pi0Centroid + pi0Nsigmas*pi0Width;
+    RangeMassPi0.push_back(pi0MLo); // Lower limit on pi0 mass (in Gev/c^2)
+    RangeMassPi0.push_back(pi0MHi); // Upper limit on pi0 mass (in Gev/c^2)
 
     RangeQSquared.push_back(-100000.0); // Lower limit on Q^2 (in Gev^2)
     RangeQSquared.push_back(-1.0); // Upper limit on Q^2 (in Gev^2)
