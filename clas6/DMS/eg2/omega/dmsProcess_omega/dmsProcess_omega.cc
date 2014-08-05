@@ -232,6 +232,7 @@ EG2Cuts::EG2Cuts()
     CutsLabel.push_back("Zdiff_Electron_PiPlus");
     CutsLabel.push_back("MassPi0");
     CutsLabel.push_back("QSquared");
+    CutsLabel.push_back("OpAng_ElecPhoton");
     
     RangeZdiff_ElecPim.push_back(-2.0); // Lower limit on z vertex difference with electron (in cm)
     RangeZdiff_ElecPim.push_back(2.0); // Upper limit on z vertex difference with electron (in cm)
@@ -806,23 +807,51 @@ void WriteHist(string RootFile){
     
 	TFile *out = new TFile(RootFile.c_str(), "recreate");
 	out->cd();
+    
+    q2->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
+    q2->GetYaxis()->SetTitle("Counts");
 	q2->Write();
+
+    elecZVert->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVert->GetYaxis()->SetTitle("Counts");
 	elecZVert->Write();
+    
 	ZVertDiff->Write();
 	Beta_VS_Momentum->Write();
 	TotalMomentum->Write();
+    
+    OpAng_2Photons->GetXaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
+    OpAng_2Photons->GetYaxis()->SetTitle("Counts");
 	OpAng_2Photons->Write();
+
+    OpAng_elecPhoton1->GetXaxis()->SetTitle("Opening Angle between e^{-} and #gamma_{1} (deg.)");
+    OpAng_elecPhoton1->GetYaxis()->SetTitle("Counts");
 	OpAng_elecPhoton1->Write();
+
+    OpAng_elecPhoton2->GetXaxis()->SetTitle("Opening Angle between e^{-} and #gamma_{2} (deg.)");
+    OpAng_elecPhoton2->GetYaxis()->SetTitle("Counts");
     OpAng_elecPhoton2->Write();
     
     for(i=0; i<myPartList.Get_nPartLabel(); i++) Theta_VS_Phi[i]->Write();
     for(i=0; i<myDetPart.Get_nDetPartLabel(); i++) Xvert_VS_Yvert[i]->Write();
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
+        LongMom[i]->GetXaxis()->SetTitle("#omega Longitudinal Momentum (GeV/c)");
+        LongMom[i]->GetYaxis()->SetTitle("Counts");
 		LongMom[i]->Write();
+
+        TransMom[i]->GetXaxis()->SetTitle("#omega Transverse Momentum (GeV/c)");
+        TransMom[i]->GetYaxis()->SetTitle("Counts");
 		TransMom[i]->Write();
+        
+        IM2Photons[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons[i]->GetYaxis()->SetTitle("Counts");
 		IM2Photons[i]->Write();
+
+        IM2Photons_OpAng_ElecPhoton_Cut[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons_OpAng_ElecPhoton_Cut[i]->GetYaxis()->SetTitle("Counts");
         IM2Photons_OpAng_ElecPhoton_Cut[i]->Write();
+
 		OpAng_VS_IM2Photons[i]->Write();
 		OpAng_VS_E[i]->Write();
         OpAng_VS_E_MassPi0Cut[i]->Write();
@@ -833,10 +862,25 @@ void WriteHist(string RootFile){
 		OpAng_VS_IMOmega[i]->Write();
 		MissMom[i]->Write();
 		MMsq[i]->Write();
+
+        IMOmega[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega[i]->GetYaxis()->SetTitle("Counts");
 		IMOmega[i]->Write();
+        
+        IMOmega_OpAng_ElecPhoton_Cut[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_OpAng_ElecPhoton_Cut[i]->GetYaxis()->SetTitle("Counts");
 		IMOmega_OpAng_ElecPhoton_Cut[i]->Write();
+        
+        IMOmega_MassPi0Cut[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_MassPi0Cut[i]->GetYaxis()->SetTitle("Counts");
 		IMOmega_MassPi0Cut[i]->Write();
+
+        IMOmega_ZVertCut[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_ZVertCut[i]->GetYaxis()->SetTitle("Counts");
 		IMOmega_ZVertCut[i]->Write();
+
+        IMOmega_QsqCut[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_QsqCut[i]->GetYaxis()->SetTitle("Counts");
 		IMOmega_QsqCut[i]->Write();
         
         IMOmega_AllCuts[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
@@ -845,6 +889,8 @@ void WriteHist(string RootFile){
 	}
     
     for(i=0; i<MAX_SECTORS; i++){
+        elecZVertSector[i]->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+        elecZVertSector[i]->GetYaxis()->SetTitle("Counts");
         elecZVertSector[i]->Write();
     }
     
