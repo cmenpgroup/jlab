@@ -635,7 +635,7 @@ void BookHist(){
     char hname[100];
 	char htitle[100];
     
-    Int nIMomega = 250;
+    int nIMomega = 250;
     double IMomegaLo = 0.0;
     double IMomegaHi = 2.5;
     
