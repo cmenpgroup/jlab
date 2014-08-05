@@ -33,7 +33,7 @@ Float_t Rmar = 0.125;
 Float_t yoff = 1.5;
 
 // 
-// plotZvert - plot histogram with labels
+// PlotZvert - plot histogram with labels
 //                  
 //                  fAna = output from eg2a DMS
 //                  suffix = string to append to end of image file name
@@ -58,15 +58,15 @@ void PlotZvert(char *fAna="Ana.root", char *suffix, char *target)
 	gPad->SetRightMargin(Rmar);
 	gPad->SetFillColor(0);
     
-    TH1F *hZvert = (TH1F*)fm->Get("Z Vertex of Electron");
+	TH1F *hZvert = (TH1F*)fm->Get("elecZVert");
 	hZvert->SetTitle(target);
 	hZvert->SetXTitle("e^{-} Z Vertex (cm)");
 	hZvert->GetXaxis()->CenterTitle();
 	hZvert->SetYTitle("Counts");
 	hZvert->GetYaxis()->CenterTitle();
 	hZvert->GetYaxis()->SetTitleOffset(yoff);
-    hZvert->SetLineWidth(2);
-    hZvert->Draw();
+	hZvert->SetLineWidth(2);
+	hZvert->Draw();
 
 	sprintf(OutCan,"PlotZvert_%s.gif",suffix);
 	c1->Print(OutCan);
@@ -83,8 +83,8 @@ void PlotZvert(char *fAna="Ana.root", char *suffix, char *target)
 //
 void OverlayZvertBySector(char *fAna="Ana.root", char *suffix, char *target)
 {
-    Int_t i;
-    char legLabel[50];
+	Int_t i;
+	char legLabel[50];
     
 	// Canvas to plot histogram
 	TCanvas *c1 = new TCanvas("c1","c1",0,0,600,600);
@@ -102,30 +102,30 @@ void OverlayZvertBySector(char *fAna="Ana.root", char *suffix, char *target)
 	gPad->SetRightMargin(Rmar);
 	gPad->SetFillColor(0);
     
-    TH1F *hZSec[NSECTORS];
+	TH1F *hZSec[NSECTORS];
     
-    TLegend *leg = new TLegend(0.60,0.50,1.0,0.85); //declare Legend and give its location
+	TLegend *leg = new TLegend(0.60,0.50,1.0,0.85); //declare Legend and give its location
     
-    for(i=0; i<NSECTORS ; i++){
-        sprintf(hname,"Z Vertex of Electron in Sector %i",i+1);
-        hZSec[i] = (TH1F*)fm->Get(hname);
-        hZSec[i]->SetTitle(0);
-        hZSec[i]->SetXTitle("e^{-} Z Vertex (cm)");
-        hZSec[i]->GetXaxis()->CenterTitle();
-        hZSec[i]->SetYTitle("Counts");
-        hZSec[i]->GetYaxis()->CenterTitle();
-        hZSec[i]->GetYaxis()->SetTitleOffset(yoff);
-        hZSec[i]->SetLineWidth(2);
-        hZSec[i]->SetLineColor(lcol[i]);
-        hZSec[i]->Draw(fSame[i]);
+    	for(i=0; i<NSECTORS ; i++){
+        	sprintf(hname,"elecZVertSector%i",i+1);
+        	hZSec[i] = (TH1F*)fm->Get(hname);
+        	hZSec[i]->SetTitle(0);
+        	hZSec[i]->SetXTitle("e^{-} Z Vertex (cm)");
+        	hZSec[i]->GetXaxis()->CenterTitle();
+        	hZSec[i]->SetYTitle("Counts");
+        	hZSec[i]->GetYaxis()->CenterTitle();
+        	hZSec[i]->GetYaxis()->SetTitleOffset(yoff);
+        	hZSec[i]->SetLineWidth(2);
+        	hZSec[i]->SetLineColor(lcol[i]);
+        	hZSec[i]->Draw(fSame[i]);
         
-        sprintf(legLabel,"Sector %i",i+1);
-        leg->AddEntry(hZSec[i],legLabel,"l");
-    }
-    leg->SetLineColor(0);
-    leg->SetFillStyle(0);
-    leg->SetHeader(target);
-    leg->Draw();
+        	sprintf(legLabel,"Sector %i",i+1);
+        	leg->AddEntry(hZSec[i],legLabel,"l");
+    	}
+    	leg->SetLineColor(0);
+    	leg->SetFillStyle(0);
+    	leg->SetHeader(target);
+    	leg->Draw();
     
 	sprintf(OutCan,"OverlayZvertBySector_%s.gif",suffix);
 	c1->Print(OutCan);
