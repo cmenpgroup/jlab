@@ -16,6 +16,10 @@
 
 gROOT->Reset();
 
+char *RunName[4] = {"C12","Sn50","Fe56","Pb208"};
+char *TgtName[3] = {"NoTarget","LD2","Nuc"};
+char *HistName[2] = {"IM2Photons_","IM2Photons_OpAng_ElecPhoton_Cut"};
+
 Float_t FitPi0(TH1F *hist, char *plotFilePrefix)
 {
 
@@ -36,6 +40,8 @@ Float_t FitPi0(TH1F *hist, char *plotFilePrefix)
 	Float_t x, pval;
 	Float_t yield;
 	
+    cout << "Fitting histogram " << hist->GetName() << endl;
+    
 	TH1F *hBgFit; // histogram of background
 		
 	// create canvas
@@ -101,7 +107,7 @@ Float_t FitPi0(TH1F *hist, char *plotFilePrefix)
 	gPad->SetLeftMargin(Lmar);
 	gPad->SetRightMargin(Rmar);
 	gPad->SetFillColor(0);
-	
+    
 	// draw the original histogram
 	hist->SetTitle(0);
 	hist->GetXaxis()->SetTitle(xtitle);
@@ -131,71 +137,48 @@ Float_t FitPi0(TH1F *hist, char *plotFilePrefix)
 	return yield;
 }
 
-void FitPi0_OneTarget(char *rootFile, char *TgtName, char *yieldFilePrefix)
+void FitPi0_OneTarget(char *rootFile, Int_t iRun=0, Int_t iTgt=0, Int_t iCut=0)
 {
 	Int_t i;
 	Float_t yield;
 
 	TH1F *hist; // original histogram
 
-	char hname[50];
+    char hname[50];
 	char plotFilePrefix[100];
-
-	// open text file for the yields
-	char OutFile[100];
-	sprintf(OutFile,"%s.yld",yieldFilePrefix);
-	ofstream fout(OutFile);
-
+    
 	// data files contain the trees
 	printf("Analyzing file %s\n",rootFile);  
 	TFile *fd = new TFile(rootFile,"READ"); // open up the ROOT file
-
-	sprintf(plotFilePrefix,"%s_%s",yieldFilePrefix,TgtName);
 	
-	sprintf(hname,"IM2Photons_%s",TgtName);
+    sprintf(hname,"%s%s",HistName[iCut],TgtName[iTgt]);
+    cout << hname << endl;
 	hist = (TH1F*)fd->Get(hname); // get the histogram from the ROOT file
 
-	yield = FitPi0(hist,plotFilePrefix);
+    sprintf(plotFilePrefix,"FitPi0_%s_%s",RunName[iRun],hname);
+    
+    yield = FitPi0(hist,plotFilePrefix);
+
+	// open text file for the yields
+	char OutFile[100];
+	sprintf(OutFile,"%s.yld",plotFilePrefix);
+	ofstream fout(OutFile);
+    
 	fout<<TgtName<<"\t"<<yield<<"\t"<<sqrt(yield)<<endl;
 
 	fout.close(); // close the text file
 	fd->Close();  // close ROOT file
 }
 
-void FitPi0_AllTargets(char *rootFile, char *yieldFilePrefix)
+void FitPi0_AllTargets(char *rootFile, Int_t iRun=0)
 {
-	Int_t i;
-	Float_t yield;
-	
-	Int_t maxTargets = 3;
+	Int_t i, j;
 
-	TH1F *hist; // original histogram
-
-	char *TgtName[3] = {"NoTarget","LD2","Nuc"};
-
-	char hname[50];
-	char plotFilePrefix[100];
-
-	// open text file for the yields
-	char OutFile[100];
-	sprintf(OutFile,"%s.yld",yieldFilePrefix);
-	ofstream fout(OutFile);
-
-	// data files contain the trees
-	printf("Analyzing file %s\n",rootFile);  
-	TFile *fd = new TFile(rootFile,"READ"); // open up the ROOT file
-
-	for(i=0; i < maxTargets ; i++){
-		sprintf(plotFilePrefix,"%s_%s",yieldFilePrefix,TgtName[i]);
-	
-		sprintf(hname,"IM2Photons_%s",TgtName[i]);
-		hist = (TH1F*)fd->Get(hname); // get the histogram from the ROOT file
-
-		yield = FitPi0(hist,plotFilePrefix);
-		fout<<TgtName[i]<<"\t"<<yield<<"\t"<<sqrt(yield)<<endl;
-	}
-	fout.close(); // close the text file
-	fd->Close();  // close ROOT file
+    for(i=0; i<3; i++){
+        for(j=0; j<2; j++){
+            FitPi0_OneTarget(rootFile, iRun, i, j);
+        }
+    }
 }
 
 // peak is Gaussian
