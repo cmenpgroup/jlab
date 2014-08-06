@@ -18,7 +18,7 @@ gROOT->Reset();
 
 char *RunName[4] = {"C12","Sn50","Fe56","Pb208"};
 char *TgtName[3] = {"NoTarget","LD2","Nuc"};
-char *HistName[2] = {"IM2Photons_","IM2Photons_OpAng_ElecPhoton_Cut"};
+char *HistName[2] = {"IM2Photons","IM2Photons_OpAng_ElecPhoton_Cut"};
 
 Float_t FitPi0(TH1F *hist, char *plotFilePrefix)
 {
@@ -151,7 +151,7 @@ void FitPi0_OneTarget(char *rootFile, Int_t iRun=0, Int_t iTgt=0, Int_t iCut=0)
 	printf("Analyzing file %s\n",rootFile);  
 	TFile *fd = new TFile(rootFile,"READ"); // open up the ROOT file
 	
-    sprintf(hname,"%s%s",HistName[iCut],TgtName[iTgt]);
+    sprintf(hname,"%s_%s",HistName[iCut],TgtName[iTgt]);
     cout << hname << endl;
 	hist = (TH1F*)fd->Get(hname); // get the histogram from the ROOT file
 
