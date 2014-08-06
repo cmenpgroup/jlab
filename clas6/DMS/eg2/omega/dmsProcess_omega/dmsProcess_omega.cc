@@ -701,7 +701,7 @@ void BookHist(){
 		sprintf(htitle,"Reconstructed Mass of Pi0, %s",myTgt.Get_Label(i).c_str());
 		IM2Photons[i] = new TH1D(hname, htitle, 100, 0., 1.);
 
-        sprintf(hname,"IM2Photons_OpAng_ElecPhoton_Cut%s",myTgt.Get_Label(i).c_str());
+        sprintf(hname,"IM2Photons_OpAng_ElecPhoton_Cut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of Pi0 with e^{-} #gamma Opening Angle Cut, %s",myTgt.Get_Label(i).c_str());
 		IM2Photons_OpAng_ElecPhoton_Cut[i] = new TH1D(hname, htitle, 100, 0., 1.);
         
