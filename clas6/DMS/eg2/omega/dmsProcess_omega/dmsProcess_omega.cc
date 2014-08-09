@@ -424,10 +424,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         if (!(processed % dEvents)) {
             cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<"\t"<<processed<<endl;
-            cout<<"Beam "<<endl;
-            PrintTLorentzVector(beam);
-            cout<<"Target "<<endl;
-            PrintTLorentzVector(target);
+//            cout<<"Beam "<<endl;
+//            PrintTLorentzVector(beam);
+//            cout<<"Target "<<endl;
+//            PrintTLorentzVector(target);
         }
         
         //_________________________________
@@ -718,7 +718,7 @@ void BookHist(){
 	for(i=0; i<myTgt.Get_nIndex(); i++){
 		sprintf(hname,"W_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
-		W[i] = new TH1D(hname, htitle, 500, 0, 10);
+		W[i] = new TH1D(hname, htitle, 500, 0, 20);
         
 		sprintf(hname,"LongMom_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Longitudinal Momentum of Reconstructed Particle, %s",myTgt.Get_Label(i).c_str());
