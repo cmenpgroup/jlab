@@ -423,14 +423,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         dubU = sqrt(MASS_PROTON*MASS_PROTON - Qsq + 2*MASS_PROTON*nu); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
-        if (!(processed % dEvents)) {
-            cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<"\t"<<processed<<endl;
-//            cout<<"Beam "<<endl;
-//            PrintTLorentzVector(beam);
-//            cout<<"Target "<<endl;
-//            PrintTLorentzVector(target);
-        }
-        
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
