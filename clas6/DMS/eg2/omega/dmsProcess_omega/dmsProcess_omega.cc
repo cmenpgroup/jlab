@@ -668,7 +668,7 @@ void BookHist(){
     q2 = new TH1D(hname,htitle, 100, -4., 0.);
 
     sprintf(hname,"q2_VS_theta");
-    sprintf(htitle,"Q^{2} vs. 4*E_{e^{\prime}}sin^{2}(0.5*#theta_{e})");
+    sprintf(htitle,"Q^{2} vs. 4E_{e^{\prime}}sin^{2}(0.5*#theta_{e^{\prime}})");
     q2_VS_theta = new TH2D(hname,htitle, 100, 0., 10, 100, -4., 0.);
     
     sprintf(hname,"nu_EnergyTransfer");
@@ -844,7 +844,7 @@ void WriteHist(string RootFile){
 	q2->Write();
 
     q2_VS_theta->GetYaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
-    q2_VS_theta->GetXaxis()->SetTitle("sin^{2}(0.5*#theta_{e})");
+    q2_VS_theta->GetXaxis()->SetTitle("4E_{e^{\prime}}sin^{2}(0.5*#theta_{e^{\prime}})");
 	q2_VS_theta->Write();
     
     nu_EnergyTransfer->GetXaxis()->SetTitle("\nu (GeV)");
