@@ -26,7 +26,8 @@ double MASS_PION_NEUTRAL = 0.135; // mass of neutral pion in GeV/c^2
 double MASS_PROTON = 0.938; // mass of proton in GeV/c^2
 double MASS_DEUTERIUM = 2*MASS_PROTON; // mass of deuterium in GeV/c^2
 
-double BEAM_ENERGY = 5.01; // electron beam energy in GeV
+double BEAM_ENERGY = 4.0; // electron beam energy in GeV
+//double BEAM_ENERGY = 5.01; // electron beam energy in GeV
 
 TH1D *q2;
 TH2D *q2_VS_theta;
