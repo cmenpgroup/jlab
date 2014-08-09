@@ -29,6 +29,8 @@ double MASS_DEUTERIUM = 2*MASS_PROTON; // mass of deuterium in GeV/c^2
 double BEAM_ENERGY = 5.01; // electron beam energy in GeV
 
 TH1D *q2;
+TH2D *q2_VS_theta;
+TH1D *nu_EnergyTransfer;
 TH1D *elecZVert;
 TH2D *ZVertDiff;
 TH2D *Xvert_VS_Yvert[5];
@@ -39,6 +41,7 @@ TH1D *OpAng_2Photons;
 TH1D *OpAng_elecPhoton1;
 TH1D *OpAng_elecPhoton2;
 
+TH1D *W[3];
 TH1D *LongMom[3];
 TH1D *TransMom[3];
 TH1D *IM2Photons[3];

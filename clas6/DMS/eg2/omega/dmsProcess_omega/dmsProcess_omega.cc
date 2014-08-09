@@ -334,13 +334,14 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
-    double Qsq;
+    double Qsq, nu, dubU;
     
     EG2Target myTgt;
     EG2Cuts myCuts;
     
     myCuts.Print_Cuts();
     
+    TLorentzVector BeamMinusElectron;
     TLorentzVector TwoPhoton;
 	TLorentzVector Omega;
 
@@ -405,6 +406,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             default: target.SetE(MASS_PROTON); break;
         }
         
+        BeamMinusElectron = beam - elec; // Lorentz Vector Difference between beam and scattered electron
 		TwoPhoton = photon1 + photon2; // Two photon Lorentz vector
 		Omega = pPion + nPion + TwoPhoton; // omega Lorntz vector
         
@@ -415,12 +417,20 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		double elecPhoton1ZVertDiff = elec_vert.Z() - photon1_vert.Z(); // z vertex difference, e- and photon 1
 		double elecPhoton2ZVertDiff = elec_vert.Z() - photon2_vert.Z(); // z vertex difference, e- and photon 2
         
-        Qsq = (beam - elec).M2(); // electron Q^2
+        Qsq = BeamMinusElectron.M2(); // electron Q^2
+        nu = BeamMinusElectron.E(); // energy transfered to target
+        dubU = sqrt(target.M2() - Qsq + 2*target.M()*nu); // reaction W
         
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
+        sinHalfTheta = sin(0.5*elec.Theta() * TMath::RadToDeg()); // sine of one-half the electron scattering angle theta
+        q2_VS_theta->(sinHalfTheta*sinHalfTheta,Qsq);
+        
+        nu_EnergyTransfer->Fill(nu);
 		elecZVert->Fill(elec_vert.Z());
+        
+        W[Vz_index]->Fill(dubU);
 
         // plots of z vertex difference between scattered electron and other decay particle
 		ZVertDiff->Fill(elecNPionZVertDiff,1);
@@ -648,6 +658,14 @@ void BookHist(){
     sprintf(htitle,"Q^{2}");
     q2 = new TH1D(hname,htitle, 100, -4., 0.);
 
+    sprintf(hname,"q2_VS_theta");
+    sprintf(htitle,"Q^{2} vs. sin^{2}(0.5*#theta_{e})");
+    q2_VS_theta = new TH2D(hname,htitle, 180, 0., 180., 100, -4., 0.);
+    
+    sprintf(hname,"nu_EnergyTransfer");
+    sprintf(htitle,"\nu");
+    nu_EnergyTransfer = new TH1D(hname,htitle, 100, 0., 5.);
+    
     sprintf(hname,"elecZVert");
     sprintf(htitle,"Z Vertex of Electron");
 	elecZVert = new TH1D(hname,htitle, 300, -40, -10);
@@ -689,6 +707,10 @@ void BookHist(){
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
+		sprintf(hname,"W_%s",myTgt.Get_Label(i).c_str());
+		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
+		W[i] = new TH1D(hname, htitle, 500, 0, 10);
+        
 		sprintf(hname,"LongMom_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Longitudinal Momentum of Reconstructed Particle, %s",myTgt.Get_Label(i).c_str());
 		LongMom[i] = new TH1D(hname, htitle, 500, 0, 5);
@@ -812,6 +834,14 @@ void WriteHist(string RootFile){
     q2->GetYaxis()->SetTitle("Counts");
 	q2->Write();
 
+    q2_VS_theta->GetYaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
+    q2_VS_theta->GetXaxis()->SetTitle("sin^{2}(0.5*#theta_{e})");
+	q2_VS_theta->Write();
+    
+    nu_EnergyTransfer->GetXaxis()->SetTitle("\nu (GeV)");
+    nu_EnergyTransfer->GetYaxis()->SetTitle("Counts");
+	nu_EnergyTransfer->Write();
+    
     elecZVert->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert->GetYaxis()->SetTitle("Counts");
 	elecZVert->Write();
@@ -853,6 +883,10 @@ void WriteHist(string RootFile){
     }
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
+        W[i]->GetXaxis()->SetTitle("W (GeV)");
+        W[i]->GetYaxis()->SetTitle("Counts");
+        W[i]->Write();
+        
         LongMom[i]->GetXaxis()->SetTitle("#omega Longitudinal Momentum (GeV/c)");
         LongMom[i]->GetYaxis()->SetTitle("Counts");
 		LongMom[i]->Write();
