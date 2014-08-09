@@ -426,7 +426,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		// Fill histograms
 		q2->Fill(Qsq);
         sinHalfTheta = sin(0.5*elec.Theta() * TMath::RadToDeg()); // sine of one-half the electron scattering angle theta
-        q2_VS_theta->(sinHalfTheta*sinHalfTheta,Qsq);
+        q2_VS_theta->Fill(sinHalfTheta*sinHalfTheta,Qsq);
         
         nu_EnergyTransfer->Fill(nu);
 		elecZVert->Fill(elec_vert.Z());
