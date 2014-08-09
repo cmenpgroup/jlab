@@ -712,7 +712,7 @@ void BookHist(){
 	for(i=0; i<myTgt.Get_nIndex(); i++){
 		sprintf(hname,"W_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
-		W[i] = new TH1D(hname, htitle, 200, 0, 2);
+		W[i] = new TH1D(hname, htitle, 250, 0, 5);
         
 		sprintf(hname,"z_fracE_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Fractional Energy, %s",myTgt.Get_Label(i).c_str());
