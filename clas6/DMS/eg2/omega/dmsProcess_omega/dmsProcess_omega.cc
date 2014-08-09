@@ -420,7 +420,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         Qsq = BeamMinusElectron.M2(); // electron Q^2
         nu = BeamMinusElectron.E(); // energy transfered to target
-        dubU = sqrt(target.M2() - Qsq + 2*target.M()*nu); // reaction W
+        dubU = sqrt(MASS_PROTON*MASS_PROTON - Qsq + 2*MASS_PROTON*nu); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         if (!(processed % dEvents)) {
@@ -720,11 +720,11 @@ void BookHist(){
 	for(i=0; i<myTgt.Get_nIndex(); i++){
 		sprintf(hname,"W_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
-		W[i] = new TH1D(hname, htitle, 500, 0, 20);
+		W[i] = new TH1D(hname, htitle, 200, 0, 2);
         
 		sprintf(hname,"z_fracE_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Fractional Energy, %s",myTgt.Get_Label(i).c_str());
-		z_fracE[i] = new TH1D(hname, htitle, 100, 0, 1.0);
+		z_fracE[i] = new TH1D(hname, htitle, 150, 0, 1.5);
         
 		sprintf(hname,"LongMom_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Longitudinal Momentum of Reconstructed Particle, %s",myTgt.Get_Label(i).c_str());
