@@ -76,5 +76,5 @@ void PrintAnalysisTime(float tStart, float tStop);
 int CheckCut(double var, double LowerLimit, double UpperLimit);
 void BookHist();
 void WriteHist(string RootFile);
-void PrintTLorentzVector(TLorentzVector *TLV);
+void PrintTLorentzVector(TLorentzVector TLV);
 
