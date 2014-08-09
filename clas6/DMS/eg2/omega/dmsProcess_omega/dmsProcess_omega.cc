@@ -335,6 +335,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, dubU;
+    double sinHalfTheta;
     
     EG2Target myTgt;
     EG2Cuts myCuts;
