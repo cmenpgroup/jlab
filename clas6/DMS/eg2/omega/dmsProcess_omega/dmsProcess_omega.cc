@@ -424,6 +424,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         if (!(processed % dEvents)) {
             cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<"\t"<<processed<<endl;
+            cout<<"Beam "<<endl;
+            PrintTLorentzVector(beam);
+            cout<<"Target "<<endl;
+            PrintTLorentzVector(target);
         }
         
         //_________________________________
@@ -985,6 +989,15 @@ void WriteHist(string RootFile){
 	GammaPi0->Write();
 
     out->Close();
+}
+
+void PrintTLorentzVector(TLorentzVector *TLV){
+    cout <<"Px "<<TLV.Px()<<"\t";
+    cout <<"Py "<<TLV.Py()<<"\t";
+    cout <<"Pz "<<TLV.Pz()<<"\t";
+    cout <<"E " <<TLV.E() <<"\t";
+    cout <<"M " <<TLV.M() <<"\t";
+    cout <<"M^2 " <<TLV.M2() <<endl;
 }
 
 #ifndef __CINT__
