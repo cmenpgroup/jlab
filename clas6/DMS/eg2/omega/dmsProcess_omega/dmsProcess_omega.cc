@@ -662,7 +662,7 @@ void BookHist(){
     q2 = new TH1D(hname,htitle, 100, -4., 0.);
 
     sprintf(hname,"q2_VS_theta");
-    sprintf(htitle,"Q^{2} vs. 4E_{e'sin^{2}(0.5*#theta_{e'})");
+    sprintf(htitle,"Q^{2} vs. 4E_{e'}sin^{2}(0.5*#theta_{e'})");
     q2_VS_theta = new TH2D(hname,htitle, 200, 0., 1.0, 200, -4., 0.);
     
     sprintf(hname,"nu_EnergyTransfer");
