@@ -420,7 +420,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         Qsq = BeamMinusElectron.M2(); // electron Q^2
         nu = BeamMinusElectron.E(); // energy transfered to target
-        dubU = sqrt(MASS_PROTON*MASS_PROTON - Qsq + 2*MASS_PROTON*nu); // reaction W
+        dubU = sqrt(MASS_PROTON*MASS_PROTON + Qsq + 2*MASS_PROTON*nu); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         //_________________________________
