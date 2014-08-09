@@ -42,6 +42,7 @@ TH1D *OpAng_elecPhoton1;
 TH1D *OpAng_elecPhoton2;
 
 TH1D *W[3];
+TH1D *z_fracE[3];
 TH1D *LongMom[3];
 TH1D *TransMom[3];
 TH1D *IM2Photons[3];

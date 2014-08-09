@@ -334,7 +334,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
-    double Qsq, nu, dubU;
+    double Qsq, nu, dubU, z_fracEnergy;
     double sinHalfTheta;
     
     EG2Target myTgt;
@@ -409,7 +409,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         BeamMinusElectron = beam - elec; // Lorentz Vector Difference between beam and scattered electron
 		TwoPhoton = photon1 + photon2; // Two photon Lorentz vector
-		Omega = pPion + nPion + TwoPhoton; // omega Lorntz vector
+		Omega = pPion + nPion + TwoPhoton; // omega Lorentz vector
         
         if(DEBUG) cout <<processed<<"\t"<<Omega.M()<<"\t"<<nPion.M()<<"\t"<<pPion.M()<<endl;
 
@@ -421,6 +421,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Qsq = BeamMinusElectron.M2(); // electron Q^2
         nu = BeamMinusElectron.E(); // energy transfered to target
         dubU = sqrt(target.M2() - Qsq + 2*target.M()*nu); // reaction W
+        z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         if (!(processed % dEvents)) {
             cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<"\t"<<processed<<endl;
@@ -440,7 +441,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		elecZVert->Fill(elec_vert.Z());
         
         W[Vz_index]->Fill(dubU);
-
+        z_fracE[Vz_index]->Fill(z_fracEnergy);
+        
         // plots of z vertex difference between scattered electron and other decay particle
 		ZVertDiff->Fill(elecNPionZVertDiff,1);
 		ZVertDiff->Fill(elecPPionZVertDiff,2);
@@ -668,7 +670,7 @@ void BookHist(){
     q2 = new TH1D(hname,htitle, 100, -4., 0.);
 
     sprintf(hname,"q2_VS_theta");
-    sprintf(htitle,"Q^{2} vs. 4E_{e^{#prime}}sin^{2}(0.5*#theta_{e^{#prime}})");
+    sprintf(htitle,"Q^{2} vs. 4E_{e'sin^{2}(0.5*#theta_{e'})");
     q2_VS_theta = new TH2D(hname,htitle, 200, 0., 1.0, 200, -4., 0.);
     
     sprintf(hname,"nu_EnergyTransfer");
@@ -719,6 +721,10 @@ void BookHist(){
 		sprintf(hname,"W_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
 		W[i] = new TH1D(hname, htitle, 500, 0, 20);
+        
+		sprintf(hname,"z_fracE_%s",myTgt.Get_Label(i).c_str());
+		sprintf(htitle,"Fractional Energy, %s",myTgt.Get_Label(i).c_str());
+		z_fracE[i] = new TH1D(hname, htitle, 100, 0, 1.0);
         
 		sprintf(hname,"LongMom_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Longitudinal Momentum of Reconstructed Particle, %s",myTgt.Get_Label(i).c_str());
@@ -844,7 +850,7 @@ void WriteHist(string RootFile){
 	q2->Write();
 
     q2_VS_theta->GetYaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
-    q2_VS_theta->GetXaxis()->SetTitle("4E_{e^{#prime}}sin^{2}(0.5*#theta_{e^{#prime}})");
+    q2_VS_theta->GetXaxis()->SetTitle("4E_{e'}sin^{2}(0.5*#theta_{e'})");
 	q2_VS_theta->Write();
     
     nu_EnergyTransfer->GetXaxis()->SetTitle("\nu (GeV)");
@@ -895,6 +901,10 @@ void WriteHist(string RootFile){
         W[i]->GetXaxis()->SetTitle("W (GeV)");
         W[i]->GetYaxis()->SetTitle("Counts");
         W[i]->Write();
+
+        z_fracE[i]->GetXaxis()->SetTitle("z");
+        z_fracE[i]->GetYaxis()->SetTitle("Counts");
+        z_fracE[i]->Write();
         
         LongMom[i]->GetXaxis()->SetTitle("#omega Longitudinal Momentum (GeV/c)");
         LongMom[i]->GetYaxis()->SetTitle("Counts");
