@@ -991,7 +991,7 @@ void WriteHist(string RootFile){
     out->Close();
 }
 
-void PrintTLorentzVector(TLorentzVector *TLV){
+void PrintTLorentzVector(TLorentzVector TLV){
     cout <<"Px "<<TLV.Px()<<"\t";
     cout <<"Py "<<TLV.Py()<<"\t";
     cout <<"Pz "<<TLV.Pz()<<"\t";
