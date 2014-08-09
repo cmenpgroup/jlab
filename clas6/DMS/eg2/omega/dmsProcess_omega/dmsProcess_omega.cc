@@ -423,7 +423,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         dubU = sqrt(target.M2() - Qsq + 2*target.M()*nu); // reaction W
         
         if (!(processed % dEvents)) {
-            cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<endl;
+            cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<"\t"<<processed<<endl;
         }
         
         //_________________________________
