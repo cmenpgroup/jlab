@@ -346,7 +346,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     TLorentzVector TwoPhoton;
 	TLorentzVector Omega;
 
-    TLorentzVector beam(0., 0., BEAM_ENERGY, BEAM_ENERGY);
+    TLorentzVector beam(0., 0., BEAM_ENERGY, sqrt(BEAM_ENERGY*BEAM_ENERGY+MASS_ELECTRON*MASS_ELECTRON));
 	TLorentzVector target(0., 0., 0., MASS_PROTON);
 
     TEventReader reader;
@@ -422,10 +422,14 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         nu = BeamMinusElectron.E(); // energy transfered to target
         dubU = sqrt(target.M2() - Qsq + 2*target.M()*nu); // reaction W
         
+        if (!(processed % dEvents)) {
+            cout<<"W "<<dubU<<"\t"<<Vz_index<<"\t"<<target.M2()<<"\t"<<Qsq<<"\t"<<target.M()<<"\t"<<nu<<endl;
+        }
+        
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
-        sinHalfTheta = sin(0.5*elec.Theta() * TMath::RadToDeg()); // sine of one-half the electron scattering angle theta
+        sinHalfTheta = sin(0.5*elec.Theta()); // sine of one-half the electron scattering angle theta
         q2_VS_theta->Fill(sinHalfTheta*sinHalfTheta,Qsq);
         
         nu_EnergyTransfer->Fill(nu);
@@ -661,7 +665,7 @@ void BookHist(){
 
     sprintf(hname,"q2_VS_theta");
     sprintf(htitle,"Q^{2} vs. sin^{2}(0.5*#theta_{e})");
-    q2_VS_theta = new TH2D(hname,htitle, 180, 0., 180., 100, -4., 0.);
+    q2_VS_theta = new TH2D(hname,htitle, 100, 0., 1.0, 100, -4., 0.);
     
     sprintf(hname,"nu_EnergyTransfer");
     sprintf(htitle,"\nu");
