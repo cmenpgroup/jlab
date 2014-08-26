@@ -11,6 +11,7 @@
 
 using namespace std;
 
+int ENTRIES_OFFSET = 10; //offset of the entry number for mixed events
 int MAX_SECTORS = 6; // max. number of CLAS sectors
 
 int ID_ELECTRON = 11; // PDG electron id
@@ -26,8 +27,8 @@ double MASS_PION_NEUTRAL = 0.135; // mass of neutral pion in GeV/c^2
 double MASS_PROTON = 0.938; // mass of proton in GeV/c^2
 double MASS_DEUTERIUM = 2*MASS_PROTON; // mass of deuterium in GeV/c^2
 
-double BEAM_ENERGY = 4.5; // electron beam energy in GeV
-//double BEAM_ENERGY = 5.01; // electron beam energy in GeV
+//double BEAM_ENERGY = 4.5; // electron beam energy in GeV
+double BEAM_ENERGY = 5.01; // electron beam energy in GeV
 
 TH1D *q2;
 TH2D *q2_VS_theta;
@@ -65,6 +66,15 @@ TH1D *IMOmega_ZVertCut[3];
 TH1D *IMOmega_QsqCut[3];
 TH1D *IMOmega_AllCuts[3];
 TH1D *elecZVertSector[6];
+
+TH1D *IM2Photons_ME[3][2];
+TH1D *IM2Photons_OpAng_ElecPhoton_Cut_ME[3][2];
+TH1D *IMOmega_ME[3][2];
+TH1D *IMOmega_OpAng_ElecPhoton_Cut_ME[3][2];
+TH1D *IMOmega_MassPi0Cut_ME[3][2];
+TH1D *IMOmega_ZVertCut_ME[3][2];
+TH1D *IMOmega_QsqCut_ME[3][2];
+TH1D *IMOmega_AllCuts_ME[3][2];
 
 TH2D *RelativityOpAngPhotonsA;
 TH2D *RelativityOpAngPhotonsB;
