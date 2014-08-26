@@ -904,7 +904,7 @@ void BookHist(){
 //
 void WriteHist(string RootFile){
     
-    int i;
+    int i, j;
     
     DetectedParticles myDetPart;
     ParticleList myPartList;
