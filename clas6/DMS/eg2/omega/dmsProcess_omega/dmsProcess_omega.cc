@@ -872,6 +872,7 @@ void BookHist(){
             sprintf(hname,"IMOmega_AllCuts_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
             sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
             IMOmega_AllCuts_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+        }
     }
     
     for(i=0; i<MAX_SECTORS; i++){
