@@ -425,7 +425,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             TwoPhoton_MixedEvt[0] = photon1_MixedEvt + photon2;
             Omega_MixedEvt[0] = pPion + nPion + TwoPhoton_MixedEvt[0];
             
-            TwoPhoton_MixedEvt[0] = photon1 + photon2_MixedEvt;
+            TwoPhoton_MixedEvt[1] = photon1 + photon2_MixedEvt;
             Omega_MixedEvt[1] = pPion + nPion + TwoPhoton_MixedEvt[1];
         }
         
