@@ -321,7 +321,7 @@ void EG2Cuts::Print_Cuts()
 }
 
 int process (string inFile, int MaxEvents, int dEvents, int targMass) {
-    int i, j;
+    int i, j, k;
     
     int Sector_index;
     int Vz_index;
@@ -346,8 +346,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     TLorentzVector TwoPhoton;
 	TLorentzVector Omega;
 
-    TLorentzVector TwoPhoton_MixedEvt[2];
-	TLorentzVector Omega_MixedEvt[2];
+    TLorentzVector photon1_MixedEvt;
+    TLorentzVector photon2_MixedEvt;
+    TLorentzVector TwoPhoton_MixedEvt;
+	TLorentzVector Omega_MixedEvt;
+
+    double Mass_TwoPhoton_ME[2][NUM_ENTRIES_OFFSET];
+    double Mass_Omega_ME[2][NUM_ENTRIES_OFFSET];
     
     TLorentzVector beam(0., 0., BEAM_ENERGY, sqrt(BEAM_ENERGY*BEAM_ENERGY+MASS_ELECTRON*MASS_ELECTRON));
 	TLorentzVector target(0., 0., 0., MASS_PROTON);
@@ -417,16 +422,22 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		TwoPhoton = photon1 + photon2; // Two photon Lorentz vector
 		Omega = pPion + nPion + TwoPhoton; // omega Lorentz vector
         
-        if(processed < entries - ENTRIES_OFFSET){
-            readerMixedEvt.readEntry(processed + ENTRIES_OFFSET);
-            TLorentzVector photon1_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON);
-            TLorentzVector photon2_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
+        if(NUM_ENTRIES_OFFSET*ENTRIES_OFFSET < entries){
+            for(k=0; k<NUM_ENTRIES_OFFSET; k++){
+                iMixedEvt = processed + (k+1)*ENTRIES_OFFSET;
+                if(iMixedEvt > entries){
+                    iMixedEvt = (k+1)*ENTRIES_OFFSET;
+                }
+                readerMixedEvt.readEntry(iMixedEvt);
+                photon1_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON);
+                photon2_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
         
-            TwoPhoton_MixedEvt[0] = photon1_MixedEvt + photon2;
-            Omega_MixedEvt[0] = pPion + nPion + TwoPhoton_MixedEvt[0];
-            
-            TwoPhoton_MixedEvt[1] = photon1 + photon2_MixedEvt;
-            Omega_MixedEvt[1] = pPion + nPion + TwoPhoton_MixedEvt[1];
+                Mass_TwoPhoton_ME[0][k] = (photon1_MixedEvt + photon2).M();
+                Mass_Omega_ME[0][k] = (pPion + nPion + photon1_MixedEvt + photon2).M();
+
+                Mass_TwoPhoton_ME[1][k] = (photon1_MixedEvt + photon2).M();
+                Mass_Omega_ME[1][k] = (pPion + nPion + photon1 + photon2_MixedEvt).M();
+            }
         }
         
         if(DEBUG) cout <<processed<<"\t"<<Omega.M()<<"\t"<<nPion.M()<<"\t"<<pPion.M()<<endl;
@@ -554,25 +565,25 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 			IMOmega_AllCuts[Vz_index]->Fill(Omega.M());
 		}
         
-        if(processed < entries - ENTRIES_OFFSET){
+        for(k=0; k<NUM_ENTRIES_OFFSET; k++){
             for(j=0; j<2; j++){
-                IM2Photons_ME[Vz_index][j]->Fill(TwoPhoton_MixedEvt[j].M()); // inv. mass of 2 photons
-                IMOmega_ME[Vz_index][j]->Fill(Omega_MixedEvt[j].M()); // inv. mass of pi+ pi- 2 photons
+                IM2Photons_ME[Vz_index][j]->Fill(Mass_TwoPhoton_ME[j][k]); // inv. mass of 2 photons
+                IMOmega_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]); // inv. mass of pi+ pi- 2 photons
                 if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
-                    IM2Photons_OpAng_ElecPhoton_Cut_ME[Vz_index][j]->Fill(TwoPhoton_MixedEvt[j].M());
-                    IMOmega_OpAng_ElecPhoton_Cut_ME[Vz_index][j]->Fill(Omega_MixedEvt[j].M());
+                    IM2Photons_OpAng_ElecPhoton_Cut_ME[Vz_index][j]->Fill(Mass_TwoPhoton_ME[j][k]);
+                    IMOmega_OpAng_ElecPhoton_Cut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
                 }
                 if(cutPi0Mass) {
-                    IMOmega_MassPi0Cut_ME[Vz_index][j]->Fill(Omega_MixedEvt[j].M());
+                    IMOmega_MassPi0Cut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
                 }
                 if(cutZDiff_ElectronNPion && cutZDiff_ElectronPPion){
-                    IMOmega_ZVertCut_ME[Vz_index][j]->Fill(Omega_MixedEvt[j].M());
+                    IMOmega_ZVertCut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
                 }
                 if(cutQSquared) {
-                    IMOmega_QsqCut_ME[Vz_index][j]->Fill(Omega_MixedEvt[j].M());
+                    IMOmega_QsqCut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
                 }
                 if(cutsAll){
-                    IMOmega_AllCuts_ME[Vz_index][j]->Fill(Omega_MixedEvt[j].M());
+                    IMOmega_AllCuts_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
                 }
             }
         }
