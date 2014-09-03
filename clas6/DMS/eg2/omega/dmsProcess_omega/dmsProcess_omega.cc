@@ -351,6 +351,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     TLorentzVector TwoPhoton_MixedEvt;
 	TLorentzVector Omega_MixedEvt;
 
+    int iMixedEvt;
     double Mass_TwoPhoton_ME[2][NUM_ENTRIES_OFFSET];
     double Mass_Omega_ME[2][NUM_ENTRIES_OFFSET];
     
