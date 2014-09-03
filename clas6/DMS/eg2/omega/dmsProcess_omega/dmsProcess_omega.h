@@ -11,8 +11,8 @@
 
 using namespace std;
 
-int NUM_ENTRIES_OFFSET = 1; // number of mixed event iterations
-int ENTRIES_OFFSET = 10; //offset of the entry number for mixed events
+int NUM_ENTRIES_OFFSET = 5; // number of mixed event iterations
+int ENTRIES_OFFSET = 5; //offset of the entry number for mixed events
 int MAX_SECTORS = 6; // max. number of CLAS sectors
 
 int ID_ELECTRON = 11; // PDG electron id
