@@ -11,7 +11,7 @@
 
 using namespace std;
 
-int NUM_ENTRIES_OFFSET = 5; // number of mixed event iterations
+int NUM_ENTRIES_OFFSET = 10; // number of mixed event iterations
 int ENTRIES_OFFSET = 5; //offset of the entry number for mixed events
 int MAX_SECTORS = 6; // max. number of CLAS sectors
 

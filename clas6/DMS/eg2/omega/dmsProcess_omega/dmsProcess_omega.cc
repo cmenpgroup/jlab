@@ -426,7 +426,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         if(NUM_ENTRIES_OFFSET*ENTRIES_OFFSET < entries){
             for(k=0; k<NUM_ENTRIES_OFFSET; k++){
                 iMixedEvt = processed + (k+1)*ENTRIES_OFFSET;
-                if(iMixedEvt > entries){
+                if(iMixedEvt >= entries){
                     iMixedEvt = (k+1)*ENTRIES_OFFSET;
                 }
                 readerMixedEvt.readEntry(iMixedEvt);
