@@ -586,7 +586,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		if(cutsAll){
 			IMOmega_AllCuts[Vz_index]->Fill(Omega.M());
 			PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
-            if(){
+            if(cutOmegaMass){
                 PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
             }
 		}
