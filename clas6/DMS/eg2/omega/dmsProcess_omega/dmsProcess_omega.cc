@@ -733,7 +733,7 @@ void BookHist(){
 
     int nPtSq_omega = 100;
     double PtSq_omegaLo = 0.0;
-    double PtSq_omegaHi = 3.0;
+    double PtSq_omegaHi = 2.0;
     
     DetectedParticles myDetPart;
     ParticleList myPartList;
@@ -881,11 +881,11 @@ void BookHist(){
 		IMOmega_AllCuts[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
 
         sprintf(hname,"PtSq_Omega_AllCuts_%s",myTgt.Get_Label(i).c_str());
-		sprintf(htitle,"#omega P^{2}_{T} - All ID Cuts, %s",myTgt.Get_Label(i).c_str());
+		sprintf(htitle,"#omega Meson - All ID Cuts, %s",myTgt.Get_Label(i).c_str());
 		PtSq_Omega_AllCuts[i] = new TH1D(hname, htitle, nPtSq_omega, PtSq_omegaLo, PtSq_omegaHi);
 
         sprintf(hname,"PtSq_Omega_AllCuts_IMOmegaCut_%s",myTgt.Get_Label(i).c_str());
-		sprintf(htitle,"#omega P^{2}_{T} - All ID Cuts & IM(#omega) Cut, %s",myTgt.Get_Label(i).c_str());
+		sprintf(htitle,"#omega Meson - All ID Cuts & IM(#omega) Cut, %s",myTgt.Get_Label(i).c_str());
 		PtSq_Omega_AllCuts_IMOmegaCut[i] = new TH1D(hname, htitle, nPtSq_omega, PtSq_omegaLo, PtSq_omegaHi);
         
         for(j=0; j<2; j++){
@@ -1103,11 +1103,11 @@ void WriteHist(string RootFile){
         IMOmega_AllCuts[i]->GetYaxis()->SetTitle("Counts");
         IMOmega_AllCuts[i]->Write();
 
-        PtSq_Omega_AllCuts[i]->GetXaxis()->SetTitle("#omega P^{2}_{T}  (GeV/c)^{2}");
+        PtSq_Omega_AllCuts[i]->GetXaxis()->SetTitle("P^{2}_{T}  (GeV/c)^{2}");
         PtSq_Omega_AllCuts[i]->GetYaxis()->SetTitle("Counts");
         PtSq_Omega_AllCuts[i]->Write();
 
-        PtSq_Omega_AllCuts_IMOmegaCut[i]->GetXaxis()->SetTitle("#omega P^{2}_{T}  (GeV/c)^{2}");
+        PtSq_Omega_AllCuts_IMOmegaCut[i]->GetXaxis()->SetTitle("P^{2}_{T}  (GeV/c)^{2}");
         PtSq_Omega_AllCuts_IMOmegaCut[i]->GetYaxis()->SetTitle("Counts");
         PtSq_Omega_AllCuts_IMOmegaCut[i]->Write();
         
