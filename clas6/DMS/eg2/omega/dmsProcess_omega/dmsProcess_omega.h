@@ -66,6 +66,8 @@ TH1D *IMOmega_MassPi0Cut[3];
 TH1D *IMOmega_ZVertCut[3];
 TH1D *IMOmega_QsqCut[3];
 TH1D *IMOmega_AllCuts[3];
+TH1D *PtSq_Omega_AllCuts[3];
+TH1D *PtSq_Omega_AllCuts_IMOmegaCut[3];
 TH1D *elecZVertSector[6];
 
 TH1D *IM2Photons_ME[3][2];
