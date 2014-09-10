@@ -349,6 +349,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutQSquared;
     bool cutOpAng_ElecPhoton1;
     bool cutOpAng_ElecPhoton2;
+    bool cutOmegaMass;
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
@@ -401,6 +402,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutQSquared = false;
         cutOpAng_ElecPhoton1 = false;
         cutOpAng_ElecPhoton2 = false;
+        cutOmegaMass = false;
         cutsAll = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
