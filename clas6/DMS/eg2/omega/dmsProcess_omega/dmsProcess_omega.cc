@@ -204,6 +204,7 @@ class EG2Cuts
     vector<double> RangeQSquared;
     vector<double> RangeOpAng_ElecPhoton;
     vector<double> RangeMassOmega;
+    vector<double> RangeMassOmega_sb;
 public:
     EG2Cuts();
     int Get_nCuts() {return CutsLabel.size();};
@@ -220,13 +221,16 @@ public:
     double Get_OpAng_ElecPhoton_hi() {return RangeOpAng_ElecPhoton[1];};
     double Get_MassOmega_lo() {return RangeMassOmega[0];};
     double Get_MassOmega_hi() {return RangeMassOmega[1];};
+    double Get_MassOmega_sb_lo() {return RangeMassOmega_sb[0];};
+    double Get_MassOmega_sb_hi() {return RangeMassOmega_sb[1];};
     bool Check_Zdiff_ElecPim(double zdiff);
     bool Check_Zdiff_ElecPip(double zdiff);
     bool Check_MassPi0(double mass);
     bool Check_QSquared(double Qsq);
     bool Check_OpAng_ElecPhoton(double OpAng);
     bool Check_MassOmega(double mass);
-	void Print_Cuts();
+    bool Check_MassOmega_sb(double mass);
+    void Print_Cuts();
 };
 
 EG2Cuts::EG2Cuts()
@@ -238,6 +242,7 @@ EG2Cuts::EG2Cuts()
     CutsLabel.push_back("QSquared");
     CutsLabel.push_back("OpAng_ElecPhoton");
     CutsLabel.push_back("MassOmega");
+    CutsLabel.push_back("MassOmega_sideband");
     
     RangeZdiff_ElecPim.push_back(-2.0); // Lower limit on z vertex difference with electron (in cm)
     RangeZdiff_ElecPim.push_back(2.0); // Upper limit on z vertex difference with electron (in cm)
@@ -261,6 +266,9 @@ EG2Cuts::EG2Cuts()
 
     RangeMassOmega.push_back(0.7); // Lower limit on omega mass (in Gev/c^2)
     RangeMassOmega.push_back(0.875); // Upper limit on omega mass (in Gev/c^2)
+
+    RangeMassOmega_sb.push_back(0.610); // Lower limit on omega mass lower sideband (in Gev/c^2)
+    RangeMassOmega_sb.push_back(0.965); // Upper limit on omega mass upper sideband (in Gev/c^2)
 }
 
 // check the cut on the difference in z vertex between e- and pi-
@@ -311,6 +319,20 @@ bool EG2Cuts::Check_MassOmega(double mass)
 	return ret;
 }
 
+// check the cut on omega mass sidebands
+bool EG2Cuts::Check_MassOmega_sb(double mass)
+{
+    int lower_sb = 0;
+    int upper_sb = 0;
+
+    lower_sb = (mass >= this->Get_MassOmega_sb_lo() && mass < this->Get_MassOmega_lo());
+    upper_sb = (mass >= this->Get_MassOmega_hi() && mass < this->Get_MassOmega_sb_hi());
+    
+    bool ret = (lower_sb || upper_sb) ? true : false;
+    
+    return ret;
+}
+
 // print the cut information
 void EG2Cuts::Print_Cuts()
 {
@@ -332,6 +354,8 @@ void EG2Cuts::Print_Cuts()
             cout << "[" << this->Get_OpAng_ElecPhoton_lo() << "," << this->Get_OpAng_ElecPhoton_hi() << "] (deg.)" << endl;
         }else if (this->Get_CutsLabel(ii).compare("MassOmega")==0) {
             cout << "[" << this->Get_MassOmega_lo() << "," << this->Get_MassOmega_hi() << "] (GeV/c^2)" << endl;
+        }else if (this->Get_CutsLabel(ii).compare("MassOmega_sideband")==0) {
+            cout << "[" << this->Get_MassOmega_sb_lo() << "," << this->Get_MassOmega_lo() << " or "<< this->Get_MassOmega_hi() << "," << this->Get_MassOmega_sb_hi() << "] (GeV/c^2)" << endl;
         }else{
             cout << endl;
         }
@@ -350,6 +374,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutOpAng_ElecPhoton1;
     bool cutOpAng_ElecPhoton2;
     bool cutOmegaMass;
+    bool cutOmegaMass_sb;
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
@@ -565,6 +590,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutOpAng_ElecPhoton1 = myCuts.Check_OpAng_ElecPhoton(elecPhoton1Angle);
         cutOpAng_ElecPhoton2 = myCuts.Check_OpAng_ElecPhoton(elecPhoton2Angle);
         cutOmegaMass = myCuts.Check_MassOmega(Omega.M());
+        cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M());
         
         IM2Photons[Vz_index]->Fill(TwoPhoton.M()); // inv. mass of 2 photons
 		IMOmega[Vz_index]->Fill(Omega.M()); // inv. mass of pi+ pi- 2 photons
@@ -589,7 +615,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             if(cutOmegaMass){
                 PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
             }
-		}
+            if(cutOmegaMass_sb){
+                PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
+            }
+        }
         
         for(k=0; k<NUM_ENTRIES_OFFSET; k++){
             for(j=0; j<2; j++){
@@ -887,6 +916,10 @@ void BookHist(){
         sprintf(hname,"PtSq_Omega_AllCuts_IMOmegaCut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"#omega Meson - All ID Cuts & IM(#omega) Cut, %s",myTgt.Get_Label(i).c_str());
 		PtSq_Omega_AllCuts_IMOmegaCut[i] = new TH1D(hname, htitle, nPtSq_omega, PtSq_omegaLo, PtSq_omegaHi);
+
+        sprintf(hname,"PtSq_Omega_AllCuts_IMOmegaSBCut_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"#omega Meson - All ID Cuts & IM(#omega) Cut, sideband, %s",myTgt.Get_Label(i).c_str());
+        PtSq_Omega_AllCuts_IMOmegaSBCut[i] = new TH1D(hname, htitle, nPtSq_omega, PtSq_omegaLo, PtSq_omegaHi);
         
         for(j=0; j<2; j++){
             
@@ -1110,6 +1143,10 @@ void WriteHist(string RootFile){
         PtSq_Omega_AllCuts_IMOmegaCut[i]->GetXaxis()->SetTitle("P^{2}_{T}  (GeV/c)^{2}");
         PtSq_Omega_AllCuts_IMOmegaCut[i]->GetYaxis()->SetTitle("Counts");
         PtSq_Omega_AllCuts_IMOmegaCut[i]->Write();
+
+        PtSq_Omega_AllCuts_IMOmegaSBCut[i]->GetXaxis()->SetTitle("P^{2}_{T}  (GeV/c)^{2}");
+        PtSq_Omega_AllCuts_IMOmegaSBCut[i]->GetYaxis()->SetTitle("Counts");
+        PtSq_Omega_AllCuts_IMOmegaSBCut[i]->Write();
         
         for(j=0; j<2; j++){
             IM2Photons_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
