@@ -387,6 +387,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myCuts.Print_Cuts();
     
     TLorentzVector BeamMinusElectron;
+    TLorentzVector dubU_TLV;
     TLorentzVector TwoPhoton;
 	TLorentzVector Omega;
 
@@ -401,7 +402,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     TLorentzVector beam(0., 0., BEAM_ENERGY, sqrt(BEAM_ENERGY*BEAM_ENERGY+MASS_ELECTRON*MASS_ELECTRON));
 	TLorentzVector target(0., 0., 0., MASS_PROTON);
-
+	TLorentzVector nucleon(0., 0., 0., MASS_PROTON);
+    
     TEventReader reader;
     reader.addFile(inFile.c_str());
     int entries = reader.getEntries();
@@ -493,9 +495,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		double elecPhoton1ZVertDiff = elec_vert.Z() - photon1_vert.Z(); // z vertex difference, e- and photon 1
 		double elecPhoton2ZVertDiff = elec_vert.Z() - photon2_vert.Z(); // z vertex difference, e- and photon 2
         
-        Qsq = BeamMinusElectron.M2(); // electron Q^2
+        Qsq = -1.0*BeamMinusElectron.M2(); // electron Q^2
         nu = BeamMinusElectron.E(); // energy transfered to target
-        dubU = sqrt(MASS_PROTON*MASS_PROTON + Qsq + 2*MASS_PROTON*nu); // reaction W
+        
+        dubU_TLV = BeamMinusElectron + nucleon;
+        dubU = dubU_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         //_________________________________
@@ -770,11 +774,11 @@ void BookHist(){
     
     sprintf(hname,"q2");
     sprintf(htitle,"Q^{2}");
-    q2 = new TH1D(hname,htitle, 100, -4., 0.);
+    q2 = new TH1D(hname,htitle, 100, 0., -4.);
 
     sprintf(hname,"q2_VS_theta");
     sprintf(htitle,"Q^{2} vs. 4E_{e'}sin^{2}(0.5*#theta_{e'})");
-    q2_VS_theta = new TH2D(hname,htitle, 200, 0., 1.0, 200, -4., 0.);
+    q2_VS_theta = new TH2D(hname,htitle, 200, 0., 1.0, 200, 0., 4.);
     
     sprintf(hname,"nu_EnergyTransfer");
     sprintf(htitle,"\nu");
