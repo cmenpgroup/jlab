@@ -145,9 +145,9 @@ public class SideViewBar extends RectangleItem {
 	private BarSideView _view;
 
 	/**
-	 * Color for hit cells
+	 * Upper energy level (MeV) for color scaling
 	 */
-	private static final Color defaultHitCellFill = Color.red;
+	private static final float upperEnergyScale = 50f;
 
 	/**
 	 * The rectangle the bar is drawn in
@@ -306,10 +306,14 @@ public class SideViewBar extends RectangleItem {
 						if (totalE[i] > 0) {
 
 							// draw red rectangle
-							_style.setFillColor(defaultHitCellFill);
-							WorldGraphicsUtilities.drawWorldRectangle(g,
-									container, _worldRectangle,
-									_style.getFillColor(),
+							double scale = totalE[i] / upperEnergyScale;
+							WorldGraphicsUtilities.drawWorldRectangle(
+									g,
+									container,
+									_worldRectangle,
+									new Color((int) (Math.ceil(scale * 255)),
+											0, (int) Math
+													.ceil(255 - scale * 255)),
 									_style.getLineColor());
 						}
 					}

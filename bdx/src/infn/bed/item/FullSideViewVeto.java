@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import cnuphys.bCNU.event.EventControl;
-import cnuphys.bCNU.format.DoubleFormat;
 import cnuphys.bCNU.graphics.container.IContainer;
 import cnuphys.bCNU.graphics.world.WorldGraphicsUtilities;
 import cnuphys.bCNU.item.RectangleItem;
@@ -145,9 +144,9 @@ public class FullSideViewVeto extends RectangleItem {
 	private FullSideView _view;
 
 	/**
-	 * Color for hit cells
+	 * Upper energy level (MeV) for color scaling
 	 */
-	private static final Color defaultHitCellFill = Color.red;
+	private static final float upperEnergyScale = 50f;
 
 	/**
 	 * The rectangle the veto is drawn in
@@ -305,10 +304,14 @@ public class FullSideViewVeto extends RectangleItem {
 						if (totalE[i] > 0) {
 
 							// draw red rectangle
-							_style.setFillColor(defaultHitCellFill);
-							WorldGraphicsUtilities.drawWorldRectangle(g,
-									container, _worldRectangle,
-									_style.getFillColor(),
+							double scale = totalE[i] / upperEnergyScale;
+							WorldGraphicsUtilities.drawWorldRectangle(
+									g,
+									container,
+									_worldRectangle,
+									new Color((int) (Math.ceil(scale * 255)),
+											0, (int) Math
+													.ceil(255 - scale * 255)),
 									_style.getLineColor());
 						}
 					}
@@ -452,7 +455,14 @@ public class FullSideViewVeto extends RectangleItem {
 	public void getFeedbackStrings(IContainer container, Point screenPoint,
 			Point2D.Double worldPoint, List<String> feedbackStrings) {
 		if (_worldRectangle.contains(worldPoint)) {
-
+			String inVeto = "In veto: " + _veto;
+			feedbackStrings.add(inVeto);
+			if (_view.getMode() == BedView.Mode.SINGLE_EVENT) {
+				singleEventFeedbackStrings(feedbackStrings);
+			} else {
+				accumulatedFeedbackStrings(feedbackStrings);
+			}
+			/*
 			double x = 0;
 			double y = worldPoint.y;
 			double z = 3 - worldPoint.x;
@@ -463,13 +473,7 @@ public class FullSideViewVeto extends RectangleItem {
 					+ "cm, " + DoubleFormat.doubleFormat(y, 1) + "cm, "
 					+ DoubleFormat.doubleFormat(z, 1) + "cm";
 			feedbackStrings.add(rtp);
-
-			if (_view.getMode() == BedView.Mode.SINGLE_EVENT) {
-				singleEventFeedbackStrings(feedbackStrings);
-			} else {
-				accumulatedFeedbackStrings(feedbackStrings);
-			}
-
+			 */
 		}
 	}
 

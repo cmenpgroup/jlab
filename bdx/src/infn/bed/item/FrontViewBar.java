@@ -154,9 +154,9 @@ public class FrontViewBar extends RectangleItem {
 	private BarFrontView _view;
 
 	/**
-	 * Color for hit cells
+	 * Upper energy level (MeV) for color scaling
 	 */
-	private static final Color defaultHitCellFill = Color.red;
+	private static final float upperEnergyScale = 50f;
 
 	/**
 	 * The rectangle the bar is drawn in
@@ -180,9 +180,14 @@ public class FrontViewBar extends RectangleItem {
 		super(layer, worldRectangle);
 		_worldRectangle = worldRectangle;
 		_view = view;
+		_bar = bar + 1;
 		_style.setFillColor(Color.white);
 		_style.setLineColor(Color.black);
-		_bar = bar + 1;
+		if (_bar % 3 == 2) {
+			_style.setFillColor(Color.lightGray);
+		} else if (_bar % 3 == 1) {
+			_style.setFillColor(new Color(150, 150, 150));
+		}
 		_name = "Bar: " + _bar;
 		getConstants();
 	}
@@ -281,7 +286,7 @@ public class FrontViewBar extends RectangleItem {
 	 */
 	private void singleEventDrawItem(Graphics g, IContainer container) {
 		WorldGraphicsUtilities.drawWorldRectangle(g, container,
-				_worldRectangle, Color.white, _style.getLineColor());
+				_worldRectangle, _style.getFillColor(), _style.getLineColor());
 
 		ChargeTimeData ctData = EventManager.getInstance().getChargeTimeData();
 		if (ctData != null) {
@@ -298,15 +303,20 @@ public class FrontViewBar extends RectangleItem {
 					if (inThisBar(hitSectors[i], hitLayers[i], hitPaddles[i])) {
 						if (totalE[i] > 0) {
 							// TODO EDIT SIZE OF HIT RECTANGLE
-							_style.setFillColor(defaultHitCellFill);
 							// draw small rectangle at hit
 							double pos = posFromLeft[i] / 40.0 * 3;
 							Rectangle2D.Double hitRect = new Rectangle2D.Double(
 									pos, _worldRectangle.y,
 									_worldRectangle.width / 40.0,
 									_worldRectangle.height);
-							WorldGraphicsUtilities.drawWorldRectangle(g,
-									container, hitRect, _style.getFillColor(),
+							double scale = totalE[i] / upperEnergyScale;
+							WorldGraphicsUtilities.drawWorldRectangle(
+									g,
+									container,
+									hitRect,
+									new Color((int) (Math.ceil(scale * 255)),
+											0, (int) Math
+													.ceil(255 - scale * 255)),
 									_style.getLineColor());
 						}
 					}

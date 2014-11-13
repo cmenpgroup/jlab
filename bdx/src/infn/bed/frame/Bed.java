@@ -185,12 +185,12 @@ public class Bed extends BaseMDIApplication implements PropertyChangeListener {
 		leftPlot = new WavePlot[9];
 
 		rightPlot = new WavePlot[9];
-
+		
 		for (int i = 0; i < 9; i++) {
 			leftPlot[i] = new WavePlot();
 			rightPlot[i] = new WavePlot();
 		}
-
+		clearViewMenu();
 		// log some environment info
 		Log.getInstance().config(Environment.getInstance().toString());
 
@@ -382,6 +382,10 @@ public class Bed extends BaseMDIApplication implements PropertyChangeListener {
 			virtualView.moveTo(leftPlot[i], 0, 3);
 			virtualView.moveTo(rightPlot[i], 0, 3);
 		}
+		clearViewMenu();
+	}
+	
+	private void clearViewMenu() {
 		for (int i = 0; i < leftPlot.length; i++) {
 			JMenu menu = ViewManager.getInstance().getViewMenu();
 			for(int j = 0; j < menu.getItemCount(); j++) {
