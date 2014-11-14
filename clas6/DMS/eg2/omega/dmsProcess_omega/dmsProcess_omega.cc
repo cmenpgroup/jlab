@@ -378,7 +378,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
-    double Qsq, nu, dubU, z_fracEnergy;
+    double Qsq, nu, Mx, z_fracEnergy;
     double sinHalfTheta;
     
     EG2Target myTgt;
@@ -387,7 +387,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myCuts.Print_Cuts();
     
     TLorentzVector BeamMinusElectron;
-    TLorentzVector dubU_TLV;
+    TLorentzVector Mx_TLV;
     TLorentzVector TwoPhoton;
 	TLorentzVector Omega;
 
@@ -498,8 +498,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Qsq = -1.0*BeamMinusElectron.M2(); // electron Q^2
         nu = BeamMinusElectron.E(); // energy transfered to target
         
-        dubU_TLV = BeamMinusElectron + nucleon;
-        dubU = dubU_TLV.M(); // reaction W
+        Mx_TLV = BeamMinusElectron + nucleon - Omega;
+        Mx = Mx_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         //_________________________________
@@ -511,7 +511,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         nu_EnergyTransfer->Fill(nu);
 		elecZVert->Fill(elec_vert.Z());
         
-        W[Vz_index]->Fill(dubU);
+        W[Vz_index]->Fill(Mx);
         z_fracE[Vz_index]->Fill(z_fracEnergy);
         
         // plots of z vertex difference between scattered electron and other decay particle
