@@ -44,7 +44,8 @@ TH1D *OpAng_2Photons;
 TH1D *OpAng_elecPhoton1;
 TH1D *OpAng_elecPhoton2;
 
-TH1D *W[3];
+TH1D *hW[3];
+TH1D *hMx[3];
 TH1D *z_fracE[3];
 TH1D *LongMom[3];
 TH1D *TransMom[3];
@@ -53,6 +54,7 @@ TH1D *IM2Photons_OpAng_ElecPhoton_Cut[3];
 TH2D *OpAng_VS_IM2Photons[3];
 TH2D *OpAng_VS_E[3];
 TH2D *OpAng_VS_E_MassPi0Cut[3];
+TH2D *IM2Pions_VS_IMOmega[3];
 TH2D *IM2Photons_VS_IMOmega[3];
 TH2D *Q2_VS_IMOmega[3];
 TH2D *Pt_VS_IMOmega[3];

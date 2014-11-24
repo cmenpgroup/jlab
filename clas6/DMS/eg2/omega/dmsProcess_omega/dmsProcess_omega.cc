@@ -378,7 +378,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
-    double Qsq, nu, Mx, z_fracEnergy;
+    double Qsq, nu, Mx, z_fracEnergy, W;
     double sinHalfTheta;
     
     EG2Target myTgt;
@@ -387,7 +387,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myCuts.Print_Cuts();
     
     TLorentzVector BeamMinusElectron;
+    TLorentzVector W_TLV;
     TLorentzVector Mx_TLV;
+    TLorentzVector TwoPion;
     TLorentzVector TwoPhoton;
 	TLorentzVector Omega;
 
@@ -467,8 +469,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         }
         
         BeamMinusElectron = beam - elec; // Lorentz Vector Difference between beam and scattered electron
-		TwoPhoton = photon1 + photon2; // Two photon Lorentz vector
-		Omega = pPion + nPion + TwoPhoton; // omega Lorentz vector
+        TwoPion = pPion + nPion; // pion pair Lorentz vector
+        TwoPhoton = photon1 + photon2; // Two photon Lorentz vector
+		Omega = TwoPion + TwoPhoton; // omega Lorentz vector
         
         if(NUM_ENTRIES_OFFSET*ENTRIES_OFFSET < entries){
             for(k=0; k<NUM_ENTRIES_OFFSET; k++){
@@ -499,7 +502,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         nu = BeamMinusElectron.E(); // energy transfered to target
         
         Mx_TLV = BeamMinusElectron + nucleon - Omega;
-        Mx = Mx_TLV.M(); // reaction W
+        Mx = Mx_TLV.M(); // reaction Mx
+        W_TLV = BeamMinusElectron + nucleon;
+        W = W_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         //_________________________________
@@ -511,8 +516,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         nu_EnergyTransfer->Fill(nu);
 		elecZVert->Fill(elec_vert.Z());
         
-        W[Vz_index]->Fill(Mx);
-        z_fracE[Vz_index]->Fill(z_fracEnergy);
+        hMx[Vz_index]->Fill(Mx); // histogram for Mx
+        hW[Vz_index]->Fill(W); // histogram for W
+        z_fracE[Vz_index]->Fill(z_fracEnergy); // histogram for fractional z
         
         // plots of z vertex difference between scattered electron and other decay particle
 		ZVertDiff->Fill(elecNPionZVertDiff,1);
@@ -580,7 +586,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		MMsq[Vz_index]->Fill((beam + target - Omega).M2()); // missing mass^2
         
         // plots of variable vs the omega inv. mass
-		IM2Photons_VS_IMOmega[Vz_index]->Fill(TwoPhoton.M(), Omega.M()); // variable = 2 photon inv.
+		IM2Pions_VS_IMOmega[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv.
+        IM2Photons_VS_IMOmega[Vz_index]->Fill(TwoPhoton.M(), Omega.M()); // variable = 2 photon inv.
 		Q2_VS_IMOmega[Vz_index]->Fill(Qsq, Omega.M()); // variable = Q^2
 		Pt_VS_IMOmega[Vz_index]->Fill(Omega.Pt(), Omega.M()); // variable = omega trans. mom.
 		Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
@@ -825,9 +832,13 @@ void BookHist(){
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
-		sprintf(hname,"W_%s",myTgt.Get_Label(i).c_str());
+		sprintf(hname,"hW_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
-		W[i] = new TH1D(hname, htitle, 250, 0, 5);
+		hW[i] = new TH1D(hname, htitle, 250, 0, 5);
+
+        sprintf(hname,"hMx_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"M_{x} of Reaction, %s",myTgt.Get_Label(i).c_str());
+        hMx[i] = new TH1D(hname, htitle, 250, 0, 5);
         
 		sprintf(hname,"z_fracE_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Fractional Energy, %s",myTgt.Get_Label(i).c_str());
@@ -860,6 +871,10 @@ void BookHist(){
         sprintf(hname,"OpAng_VS_E_MassPi0Cut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Opening Angle vs. #pi^{0} Total Energy with IM(#pi^{0}) Cut, %s",myTgt.Get_Label(i).c_str());
 		OpAng_VS_E_MassPi0Cut[i] = new TH2D(hname, htitle, 350, 0., 3.5, 100, 0, 100.);
+
+        sprintf(hname,"IM2Pions_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #pi^{+}#pi^{-} vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
+        IM2Pions_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"IM2Photons_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #pi^{0} vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
@@ -1052,9 +1067,13 @@ void WriteHist(string RootFile){
     }
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
-        W[i]->GetXaxis()->SetTitle("W (GeV)");
-        W[i]->GetYaxis()->SetTitle("Counts");
-        W[i]->Write();
+        hMx[i]->GetXaxis()->SetTitle("M_{x} (GeV)");
+        hMx[i]->GetYaxis()->SetTitle("Counts");
+        hMx[i]->Write();
+        
+        hW[i]->GetXaxis()->SetTitle("W (GeV)");
+        hW[i]->GetYaxis()->SetTitle("Counts");
+        hW[i]->Write();
 
         z_fracE[i]->GetXaxis()->SetTitle("z");
         z_fracE[i]->GetYaxis()->SetTitle("Counts");
@@ -1087,7 +1106,11 @@ void WriteHist(string RootFile){
         OpAng_VS_E_MassPi0Cut[i]->GetXaxis()->SetTitle("#pi^{0} Total Energy (GeV)");
         OpAng_VS_E_MassPi0Cut[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
         OpAng_VS_E_MassPi0Cut[i]->Write();
-		
+
+        IM2Pions_VS_IMOmega[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} Inv. Mass (GeV/c^{2})");
+        IM2Pions_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        IM2Pions_VS_IMOmega[i]->Write();
+        
         IM2Photons_VS_IMOmega[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
         IM2Photons_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
         IM2Photons_VS_IMOmega[i]->Write();
