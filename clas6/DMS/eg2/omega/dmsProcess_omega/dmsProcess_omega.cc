@@ -629,6 +629,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             if(cutOmegaMass_sb){
                 PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
             }
+            IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv.
         }
         
         for(k=0; k<NUM_ENTRIES_OFFSET; k++){
@@ -875,6 +876,10 @@ void BookHist(){
         sprintf(hname,"IM2Pions_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"Reconstructed Mass of #pi^{+}#pi^{-} vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
         IM2Pions_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+        sprintf(hname,"IM2Pions_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #pi^{+}#pi^{-} vs Reconstructed Mass of #omega, all cuts, %s",myTgt.Get_Label(i).c_str());
+        IM2Pions_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"IM2Photons_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #pi^{0} vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
@@ -1110,6 +1115,10 @@ void WriteHist(string RootFile){
         IM2Pions_VS_IMOmega[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} Inv. Mass (GeV/c^{2})");
         IM2Pions_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
         IM2Pions_VS_IMOmega[i]->Write();
+
+        IM2Pions_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} Inv. Mass (GeV/c^{2})");
+        IM2Pions_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        IM2Pions_VS_IMOmega_AllCuts[i]->Write();
         
         IM2Photons_VS_IMOmega[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
         IM2Photons_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");

@@ -55,6 +55,7 @@ TH2D *OpAng_VS_IM2Photons[3];
 TH2D *OpAng_VS_E[3];
 TH2D *OpAng_VS_E_MassPi0Cut[3];
 TH2D *IM2Pions_VS_IMOmega[3];
+TH2D *IM2Pions_VS_IMOmega_AllCuts[3];
 TH2D *IM2Photons_VS_IMOmega[3];
 TH2D *Q2_VS_IMOmega[3];
 TH2D *Pt_VS_IMOmega[3];
