@@ -362,6 +362,259 @@ void EG2Cuts::Print_Cuts()
     }
 }
 
+class OmegaMixedEvent
+{
+    vector<string> Label;
+    vector<int> Index;
+    vector<string> evtLabel;
+    vector<int> evtIndex;
+    TLorentzVector Photon1[2];
+    TLorentzVector Photon2[2];
+    TLorentzVector PiPlus[2];
+    TLorentzVector PiMinus[2];
+    TLorentzVector Pi0[2];
+    TLorentzVector Omega[2];
+public:
+    OmegaMixedEvent();
+    bool Check_evtIndex(int iME);
+    bool Check_Index(int iMethod);
+    int Get_nLabel() {return Label.size();};
+    int Get_nIndex() {return Index.size();};
+    string Get_Label(int num) {return Label[num];};
+    int Get_nEvtLabel() {return evtLabel.size();};
+    int Get_nEvtIndex() {return evtIndex.size();};
+    string Get_evtLabel(int num) {return evtLabel[num];};
+    TLorentzVector Get_Photon1(int iME);
+    TLorentzVector Get_Photon2(int iME);
+    TLorentzVector Get_PiPlus(int iME);
+    TLorentzVector Get_PiMinus(int iME);
+    TLorentzVector Get_Pi0(int iME);
+    TLorentzVector Get_Omega(int iME);
+    void Reconstruct_Pi0(int iME);
+    void Reconstruct_Omega(int iME);
+    void Mix_Omega(int iMethod);
+    void Put_Photon1(TLorentzVector V, int iME);
+    void Put_Photon2(TLorentzVector V, int iME);
+    void Put_PiPlus(TLorentzVector V, int iME);
+    void Put_PiMinus(TLorentzVector V, int iME);
+    void Put_Pi0(TLorentzVector V, int iME);
+    void Put_Omega(TLorentzVector V, int iME);
+    void Print_Info();
+};
+
+OmegaMixedEvent::OmegaMixedEvent()
+{
+    int i;
+    
+    Label.push_back("Mixing Photon 1");
+    Label.push_back("Mixing Photon 2");
+    Label.push_back("Mixing pi+");
+    Label.push_back("Mixing pi-");
+    Label.push_back("Mixing pi0");
+    
+    Index.push_back(0);
+    Index.push_back(1);
+    Index.push_back(2);
+    Index.push_back(3);
+    Index.push_back(4);
+
+    evtLabel.push_back("In Time Event");
+    evtLabel.push_back("Out of Time Event");
+    
+    evtIndex.push_back(0);
+    evtIndex.push_back(1);
+
+    for(i=0; i<evtIndex.size(); i++){
+        Photon1[i].SetPxPyPzE(0.,0.,0.,0.);
+        Photon2[i].SetPxPyPzE(0.,0.,0.,0.);
+        Pi0[i].SetPxPyPzE(0.,0.,0.,0.);
+        PiPlus[i].SetPxPyPzE(0.,0.,0.,0.);
+        PiMinus[i].SetPxPyPzE(0.,0.,0.,0.);
+        Omega[i].SetPxPyPzE(0.,0.,0.,0.);
+    }
+}
+
+// check that the event index is in the correct range
+bool OmegaMixedEvent::Check_evtIndex(int iME)
+{
+    bool ret = (iME>=0 && iME<this->Get_nEvtIndex()) ? true : false;
+    
+    return ret;
+}
+
+// check that the method index is in the correct range
+bool OmegaMixedEvent::Check_Index(int iMethod)
+{
+    bool ret = (iMethod>=0 && iMethod<this->Get_nIndex()) ? true : false;
+    
+    return ret;
+}
+
+void OmegaMixedEvent::Put_Photon1(TLorentzVector V, int iME){
+    if(this->Check_evtIndex(iME)) this->Photon1[iME] = V;
+}
+
+void OmegaMixedEvent::Put_Photon2(TLorentzVector V, int iME){
+    if(this->Check_evtIndex(iME)) this->Photon2[iME] = V;
+}
+
+void OmegaMixedEvent::Put_PiPlus(TLorentzVector V, int iME){
+    if(this->Check_evtIndex(iME)) this->PiPlus[iME] = V;
+}
+
+void OmegaMixedEvent::Put_PiMinus(TLorentzVector V, int iME){
+    if(this->Check_evtIndex(iME)) this->PiMinus[iME] = V;
+}
+
+void OmegaMixedEvent::Put_Pi0(TLorentzVector V, int iME){
+    if(this->Check_evtIndex(iME)) this->PiMinus[iME] = V;
+}
+
+void OmegaMixedEvent::Put_Omega(TLorentzVector V, int iME){
+    if(this->Check_evtIndex(iME)) this->PiMinus[iME] = V;
+}
+
+TLorentzVector OmegaMixedEvent::Get_Photon1(int iME){
+    
+    TLorentzVector ret(0.,0.,0.,0.); // init the return variable
+  
+    if(this->Check_evtIndex(iME)) ret = Photon1[iME];
+    
+    return ret;
+}
+
+TLorentzVector OmegaMixedEvent::Get_Photon2(int iME){
+    
+    TLorentzVector ret(0.,0.,0.,0.); // init the return variable
+    
+    if(this->Check_evtIndex(iME)) ret = Photon2[iME];
+    
+    return ret;
+}
+
+TLorentzVector OmegaMixedEvent::Get_PiPlus(int iME){
+    
+    TLorentzVector ret(0.,0.,0.,0.); // init the return variable
+    
+    if(this->Check_evtIndex(iME)) ret = PiPlus[iME];
+    
+    return ret;
+}
+
+TLorentzVector OmegaMixedEvent::Get_PiMinus(int iME){
+    
+    TLorentzVector ret(0.,0.,0.,0.); // init the return variable
+    
+    if(this->Check_evtIndex(iME)) ret = PiMinus[iME];
+    
+    return ret;
+}
+
+TLorentzVector OmegaMixedEvent::Get_Pi0(int iME){
+    
+    TLorentzVector ret(0.,0.,0.,0.); // init the return variable
+    
+    if(this->Check_evtIndex(iME)) ret = PiPlus[iME];
+    
+    return ret;
+}
+
+TLorentzVector OmegaMixedEvent::Get_Omega(int iME){
+    
+    TLorentzVector ret(0.,0.,0.,0.); // init the return variable
+    
+    if(this->Check_evtIndex(iME)) ret = Omega[iME];
+    
+    return ret;
+}
+
+void OmegaMixedEvent::Reconstruct_Pi0(int iME){
+    if(this->Check_evtIndex(iME)){
+        TLorentzVector tempPhoton1 = this->Get_Photon1(iME);
+        TLorentzVector tempPhoton2 = this->Get_Photon2(iME);
+        
+        this->Put_Omega(tempPhoton1 + tempPhoton2, iME);
+    }
+}
+
+void OmegaMixedEvent::Reconstruct_Omega(int iME){
+    if(this->Check_evtIndex(iME)){
+        TLorentzVector tempPhoton1 = this->Get_Photon1(iME);
+        TLorentzVector tempPhoton2 = this->Get_Photon2(iME);
+        TLorentzVector tempPiPlus = this->Get_PiPlus(iME);
+        TLorentzVector tempPiMinus = this->Get_PiMinus(iME);
+        
+        this->Put_Omega(tempPhoton1 + tempPhoton2 + tempPiPlus + tempPiMinus, iME);
+    }
+}
+
+void OmegaMixedEvent::Mix_Omega(int iMethod){
+
+    double theta, phi, tempPx, tempPy, tempPz, tempE;
+    TLorentzVector tempPhoton1 = this->Get_Photon1(0);
+    TLorentzVector tempPhoton2 = this->Get_Photon2(0);
+    TLorentzVector tempPiPlus = this->Get_PiPlus(0);
+    TLorentzVector tempPiMinus = this->Get_PiMinus(0);
+    TLorentzVector tempPi0 = tempPhoton1 +tempPhoton2;
+    TlorentzVector A;
+    
+    switch (iMethod){
+        case 0:
+            tempPhoton1 = this->Get_Photon1(1);
+            tempPi0 = tempPhoton1 + tempPhoton2;
+        case 1:
+            tempPhoton1 = this->Get_Photon2(1);
+            tempPi0 = tempPhoton1 + tempPhoton2;
+        case 2:
+            A = this->Get_PiPlus(1);
+            theta = tempPiPlus.Theta();
+            phi = tempPiPlus.Phi();
+            tempPx = A.Mag()*sin(theta)*cos(phi);
+            tempPy = A.Mag()*sin(theta)*sin(phi);
+            tempPz = A.Mag()*cos(theta);
+            tempE = tempPiPlus.GetE();
+            tempPiPlus.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
+        case 3:
+            A = this->Get_PiMinus(1);
+            theta = tempPiMinus.Theta();
+            phi = tempPiMinus.Phi();
+            tempPx = A.Mag()*sin(theta)*cos(phi);
+            tempPy = A.Mag()*sin(theta)*sin(phi);
+            tempPz = A.Mag()*cos(theta);
+            tempE = tempPiMinus.GetE();
+            tempPiMinus.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
+        case 4:
+            A = this->Get_Photon1(1) + this->Get_Photon2(1);
+            theta = tempPi0.Theta();
+            phi = tempPi0.Phi();
+            tempPx = A.Mag()*sin(theta)*cos(phi);
+            tempPy = A.Mag()*sin(theta)*sin(phi);
+            tempPz = A.Mag()*cos(theta);
+            tempE = tempPi0.GetE();
+            tempPi0.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
+        default:
+            cout << "OmegaMixedevent::Mix_Omega - incorrect iMethod " << iMethod <<endl;
+            exit(0);
+            break;
+    }
+    this->Put_Pi0(tempPi0, 1);
+    this->Put_Omega(tempPi0 + tempPiPlus + tempPiMinus, 1);
+}
+
+void OmegaMixedEvent::Print_Info()
+{
+    int ii;
+    cout<<"Mixed Event Info"<<endl;
+    cout<<"========================="<<endl;
+    
+    for(ii=0;ii<this->Get_nLabel();ii++){
+        cout << "Method " << ii+1 << "\t" << this->Get_Label(ii) << endl;
+    }
+    for(ii=0;ii<this->Get_nEvtLabel();ii++){
+        cout << "Event type " << ii+1 << "\t" << this->Get_evtLabel(ii) << endl;
+    }
+}
+
 int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     int i, j, k;
     
@@ -383,8 +636,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     EG2Target myTgt;
     EG2Cuts myCuts;
+    OmegaMixedEvent myMixEvt;
     
     myCuts.Print_Cuts();
+    myMixEvt.Print_Info();
     
     TLorentzVector BeamMinusElectron;
     TLorentzVector W_TLV;
@@ -395,12 +650,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
     TLorentzVector photon1_MixedEvt;
     TLorentzVector photon2_MixedEvt;
+    TLorentzVector pPion_MixedEvt;
+    TLorentzVector nPion_MixedEvt;
     TLorentzVector TwoPhoton_MixedEvt;
-	TLorentzVector Omega_MixedEvt;
 
     int iMixedEvt;
-    double Mass_TwoPhoton_ME[2][NUM_ENTRIES_OFFSET];
-    double Mass_Omega_ME[2][NUM_ENTRIES_OFFSET];
+    double Mass_TwoPhoton_ME[NUM_MIXING_METHODS][NUM_ENTRIES_OFFSET];
+    double Mass_Omega_ME[NUM_MIXING_METHODS][NUM_ENTRIES_OFFSET];
     
     TLorentzVector beam(0., 0., BEAM_ENERGY, sqrt(BEAM_ENERGY*BEAM_ENERGY+MASS_ELECTRON*MASS_ELECTRON));
 	TLorentzVector target(0., 0., 0., MASS_PROTON);
@@ -480,14 +736,31 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                     iMixedEvt = (k+1)*ENTRIES_OFFSET;
                 }
                 readerMixedEvt.readEntry(iMixedEvt);
-                photon1_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON);
-                photon2_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
+                photon1_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON); // Photon 1 Lorentz vector from an out-of-time event
+                photon2_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON); // Photon 2 Lorentz vector from an out-of-time event
+                TwoPhoton_MixedEvt = photon1_MixedEvt + photon2_MixedEvt; // Two photon Lorentz vector from an out-of-time event
+                nPion_MixedEvt = readerMixedEvt.getLorentzVector(ID_PION_NEG, 0,MASS_PION_CHARGED); // pi+ Lorentz vector from an out-of-time event
+                pPion_MixedEvt = readerMixedEvt.getLorentzVector(ID_PION_POS, 0, MASS_PION_CHARGED); // pi- Lorentz vector from an out-of-time event
         
+                // Method 1: photon 1 from out-of-time events
                 Mass_TwoPhoton_ME[0][k] = (photon1_MixedEvt + photon2).M();
                 Mass_Omega_ME[0][k] = (pPion + nPion + photon1_MixedEvt + photon2).M();
 
+                // Method 2: photon 2 from out-of-time events
                 Mass_TwoPhoton_ME[1][k] = (photon1_MixedEvt + photon2).M();
                 Mass_Omega_ME[1][k] = (pPion + nPion + photon1 + photon2_MixedEvt).M();
+                
+                // Method 3: pi+ from out-of-time events
+                Mass_TwoPhoton_ME[2][k] = TwoPhoton.M();
+                Mass_Omega_ME[2][k] = (pPion_MixedEvt + nPion + TwoPhoton).M();
+
+                // Method 4: pi- from out-of-time events
+                Mass_TwoPhoton_ME[3][k] = TwoPhoton.M();
+                Mass_Omega_ME[3][k] = (pPion + nPion_MixedEvt + TwoPhoton).M();
+
+                // Method 5: pi0 from out-of-time events
+                Mass_TwoPhoton_ME[4][k] = TwoPhoton_MixedEvt.M();
+                Mass_Omega_ME[4][k] = (pPion + nPion + TwoPhoton_MixedEvt).M();
             }
         }
         
@@ -631,9 +904,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv.
         }
-        
-        for(k=0; k<NUM_ENTRIES_OFFSET; k++){
-            for(j=0; j<2; j++){
+    
+        for(k=0; k<NUM_ENTRIES_OFFSET; k++){ // loop over number of mixed event iterations
+            for(j=0; j<NUM_MIXING_METHODS; j++){ // loop over number of mixed event methods
                 IM2Photons_ME[Vz_index][j]->Fill(Mass_TwoPhoton_ME[j][k]); // inv. mass of 2 photons
                 IMOmega_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]); // inv. mass of pi+ pi- 2 photons
                 if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
@@ -945,7 +1218,7 @@ void BookHist(){
         sprintf(htitle,"#omega Meson - All ID Cuts & IM(#omega) Cut, sideband, %s",myTgt.Get_Label(i).c_str());
         PtSq_Omega_AllCuts_IMOmegaSBCut[i] = new TH1D(hname, htitle, nPtSq_omega, PtSq_omegaLo, PtSq_omegaHi);
         
-        for(j=0; j<2; j++){
+        for(j=0; j<NUM_MIXING_METHODS; j++){
             
             sprintf(hname,"IM2Photons_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
             sprintf(htitle,"Reconstructed Mass of Pi0, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
@@ -1184,7 +1457,7 @@ void WriteHist(string RootFile){
         PtSq_Omega_AllCuts_IMOmegaSBCut[i]->GetYaxis()->SetTitle("Counts");
         PtSq_Omega_AllCuts_IMOmegaSBCut[i]->Write();
         
-        for(j=0; j<2; j++){
+        for(j=0; j<NUM_MIXING_METHODS; j++){
             IM2Photons_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
             IM2Photons_ME[i][j]->GetYaxis()->SetTitle("Counts");
             IM2Photons_ME[i][j]->Write();
