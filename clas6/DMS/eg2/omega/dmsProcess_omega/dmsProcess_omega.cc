@@ -556,7 +556,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
     TLorentzVector tempPiPlus = this->Get_PiPlus(0);
     TLorentzVector tempPiMinus = this->Get_PiMinus(0);
     TLorentzVector tempPi0 = tempPhoton1 +tempPhoton2;
-    TlorentzVector A;
+    TLorentzVector A;
     
     switch (iMethod){
         case 0:
@@ -572,7 +572,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             tempPx = A.Mag()*sin(theta)*cos(phi);
             tempPy = A.Mag()*sin(theta)*sin(phi);
             tempPz = A.Mag()*cos(theta);
-            tempE = tempPiPlus.GetE();
+            tempE = tempPiPlus.E();
             tempPiPlus.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
         case 3:
             A = this->Get_PiMinus(1);
@@ -581,7 +581,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             tempPx = A.Mag()*sin(theta)*cos(phi);
             tempPy = A.Mag()*sin(theta)*sin(phi);
             tempPz = A.Mag()*cos(theta);
-            tempE = tempPiMinus.GetE();
+            tempE = tempPiMinus.E();
             tempPiMinus.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
         case 4:
             A = this->Get_Photon1(1) + this->Get_Photon2(1);
@@ -590,7 +590,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             tempPx = A.Mag()*sin(theta)*cos(phi);
             tempPy = A.Mag()*sin(theta)*sin(phi);
             tempPz = A.Mag()*cos(theta);
-            tempE = tempPi0.GetE();
+            tempE = tempPi0.E();
             tempPi0.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
         default:
             cout << "OmegaMixedevent::Mix_Omega - incorrect iMethod " << iMethod <<endl;
