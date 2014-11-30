@@ -571,6 +571,13 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
     TLorentzVector tempPiMinus = this->Get_PiMinus(0);
     TLorentzVector tempPi0 = tempPhoton1 +tempPhoton2;
     TLorentzVector A;
+
+    cout <<"Before " << iMethod <<endl;
+    PrintTLorentzVector(tempPhoton1);
+    PrintTLorentzVector(tempPhoton2);
+    PrintTLorentzVector(tempPiPlus);
+    PrintTLorentzVector(tempPiMinus);
+    PrintTLorentzVector(tempPi0);
     
     switch (iMethod){
         case 0:
@@ -604,6 +611,13 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             exit(0);
             break;
     }
+    cout <<"After " << iMethod <<endl;
+    PrintTLorentzVector(tempPhoton1);
+    PrintTLorentzVector(tempPhoton2);
+    PrintTLorentzVector(tempPiPlus);
+    PrintTLorentzVector(tempPiMinus);
+    PrintTLorentzVector(tempPi0);
+    
     this->Put_Pi0(tempPi0, 1);
     this->Put_Omega(tempPi0 + tempPiPlus + tempPiMinus, 1);
 }
