@@ -581,31 +581,19 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             tempPi0 = tempPhoton1 + tempPhoton2;
         case 2:
             A = this->Get_PiPlus(1);
-            theta = tempPiPlus.Theta();
-            phi = tempPiPlus.Phi();
-            tempPx = A.Mag()*sin(theta)*cos(phi);
-            tempPy = A.Mag()*sin(theta)*sin(phi);
-            tempPz = A.Mag()*cos(theta);
-            tempE = tempPiPlus.E();
-            tempPiPlus.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
+            A.SetTheta(tempPiPlus.Theta());
+            A.SetPhi(tempPiPlus.Phi());
+            tempPiPlus = A;
         case 3:
             A = this->Get_PiMinus(1);
-            theta = tempPiMinus.Theta();
-            phi = tempPiMinus.Phi();
-            tempPx = A.Mag()*sin(theta)*cos(phi);
-            tempPy = A.Mag()*sin(theta)*sin(phi);
-            tempPz = A.Mag()*cos(theta);
-            tempE = tempPiMinus.E();
-            tempPiMinus.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
+            A.SetTheta(tempPiMinus.Theta());
+            A.SetPhi(tempPiMinus.Phi());
+            tempPiMinus = A;
         case 4:
             A = this->Get_Photon1(1) + this->Get_Photon2(1);
-            theta = tempPi0.Theta();
-            phi = tempPi0.Phi();
-            tempPx = A.Mag()*sin(theta)*cos(phi);
-            tempPy = A.Mag()*sin(theta)*sin(phi);
-            tempPz = A.Mag()*cos(theta);
-            tempE = tempPi0.E();
-            tempPi0.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
+            A.SetTheta(tempPi0.Theta());
+            A.SetPhi(tempPi0.Phi());
+            tempPi0 = A;
         default:
             cout << "OmegaMixedEvent::Mix_Omega - incorrect iMethod " << iMethod <<endl;
             exit(0);
@@ -988,8 +976,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         caseB1.Transform(lbr);
         caseB2.Transform(lbr);
         
-        double alphaA = caseA1.Angle(caseA2);
-        double alphaB = caseB1.Angle(caseB2);
+        double alphaA = caseA1.Angle(caseA2.Vect());
+        double alphaB = caseB1.Angle(caseB2).Vect();
         
         hCaseA->Fill(pi0.Pz(),alphaA);
         hCaseB->Fill(pi0.Pz(),alphaB);
