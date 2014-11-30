@@ -1504,37 +1504,37 @@ void WriteHist(string RootFile){
         PtSq_Omega_AllCuts_IMOmegaSBCut[i]->GetYaxis()->SetTitle("Counts");
         PtSq_Omega_AllCuts_IMOmegaSBCut[i]->Write();
         
-        IM2Photons_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
-        IM2Photons_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IM2Photons_ME[i][j]->Write();
+        IM2Photons_ME[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IM2Photons_ME[i]->Write();
             
-        IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
-        IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->Write();
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i]->Write();
             
-        IMOmega_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IMOmega_ME[i][j]->Write();
+        IMOmega_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_ME[i]->Write();
             
-        IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->Write();
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i]->Write();
             
-        IMOmega_MassPi0Cut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_MassPi0Cut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IMOmega_MassPi0Cut_ME[i][j]->Write();
+        IMOmega_MassPi0Cut_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_MassPi0Cut_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_MassPi0Cut_ME[i]->Write();
             
-        IMOmega_ZVertCut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_ZVertCut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IMOmega_ZVertCut_ME[i][j]->Write();
+        IMOmega_ZVertCut_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_ZVertCut_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_ZVertCut_ME[i]->Write();
             
-        IMOmega_QsqCut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_QsqCut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IMOmega_QsqCut_ME[i][j]->Write();
+        IMOmega_QsqCut_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_QsqCut_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_QsqCut_ME[i]->Write();
             
-        IMOmega_AllCuts_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_AllCuts_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
-        IMOmega_AllCuts_ME[i][j]->Write();
+        IMOmega_AllCuts_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_AllCuts_ME[i]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_AllCuts_ME[i]->Write();
     }
     
     for(i=0; i<MAX_SECTORS; i++){
