@@ -970,7 +970,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
 		RelativityOpAngPhotonsB->Fill(pi0.Pz(), TMath::ACos((photon1_pi0Moving_caseB.Px() * photon2_pi0Moving_caseB.Px() + photon1_pi0Moving_caseB.Py() * photon2_pi0Moving_caseB.Py() + photon1_pi0Moving_caseB.Pz() * photon2_pi0Moving_caseB.Pz())/(photon1_pi0Moving_caseB.P() * photon2_pi0Moving_caseB.P())) * TMath::RadToDeg());
 
-        TLorentzRotation lbr(pi0.Vect());
+        TLorentzRotation lbr(pi0.BoostVector());
         TLorentzVector caseA1 = photon1_pi0Rest_caseA;
         TLorentzVector caseA2 = photon2_pi0Rest_caseA;
         TLorentzVector caseB1 = photon1_pi0Rest_caseB;
