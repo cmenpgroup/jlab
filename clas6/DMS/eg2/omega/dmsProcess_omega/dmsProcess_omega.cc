@@ -981,11 +981,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         caseB1.Transform(lbr);
         caseB2.Transform(lbr);
         
-        double alphaA = caseA1.Angle(caseA2.Vect());
-        double alphaB = caseB1.Angle(caseB2.Vect());
-        
-        hCaseA->Fill(pi0.Pz(),alphaA);
-        hCaseB->Fill(pi0.Pz(),alphaB);
+        hCaseA->Fill(pi0.Pz(),caseA1.Angle(caseA2.Vect())*TMath::RadToDeg());
+        hCaseB->Fill(pi0.Pz(),caseB1.Angle(caseB2.Vect())*TMath::RadToDeg());
         
         //-----------------------------------------------------
     }
