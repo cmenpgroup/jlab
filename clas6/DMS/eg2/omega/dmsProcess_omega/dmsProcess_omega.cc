@@ -576,24 +576,29 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
         case 0:
             tempPhoton1 = this->Get_Photon1(1);
             tempPi0 = tempPhoton1 + tempPhoton2;
+            break;
         case 1:
             tempPhoton1 = this->Get_Photon2(1);
             tempPi0 = tempPhoton1 + tempPhoton2;
+            break;
         case 2:
             A = this->Get_PiPlus(1);
             A.SetTheta(tempPiPlus.Theta());
             A.SetPhi(tempPiPlus.Phi());
             tempPiPlus = A;
+            break;
         case 3:
             A = this->Get_PiMinus(1);
             A.SetTheta(tempPiMinus.Theta());
             A.SetPhi(tempPiMinus.Phi());
             tempPiMinus = A;
+            break;
         case 4:
             A = this->Get_Photon1(1) + this->Get_Photon2(1);
             A.SetTheta(tempPi0.Theta());
             A.SetPhi(tempPi0.Phi());
             tempPi0 = A;
+            break;
         default:
             cout << "OmegaMixedEvent::Mix_Omega - incorrect iMethod " << iMethod <<endl;
             exit(0);
