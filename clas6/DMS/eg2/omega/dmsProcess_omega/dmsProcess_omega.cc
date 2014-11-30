@@ -971,8 +971,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         photon1_pi0Rest_caseB.Transform(lbr);
         photon2_pi0Rest_caseB.Transform(lbr);
         
-        RelativityOpAngPhotonsA->Fill(pi0.Pz(),caseA1.Angle(caseA2.Vect())*TMath::RadToDeg());
-        RelativityOpAngPhotonsB->Fill(pi0.Pz(),caseB1.Angle(caseB2.Vect())*TMath::RadToDeg());
+        RelativityOpAngPhotonsA->Fill(pi0.Pz(),photon1_pi0Rest_caseA.Angle(photon2_pi0Rest_caseA.Vect())*TMath::RadToDeg());
+        RelativityOpAngPhotonsB->Fill(pi0.Pz(),photon1_pi0Rest_caseB.Angle(photon2_pi0Rest_caseB.Vect())*TMath::RadToDeg());
         
         //-----------------------------------------------------
     }
