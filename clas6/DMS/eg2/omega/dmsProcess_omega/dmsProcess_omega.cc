@@ -1318,11 +1318,11 @@ void BookHist(){
 
     sprintf(hname,"caseA");
     sprintf(htitle,"0/180 Degree Decay Photons");
-    caseA = new TH2D(hname,htitle, 500, 0, 5, 200, 0, 200);
+    hCaseA = new TH2D(hname,htitle, 500, 0, 5, 200, 0, 200);
     
     sprintf(hname,"caseB");
     sprintf(htitle,"90/-90 Degree Decay Photons");
-    caseB = new TH2D(hname,htitle, 500, 0, 5, 180, 0, 180);
+    hCaseB = new TH2D(hname,htitle, 500, 0, 5, 180, 0, 180);
 }
 
 //
@@ -1543,8 +1543,8 @@ void WriteHist(string RootFile){
         elecZVertSector[i]->Write();
     }
 
-    caseA->Write();
-    caseB->Write();
+    hCaseA->Write();
+    hCaseB->Write();
 	RelativityOpAngPhotonsA->Write();
 	RelativityOpAngPhotonsB->Write();
 	BetaPi0->Write();
