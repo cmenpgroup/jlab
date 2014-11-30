@@ -768,11 +768,20 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 myMixEvt.Put_PiPlus(pPion_MixedEvt,1);
                 myMixEvt.Put_PiMinus(nPion_MixedEvt,1);
                 
+                cout << "test 1" <<endl;
+                PrintTLorentzVector((photon1_MixedEvt+photon2));
+                
+                cout << "test 2" <<endl;
+                PrintTLorentzVector((photon2_MixedEvt+photon1));
+                
                 for(kk=0; kk<NUM_MIXING_METHODS; kk++){
                     myMixEvt.Mix_Omega(kk); // run mixing routine for each method
                     
                     TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(1); // Two photon Lorentz vector from an out-of-time event
                     Mass_TwoPhoton_ME[kk][k] = TwoPhoton_MixedEvt.M();
+
+                    cout << "Method " << myMixEvt.Get_Label(kk) << endl;
+                    PrintTLorentzVector(TwoPhoton_MixedEvt);
 
                     Omega_MixedEvt = myMixEvt.Get_Omega(1); // Omega Lorentz vector from an out-of-time event
                     Mass_Omega_ME[kk][k] = Omega_MixedEvt.M();
@@ -947,42 +956,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         //-----------------------------------------------------
         // plots to check special relativistic kinematics
 		TLorentzVector pi0(0, 0, TwoPhoton.Pz(), TMath::Sqrt(MASS_PION_NEUTRAL*MASS_PION_NEUTRAL + TwoPhoton.Pz() * TwoPhoton.Pz()));
-		double gamma = pi0.Gamma();
-		double beta = pi0.Beta();
+		BetaPi0->Fill(pi0.Beta());
+		GammaPi0->Fill(pi0.Gamma());
         
-		BetaPi0->Fill(beta);
-		GammaPi0->Fill(gamma);
+        TLorentzRotation lbr(pi0.BoostVector());
         
 		TLorentzVector photon1_pi0Rest_caseA(0, 0, 0.5 * MASS_PION_NEUTRAL, 0.5 * MASS_PION_NEUTRAL);
-		TLorentzVector photon2_pi0Rest_caseA(0, 0, -0.5 * MASS_PION_NEUTRAL, 0.5 * MASS_PION_NEUTRAL);
-		TLorentzVector photon1_pi0Rest_caseB(0, 0.5 * MASS_PION_NEUTRAL, 0, 0.5 * MASS_PION_NEUTRAL);
-		TLorentzVector photon2_pi0Rest_caseB(0, -0.5 * MASS_PION_NEUTRAL, 0, 0.5 * MASS_PION_NEUTRAL);
+        TLorentzVector photon2_pi0Rest_caseA(0, 0, -0.5 * MASS_PION_NEUTRAL, 0.5 * MASS_PION_NEUTRAL);
+        photon1_pi0Rest_caseA.Transform(lbr);
+        photon2_pi0Rest_caseA.Transform(lbr);
         
-		TLorentzVector photon1_pi0Moving_caseA(photon1_pi0Rest_caseA.Px(), photon1_pi0Rest_caseA.Py(), gamma * (photon1_pi0Rest_caseA.Pz() - beta * photon1_pi0Rest_caseA.E()), gamma * (photon1_pi0Rest_caseA.E() - beta * photon1_pi0Rest_caseA.Pz()));
+        TLorentzVector photon1_pi0Rest_caseB(0, 0.5 * MASS_PION_NEUTRAL, 0, 0.5 * MASS_PION_NEUTRAL);
+        TLorentzVector photon2_pi0Rest_caseB(0, -0.5 * MASS_PION_NEUTRAL, 0, 0.5 * MASS_PION_NEUTRAL);
+        photon1_pi0Rest_caseB.Transform(lbr);
+        photon2_pi0Rest_caseB.Transform(lbr);
         
-		TLorentzVector photon2_pi0Moving_caseA(photon2_pi0Rest_caseA.Px(), photon2_pi0Rest_caseA.Py(), gamma * (photon2_pi0Rest_caseA.Pz() - beta * photon2_pi0Rest_caseA.E()), gamma * (photon2_pi0Rest_caseA.E() - beta * photon2_pi0Rest_caseA.Pz()));
-        
-		TLorentzVector photon1_pi0Moving_caseB(photon1_pi0Rest_caseB.Px(), photon1_pi0Rest_caseB.Py(), gamma * (photon1_pi0Rest_caseB.Pz() - beta * photon1_pi0Rest_caseB.E()), gamma * (photon1_pi0Rest_caseB.E() - beta * photon1_pi0Rest_caseB.Pz()));
-        
-		TLorentzVector photon2_pi0Moving_caseB(photon2_pi0Rest_caseB.Px(), photon2_pi0Rest_caseB.Py(), gamma * (photon2_pi0Rest_caseB.Pz() - beta * photon2_pi0Rest_caseB.E()), gamma * (photon2_pi0Rest_caseB.E() - beta * photon2_pi0Rest_caseB.Pz()));
-        
-		RelativityOpAngPhotonsA->Fill(pi0.Pz(), TMath::ACos((photon1_pi0Moving_caseA.Px() * photon2_pi0Moving_caseA.Px() + photon1_pi0Moving_caseA.Py() * photon2_pi0Moving_caseA.Py() + photon1_pi0Moving_caseA.Pz() * photon2_pi0Moving_caseA.Pz())/(photon1_pi0Moving_caseA.P() * photon2_pi0Moving_caseA.P())) * TMath::RadToDeg());
-        
-		RelativityOpAngPhotonsB->Fill(pi0.Pz(), TMath::ACos((photon1_pi0Moving_caseB.Px() * photon2_pi0Moving_caseB.Px() + photon1_pi0Moving_caseB.Py() * photon2_pi0Moving_caseB.Py() + photon1_pi0Moving_caseB.Pz() * photon2_pi0Moving_caseB.Pz())/(photon1_pi0Moving_caseB.P() * photon2_pi0Moving_caseB.P())) * TMath::RadToDeg());
-
-        TLorentzRotation lbr(pi0.BoostVector());
-        TLorentzVector caseA1 = photon1_pi0Rest_caseA;
-        TLorentzVector caseA2 = photon2_pi0Rest_caseA;
-        TLorentzVector caseB1 = photon1_pi0Rest_caseB;
-        TLorentzVector caseB2 = photon2_pi0Rest_caseB;
-        
-        caseA1.Transform(lbr);
-        caseA2.Transform(lbr);
-        caseB1.Transform(lbr);
-        caseB2.Transform(lbr);
-        
-        hCaseA->Fill(pi0.Pz(),caseA1.Angle(caseA2.Vect())*TMath::RadToDeg());
-        hCaseB->Fill(pi0.Pz(),caseB1.Angle(caseB2.Vect())*TMath::RadToDeg());
+        RelativityOpAngPhotonsA->Fill(pi0.Pz(),caseA1.Angle(caseA2.Vect())*TMath::RadToDeg());
+        RelativityOpAngPhotonsB->Fill(pi0.Pz(),caseB1.Angle(caseB2.Vect())*TMath::RadToDeg());
         
         //-----------------------------------------------------
     }
@@ -1305,14 +1295,6 @@ void BookHist(){
     sprintf(hname,"BetaPi0");
     sprintf(htitle,"Beta of Pi0");
 	BetaPi0 = new TH1D(hname,htitle, 100, 0, 1);
-
-    sprintf(hname,"caseA");
-    sprintf(htitle,"0/180 Degree Decay Photons");
-    hCaseA = new TH2D(hname,htitle, 500, 0, 5, 200, 0, 200);
-    
-    sprintf(hname,"caseB");
-    sprintf(htitle,"90/-90 Degree Decay Photons");
-    hCaseB = new TH2D(hname,htitle, 500, 0, 5, 180, 0, 180);
 }
 
 //
@@ -1533,8 +1515,6 @@ void WriteHist(string RootFile){
         elecZVertSector[i]->Write();
     }
 
-    hCaseA->Write();
-    hCaseB->Write();
 	RelativityOpAngPhotonsA->Write();
 	RelativityOpAngPhotonsB->Write();
 	BetaPi0->Write();

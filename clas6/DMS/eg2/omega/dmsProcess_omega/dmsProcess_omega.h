@@ -81,8 +81,6 @@ TH2D *IMOmega_ZVertCut_ME[3];
 TH2D *IMOmega_QsqCut_ME[3];
 TH2D *IMOmega_AllCuts_ME[3];
 
-TH2D *hCaseA;
-TH2D *hCaseB;
 TH2D *RelativityOpAngPhotonsA;
 TH2D *RelativityOpAngPhotonsB;
 TH1D *GammaPi0;
