@@ -364,6 +364,8 @@ void EG2Cuts::Print_Cuts()
 
 class OmegaMixedEvent
 {
+    int nEvtToMix;
+    int EvtOffset;
     vector<string> Label;
     vector<int> Index;
     vector<string> evtLabel;
@@ -376,6 +378,10 @@ class OmegaMixedEvent
     TLorentzVector Omega[2];
 public:
     OmegaMixedEvent();
+    int Get_NumberOfEventsToMix(){return nEvtToMix;};
+    void Put_NumberOfEventsToMix(int i);
+    int Get_OffsetOfEventsToMix(){return EvtOffset;};
+    void Put_OffsetOfEventsToMix(int i);
     bool Check_evtIndex(int iME);
     bool Check_Index(int iMethod);
     int Get_nLabel() {return Label.size();};
@@ -432,6 +438,14 @@ OmegaMixedEvent::OmegaMixedEvent()
         PiMinus[i].SetPxPyPzE(0.,0.,0.,0.);
         Omega[i].SetPxPyPzE(0.,0.,0.,0.);
     }
+}
+
+void OmegaMixedEvent::Put_NumberOfEventsToMix(int i){
+    this->nEvtToMix = i;
+}
+
+void OmegaMixedEvent::Put_OffsetOfEventsToMix(int i){
+    this->EvtOffset = i;
 }
 
 // check that the event index is in the correct range
@@ -593,7 +607,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             tempE = tempPi0.E();
             tempPi0.SetPxPyPzE(tempPx,tempPy,tempPz,tempE);
         default:
-            cout << "OmegaMixedevent::Mix_Omega - incorrect iMethod " << iMethod <<endl;
+            cout << "OmegaMixedEvent::Mix_Omega - incorrect iMethod " << iMethod <<endl;
             exit(0);
             break;
     }
@@ -616,7 +630,7 @@ void OmegaMixedEvent::Print_Info()
 }
 
 int process (string inFile, int MaxEvents, int dEvents, int targMass) {
-    int i, j, k;
+    int i, j, k, kk;
     
     int Sector_index;
     int Vz_index;
@@ -637,6 +651,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
+
+    myMixEvt.Put_NumberOfEventsToMix(10); // add number of mixed event iterations
+    myMixEvt.Put_OffsetOfEventsToMix(5); // add offset of the entry number for mixed events
+    
+    int NUM_MIXING_METHODS = myMixEvt.Get_nLabel(); // number of methods for mixing events
+    int NUM_ENTRIES_OFFSET = myMixEvt.Get_NumberOfEventsToMix(); // retreive number of mixed event iterations
+    int ENTRIES_OFFSET = myMixEvt.Get_OffsetOfEventsToMix(); // retrieve offset of the entry number for mixed events
     
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
@@ -653,6 +674,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     TLorentzVector pPion_MixedEvt;
     TLorentzVector nPion_MixedEvt;
     TLorentzVector TwoPhoton_MixedEvt;
+    TLorentzVector Omega_MixedEvt;
 
     int iMixedEvt;
     double Mass_TwoPhoton_ME[NUM_MIXING_METHODS][NUM_ENTRIES_OFFSET];
@@ -714,6 +736,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		TLorentzVector photon2 = reader.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
 		TVector3 photon2_vert = reader.getVertex(ID_PHOTON, 1);
         
+        myMixEvt.Put_Photon1(photon1,0);
+        myMixEvt.Put_Photon2(photon2,0);
+        myMixEvt.Put_PiPlus(pPion,0);
+        myMixEvt.Put_PiMinus(nPion,0);
+        myMixEvt.Reconstruct_Pi0(0);
+        myMixEvt.Reconstruct_Omega(0);
+        
         // determine which target the reaction occurred in
         Vz_index = myTgt.Get_Index(elec_vert.Z());
         
@@ -738,29 +767,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 readerMixedEvt.readEntry(iMixedEvt);
                 photon1_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON); // Photon 1 Lorentz vector from an out-of-time event
                 photon2_MixedEvt = readerMixedEvt.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON); // Photon 2 Lorentz vector from an out-of-time event
-                TwoPhoton_MixedEvt = photon1_MixedEvt + photon2_MixedEvt; // Two photon Lorentz vector from an out-of-time event
                 nPion_MixedEvt = readerMixedEvt.getLorentzVector(ID_PION_NEG, 0,MASS_PION_CHARGED); // pi+ Lorentz vector from an out-of-time event
                 pPion_MixedEvt = readerMixedEvt.getLorentzVector(ID_PION_POS, 0, MASS_PION_CHARGED); // pi- Lorentz vector from an out-of-time event
         
-                // Method 1: photon 1 from out-of-time events
-                Mass_TwoPhoton_ME[0][k] = (photon1_MixedEvt + photon2).M();
-                Mass_Omega_ME[0][k] = (pPion + nPion + photon1_MixedEvt + photon2).M();
-
-                // Method 2: photon 2 from out-of-time events
-                Mass_TwoPhoton_ME[1][k] = (photon1_MixedEvt + photon2).M();
-                Mass_Omega_ME[1][k] = (pPion + nPion + photon1 + photon2_MixedEvt).M();
+                myMixEvt.Put_Photon1(photon1_MixedEvt,1);
+                myMixEvt.Put_Photon2(photon2_MixedEvt,1);
+                myMixEvt.Put_PiPlus(pPion_MixedEvt,1);
+                myMixEvt.Put_PiMinus(nPion_MixedEvt,1);
                 
-                // Method 3: pi+ from out-of-time events
-                Mass_TwoPhoton_ME[2][k] = TwoPhoton.M();
-                Mass_Omega_ME[2][k] = (pPion_MixedEvt + nPion + TwoPhoton).M();
+                for(kk=0; kk<NUM_MIXING_METHODS; kk++){
+                    myMixEvt.Mix_Omega(kk); // run mixing routine for each method
+                    
+                    TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(1); // Two photon Lorentz vector from an out-of-time event
+                    Mass_TwoPhoton_ME[kk][k] = TwoPhoton_MixedEvt.M();
 
-                // Method 4: pi- from out-of-time events
-                Mass_TwoPhoton_ME[3][k] = TwoPhoton.M();
-                Mass_Omega_ME[3][k] = (pPion + nPion_MixedEvt + TwoPhoton).M();
-
-                // Method 5: pi0 from out-of-time events
-                Mass_TwoPhoton_ME[4][k] = TwoPhoton_MixedEvt.M();
-                Mass_Omega_ME[4][k] = (pPion + nPion + TwoPhoton_MixedEvt).M();
+                    Omega_MixedEvt = myMixEvt.Get_Omega(1); // Omega Lorentz vector from an out-of-time event
+                    Mass_Omega_ME[kk][k] = Omega_MixedEvt.M();
+                }
             }
         }
         
@@ -907,30 +930,30 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
         for(k=0; k<NUM_ENTRIES_OFFSET; k++){ // loop over number of mixed event iterations
             for(j=0; j<NUM_MIXING_METHODS; j++){ // loop over number of mixed event methods
-                IM2Photons_ME[Vz_index][j]->Fill(Mass_TwoPhoton_ME[j][k]); // inv. mass of 2 photons
-                IMOmega_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]); // inv. mass of pi+ pi- 2 photons
+                IM2Photons_ME[Vz_index]->Fill(Mass_TwoPhoton_ME[j][k],j); // inv. mass of 2 photons
+                IMOmega_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j); // inv. mass of pi+ pi- 2 photons
                 if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
-                    IM2Photons_OpAng_ElecPhoton_Cut_ME[Vz_index][j]->Fill(Mass_TwoPhoton_ME[j][k]);
-                    IMOmega_OpAng_ElecPhoton_Cut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
+                    IM2Photons_OpAng_ElecPhoton_Cut_ME[Vz_index]->Fill(Mass_TwoPhoton_ME[j][k],j);
+                    IMOmega_OpAng_ElecPhoton_Cut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
                 }
                 if(cutPi0Mass) {
-                    IMOmega_MassPi0Cut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
+                    IMOmega_MassPi0Cut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
                 }
                 if(cutZDiff_ElectronNPion && cutZDiff_ElectronPPion){
-                    IMOmega_ZVertCut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
+                    IMOmega_ZVertCut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
                 }
                 if(cutQSquared) {
-                    IMOmega_QsqCut_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
+                    IMOmega_QsqCut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
                 }
                 if(cutsAll){
-                    IMOmega_AllCuts_ME[Vz_index][j]->Fill(Mass_Omega_ME[j][k]);
+                    IMOmega_AllCuts_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
                 }
             }
         }
         
         //-----------------------------------------------------
         // plots to check special relativistic kinematics
-		TLorentzVector pi0(0, 0, (photon1+photon2).Pz(), TMath::Sqrt(MASS_PION_NEUTRAL*MASS_PION_NEUTRAL + (photon1+photon2).Pz() * (photon1+photon2).Pz()));
+		TLorentzVector pi0(0, 0, TwoPhoton.Pz(), TMath::Sqrt(MASS_PION_NEUTRAL*MASS_PION_NEUTRAL + TwoPhoton.Pz() * TwoPhoton.Pz()));
 		double gamma = pi0.Gamma();
 		double beta = pi0.Beta();
         
@@ -954,6 +977,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
 		RelativityOpAngPhotonsB->Fill(pi0.Pz(), TMath::ACos((photon1_pi0Moving_caseB.Px() * photon2_pi0Moving_caseB.Px() + photon1_pi0Moving_caseB.Py() * photon2_pi0Moving_caseB.Py() + photon1_pi0Moving_caseB.Pz() * photon2_pi0Moving_caseB.Pz())/(photon1_pi0Moving_caseB.P() * photon2_pi0Moving_caseB.P())) * TMath::RadToDeg());
 
+        TLorentzRotation lbr(pi0.Vect());
+        TLorentzVector caseA1 = photon1_pi0Rest_caseA;
+        TLorentzVector caseA2 = photon2_pi0Rest_caseA;
+        TLorentzVector caseB1 = photon1_pi0Rest_caseB;
+        TLorentzVector caseB2 = photon2_pi0Rest_caseB;
+        
+        caseA1.Transform(lbr);
+        caseA2.Transform(lbr);
+        caseB1.Transform(lbr);
+        caseB2.Transform(lbr);
+        
+        double alphaA = caseA1.Angle(caseA2);
+        double alphaB = caseB1.Angle(caseB2);
+        
+        hCaseA->Fill(pi0.Pz(),alphaA);
+        hCaseB->Fill(pi0.Pz(),alphaB);
+        
         //-----------------------------------------------------
     }
     
@@ -1052,6 +1092,9 @@ void BookHist(){
     DetectedParticles myDetPart;
     ParticleList myPartList;
     EG2Target myTgt;
+    OmegaMixedEvent myMixEvt;
+    
+    int nME_Methods = myMixEvt.Get_nLabel();
     
     sprintf(hname,"q2");
     sprintf(htitle,"Q^{2}");
@@ -1217,41 +1260,38 @@ void BookHist(){
         sprintf(hname,"PtSq_Omega_AllCuts_IMOmegaSBCut_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"#omega Meson - All ID Cuts & IM(#omega) Cut, sideband, %s",myTgt.Get_Label(i).c_str());
         PtSq_Omega_AllCuts_IMOmegaSBCut[i] = new TH1D(hname, htitle, nPtSq_omega, PtSq_omegaLo, PtSq_omegaHi);
-        
-        for(j=0; j<NUM_MIXING_METHODS; j++){
             
-            sprintf(hname,"IM2Photons_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of Pi0, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IM2Photons_ME[i][j] = new TH1D(hname, htitle, 100, 0., 1.);
+        sprintf(hname,"IM2Photons_ME%i_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of Pi0, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IM2Photons_ME[i] = new TH2D(hname, htitle, 100, 0., 1., nME_Methods, -0.5, nME_Methods-0.5);
             
-            sprintf(hname,"IM2Photons_OpAng_ElecPhoton_Cut_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of Pi0 with e^{-} #gamma Opening Angle Cut, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j] = new TH1D(hname, htitle, 100, 0., 1.);
+        sprintf(hname,"IM2Photons_OpAng_ElecPhoton_Cut_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of Pi0 with e^{-} #gamma Opening Angle Cut, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i] = new TH2D(hname, htitle, 100, 0., 1., nME_Methods, -0.5, nME_Methods-0.5);
             
-            sprintf(hname,"IMOmega_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of #omega, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IMOmega_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+        sprintf(hname,"IMOmega_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IMOmega_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
         
-            sprintf(hname,"IMOmega_OpAng_ElecPhoton_Cut_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of #omega - e^{-} #gamma Opening Angle Cut, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IMOmega_OpAng_ElecPhoton_Cut_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+        sprintf(hname,"IMOmega_OpAng_ElecPhoton_Cut_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega - e^{-} #gamma Opening Angle Cut, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
         
-            sprintf(hname,"IMOmega_MassPi0Cut_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of #omega - Pi0 Mass Cut, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IMOmega_MassPi0Cut_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+        sprintf(hname,"IMOmega_MassPi0Cut_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega - Pi0 Mass Cut, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IMOmega_MassPi0Cut_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
         
-            sprintf(hname,"IMOmega_ZVertCut_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of #omega - Z Vertex Cut, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IMOmega_ZVertCut_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+        sprintf(hname,"IMOmega_ZVertCut_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega - Z Vertex Cut, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IMOmega_ZVertCut_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
         
-            sprintf(hname,"IMOmega_QsqCut_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of #omega - Q^{2} Cut, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IMOmega_QsqCut_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+        sprintf(hname,"IMOmega_QsqCut_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega - Q^{2} Cut, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IMOmega_QsqCut_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
         
-            sprintf(hname,"IMOmega_AllCuts_ME%i_%s",j+1,myTgt.Get_Label(i).c_str());
-            sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, Mixed Evt %i, %s",j+1,myTgt.Get_Label(i).c_str());
-            IMOmega_AllCuts_ME[i][j] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
-        }
+        sprintf(hname,"IMOmega_AllCuts_ME_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
+        IMOmega_AllCuts_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
     }
     
     for(i=0; i<MAX_SECTORS; i++){
@@ -1275,7 +1315,14 @@ void BookHist(){
     sprintf(hname,"BetaPi0");
     sprintf(htitle,"Beta of Pi0");
 	BetaPi0 = new TH1D(hname,htitle, 100, 0, 1);
+
+    sprintf(hname,"caseA");
+    sprintf(htitle,"0/180 Degree Decay Photons");
+    caseA = new TH2D(hname,htitle, 500, 0, 5, 200, 0, 200);
     
+    sprintf(hname,"caseB");
+    sprintf(htitle,"90/-90 Degree Decay Photons");
+    caseB = new TH2D(hname,htitle, 500, 0, 5, 180, 0, 180);
 }
 
 //
@@ -1457,39 +1504,37 @@ void WriteHist(string RootFile){
         PtSq_Omega_AllCuts_IMOmegaSBCut[i]->GetYaxis()->SetTitle("Counts");
         PtSq_Omega_AllCuts_IMOmegaSBCut[i]->Write();
         
-        for(j=0; j<NUM_MIXING_METHODS; j++){
-            IM2Photons_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
-            IM2Photons_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IM2Photons_ME[i][j]->Write();
+        IM2Photons_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IM2Photons_ME[i][j]->Write();
             
-            IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
-            IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->Write();
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IM2Photons_OpAng_ElecPhoton_Cut_ME[i][j]->Write();
             
-            IMOmega_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-            IMOmega_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IMOmega_ME[i][j]->Write();
+        IMOmega_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_ME[i][j]->Write();
             
-            IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-            IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->Write();
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_OpAng_ElecPhoton_Cut_ME[i][j]->Write();
             
-            IMOmega_MassPi0Cut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-            IMOmega_MassPi0Cut_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IMOmega_MassPi0Cut_ME[i][j]->Write();
+        IMOmega_MassPi0Cut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_MassPi0Cut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_MassPi0Cut_ME[i][j]->Write();
             
-            IMOmega_ZVertCut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-            IMOmega_ZVertCut_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IMOmega_ZVertCut_ME[i][j]->Write();
+        IMOmega_ZVertCut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_ZVertCut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_ZVertCut_ME[i][j]->Write();
             
-            IMOmega_QsqCut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-            IMOmega_QsqCut_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IMOmega_QsqCut_ME[i][j]->Write();
+        IMOmega_QsqCut_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_QsqCut_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_QsqCut_ME[i][j]->Write();
             
-            IMOmega_AllCuts_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-            IMOmega_AllCuts_ME[i][j]->GetYaxis()->SetTitle("Counts");
-            IMOmega_AllCuts_ME[i][j]->Write();
-        }
+        IMOmega_AllCuts_ME[i][j]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_AllCuts_ME[i][j]->GetYaxis()->SetTitle("Mixing Method");
+        IMOmega_AllCuts_ME[i][j]->Write();
     }
     
     for(i=0; i<MAX_SECTORS; i++){
@@ -1497,7 +1542,9 @@ void WriteHist(string RootFile){
         elecZVertSector[i]->GetYaxis()->SetTitle("Counts");
         elecZVertSector[i]->Write();
     }
-    
+
+    caseA->Write();
+    caseB->Write();
 	RelativityOpAngPhotonsA->Write();
 	RelativityOpAngPhotonsB->Write();
 	BetaPi0->Write();

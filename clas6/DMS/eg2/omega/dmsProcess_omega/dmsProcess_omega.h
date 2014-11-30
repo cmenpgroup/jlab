@@ -11,9 +11,6 @@
 
 using namespace std;
 
-int NUM_MIXING_METHODS = 5; // number of methods for mixing events
-int NUM_ENTRIES_OFFSET = 10; // number of mixed event iterations
-int ENTRIES_OFFSET = 5; //offset of the entry number for mixed events
 int MAX_SECTORS = 6; // max. number of CLAS sectors
 
 int ID_ELECTRON = 11; // PDG electron id
@@ -75,15 +72,17 @@ TH1D *PtSq_Omega_AllCuts_IMOmegaCut[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaSBCut[3];
 TH1D *elecZVertSector[6];
 
-TH1D *IM2Photons_ME[3][5];
-TH1D *IM2Photons_OpAng_ElecPhoton_Cut_ME[3][5];
-TH1D *IMOmega_ME[3][5];
-TH1D *IMOmega_OpAng_ElecPhoton_Cut_ME[3][5];
-TH1D *IMOmega_MassPi0Cut_ME[3][5];
-TH1D *IMOmega_ZVertCut_ME[3][5];
-TH1D *IMOmega_QsqCut_ME[3][5];
-TH1D *IMOmega_AllCuts_ME[3][5];
+TH2D *IM2Photons_ME[3];
+TH2D *IM2Photons_OpAng_ElecPhoton_Cut_ME[3];
+TH2D *IMOmega_ME[3];
+TH2D *IMOmega_OpAng_ElecPhoton_Cut_ME[3];
+TH2D *IMOmega_MassPi0Cut_ME[3];
+TH2D *IMOmega_ZVertCut_ME[3];
+TH2D *IMOmega_QsqCut_ME[3];
+TH2D *IMOmega_AllCuts_ME[3];
 
+TH2D *caseA;
+TH2D *caseB;
 TH2D *RelativityOpAngPhotonsA;
 TH2D *RelativityOpAngPhotonsB;
 TH1D *GammaPi0;
