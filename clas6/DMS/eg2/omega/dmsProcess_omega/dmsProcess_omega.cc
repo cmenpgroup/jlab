@@ -573,13 +573,13 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
     TLorentzVector tempPi0 = tempPhoton1 +tempPhoton2;
     TLorentzVector A;
 
-/*    cout <<"Before " << iMethod <<endl;
+    cout <<"Before " << iMethod <<endl;
     PrintTLorentzVector(tempPhoton1);
     PrintTLorentzVector(tempPhoton2);
     PrintTLorentzVector(tempPiPlus);
     PrintTLorentzVector(tempPiMinus);
     PrintTLorentzVector(tempPi0);
-*/
+
     switch (iMethod){
         case 0:
             tempPhoton1 = this->Get_Photon1(1);
@@ -612,13 +612,13 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             exit(0);
             break;
     }
-/*    cout <<"After " << iMethod <<endl;
+    cout <<"After " << iMethod <<endl;
     PrintTLorentzVector(tempPhoton1);
     PrintTLorentzVector(tempPhoton2);
     PrintTLorentzVector(tempPiPlus);
     PrintTLorentzVector(tempPiMinus);
     PrintTLorentzVector(tempPi0);
-*/
+
     this->Put_Pi0(tempPi0, 1);
     this->Put_Omega(tempPi0 + tempPiPlus + tempPiMinus, 1);
 }
@@ -784,15 +784,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 myMixEvt.Put_PiPlus(pPion_MixedEvt,1);
                 myMixEvt.Put_PiMinus(nPion_MixedEvt,1);
                 
-//                cout << "test " << endl;
-//                PrintTLorentzVector(photon1_MixedEvt);
-//                PrintTLorentzVector(photon2_MixedEvt);
+                cout << "test " << endl;
+                PrintTLorentzVector(photon1_MixedEvt);
+                PrintTLorentzVector(photon2_MixedEvt);
                 
-//                cout << "test 1" <<endl;
-//                PrintTLorentzVector((photon1_MixedEvt+photon2));
+                cout << "test 1" <<endl;
+                PrintTLorentzVector((photon1_MixedEvt+photon2));
                 
-//                cout << "test 2" <<endl;
-//                PrintTLorentzVector((photon2_MixedEvt+photon1));
+                cout << "test 2" <<endl;
+                PrintTLorentzVector((photon2_MixedEvt+photon1));
                 
                 for(kk=0; kk<NUM_MIXING_METHODS; kk++){
                     myMixEvt.Mix_Omega(kk); // run mixing routine for each method
@@ -800,8 +800,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                     TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(1); // Two photon Lorentz vector from an out-of-time event
                     Mass_TwoPhoton_ME[kk][k] = TwoPhoton_MixedEvt.M();
 
-//                    cout << "Method " << myMixEvt.Get_Label(kk) << endl;
-//                    PrintTLorentzVector(TwoPhoton_MixedEvt);
+                    cout << "Method " << myMixEvt.Get_Label(kk) << endl;
+                    PrintTLorentzVector(TwoPhoton_MixedEvt);
 
                     Omega_MixedEvt = myMixEvt.Get_Omega(1); // Omega Lorentz vector from an out-of-time event
                     Mass_Omega_ME[kk][k] = Omega_MixedEvt.M();
