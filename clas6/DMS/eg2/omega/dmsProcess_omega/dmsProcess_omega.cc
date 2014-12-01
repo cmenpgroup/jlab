@@ -617,7 +617,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
     PrintTLorentzVector(tempPiPlus);
     PrintTLorentzVector(tempPiMinus);
     PrintTLorentzVector(tempPi0);
-*/    
+*/
     this->Put_Pi0(tempPi0, 1);
     this->Put_Omega(tempPi0 + tempPiPlus + tempPiMinus, 1);
 }
@@ -784,7 +784,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 
 //                cout << "test " << endl;
 //                PrintTLorentzVector(photon1_MixedEvt);
-                PrintTLorentzVector(photon2_MixedEvt);
+//                PrintTLorentzVector(photon2_MixedEvt);
                 
 //                cout << "test 1" <<endl;
 //                PrintTLorentzVector((photon1_MixedEvt+photon2));
