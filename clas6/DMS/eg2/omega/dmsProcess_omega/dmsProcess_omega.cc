@@ -258,8 +258,8 @@ EG2Cuts::EG2Cuts()
     RangeMassPi0.push_back(pi0MLo); // Lower limit on pi0 mass (in Gev/c^2)
     RangeMassPi0.push_back(pi0MHi); // Upper limit on pi0 mass (in Gev/c^2)
 
-    RangeQSquared.push_back(-100000.0); // Lower limit on Q^2 (in Gev^2)
-    RangeQSquared.push_back(-1.0); // Upper limit on Q^2 (in Gev^2)
+    RangeQSquared.push_back(1.0); // Lower limit on Q^2 (in Gev^2)
+    RangeQSquared.push_back(100000.0); // Upper limit on Q^2 (in Gev^2)
     
     RangeOpAng_ElecPhoton.push_back(12.0); // Lower limit on opening angle between e- and photon (in degrees)
     RangeOpAng_ElecPhoton.push_back(180.0); // Upper limit on opening angle between e- and photon (in degrees)
