@@ -360,6 +360,7 @@ void EG2Cuts::Print_Cuts()
             cout << endl;
         }
     }
+    cout << endl;
 }
 
 class OmegaMixedEvent
@@ -634,6 +635,7 @@ void OmegaMixedEvent::Print_Info()
     for(ii=0;ii<this->Get_nEvtLabel();ii++){
         cout << "Event type " << ii+1 << "\t" << this->Get_evtLabel(ii) << endl;
     }
+    cout << endl;
 }
 
 int process (string inFile, int MaxEvents, int dEvents, int targMass) {
@@ -902,8 +904,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		MMsq[Vz_index]->Fill((beam + target - Omega).M2()); // missing mass^2
         
         // plots of variable vs the omega inv. mass
-		IM2Pions_VS_IMOmega[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv.
-        IM2Photons_VS_IMOmega[Vz_index]->Fill(TwoPhoton.M(), Omega.M()); // variable = 2 photon inv.
+		IM2Pions_VS_IMOmega[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
+        IM2Photons_VS_IMOmega[Vz_index]->Fill(TwoPhoton.M(), Omega.M()); // variable = 2 photon inv. mass
 		Q2_VS_IMOmega[Vz_index]->Fill(Qsq, Omega.M()); // variable = Q^2
 		Pt_VS_IMOmega[Vz_index]->Fill(Omega.Pt(), Omega.M()); // variable = omega trans. mom.
 		Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
@@ -937,6 +939,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		}
         cutsAll = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion && cutPi0Mass && cutQSquared && cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2);
 		if(cutsAll){
+            IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
 			IMOmega_AllCuts[Vz_index]->Fill(Omega.M());
 			PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
             if(cutOmegaMass){
@@ -945,7 +948,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             if(cutOmegaMass_sb){
                 PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
             }
-            IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv.
         }
     
         for(k=0; k<NUM_ENTRIES_OFFSET; k++){ // loop over number of mixed event iterations
