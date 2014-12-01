@@ -548,7 +548,7 @@ void OmegaMixedEvent::Reconstruct_Pi0(int iME){
         TLorentzVector tempPhoton1 = this->Get_Photon1(iME);
         TLorentzVector tempPhoton2 = this->Get_Photon2(iME);
         
-        this->Put_Omega(tempPhoton1 + tempPhoton2, iME);
+        this->Put_Pi0(tempPhoton1 + tempPhoton2, iME);
     }
 }
 
