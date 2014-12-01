@@ -1098,7 +1098,7 @@ void BookHist(){
     
     sprintf(hname,"q2");
     sprintf(htitle,"Q^{2}");
-    q2 = new TH1D(hname,htitle, 100, 0., -4.);
+    q2 = new TH1D(hname,htitle, 100, 0., 4.);
 
     sprintf(hname,"q2_VS_theta");
     sprintf(htitle,"Q^{2} vs. 4E_{e'}sin^{2}(0.5*#theta_{e'})");
@@ -1203,7 +1203,7 @@ void BookHist(){
         
 		sprintf(hname,"Q2_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Q2 vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		Q2_VS_IMOmega[i] = new TH2D(hname, htitle, 100, -4., 0., nIMomega, IMomegaLo, IMomegaHi);
+		Q2_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0., 4.0, nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"Pt_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Omega Trans. Mom. vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
