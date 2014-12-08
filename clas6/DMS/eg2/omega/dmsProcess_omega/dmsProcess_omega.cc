@@ -1441,9 +1441,9 @@ void WriteHist(string RootFile){
         IM2Photons_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
         IM2Photons_VS_IMOmega[i]->Write();
 
-        W_VS_IMOmega[i]->GetXaxis()->SetTitle("W (GeV)");
-        W_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
-        W_VS_IMOmega[i]->Write();
+        W_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("W (GeV)");
+        W_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        W_VS_IMOmega_AllCuts[i]->Write();
         
         Q2_VS_IMOmega[i]->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
         Q2_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
