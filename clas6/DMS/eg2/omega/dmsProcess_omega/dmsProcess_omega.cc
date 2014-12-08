@@ -822,7 +822,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Mx_TLV = BeamMinusElectron + nucleon - Omega;
         Mx = Mx_TLV.M(); // reaction Mx
         W_TLV = BeamMinusElectron + nucleon;
-        W = W_TLV.E(); // reaction W
+        W = W_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         //_________________________________
@@ -939,6 +939,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		}
         cutsAll = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion && cutPi0Mass && cutQSquared && cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2);
 		if(cutsAll){
+            W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
             IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
 			IMOmega_AllCuts[Vz_index]->Fill(Omega.M());
 			PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
@@ -1118,7 +1119,7 @@ void BookHist(){
 
     sprintf(hname,"Beta_VS_Momentum");
     sprintf(htitle,"Beta vs Momentum");
-	Beta_VS_Momentum = new TH2D(hname,htitle, 500, 0, 5, 105, 0, 1.05);
+	Beta_VS_Momentum = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
 
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
@@ -1152,7 +1153,7 @@ void BookHist(){
 		sprintf(hname,"hW_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
 		hW[i] = new TH1D(hname, htitle, 250, 0, 5);
-
+        
         sprintf(hname,"hMx_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"M_{x} of Reaction, %s",myTgt.Get_Label(i).c_str());
         hMx[i] = new TH1D(hname, htitle, 250, 0, 5);
@@ -1200,6 +1201,10 @@ void BookHist(){
 		sprintf(hname,"IM2Photons_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #pi^{0} vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
 		IM2Photons_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+        
+        sprintf(hname,"W_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"W vs Reconstructed Mass of #omega, All Cuts except W, %s",myTgt.Get_Label(i).c_str());
+        W_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 250, 0., 5.0, nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"Q2_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Q2 vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
@@ -1435,7 +1440,11 @@ void WriteHist(string RootFile){
         IM2Photons_VS_IMOmega[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
         IM2Photons_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
         IM2Photons_VS_IMOmega[i]->Write();
-		
+
+        W_VS_IMOmega[i]->GetXaxis()->SetTitle("W (GeV)");
+        W_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        W_VS_IMOmega[i]->Write();
+        
         Q2_VS_IMOmega[i]->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
         Q2_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
         Q2_VS_IMOmega[i]->Write();
