@@ -1347,9 +1347,9 @@ void BookHist(){
 		sprintf(htitle,"Reconstructed Mass of #omega - Single Cut, %s",myTgt.Get_Label(i).c_str());
 		IMOmega[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
         
-        sprintf(hname,"IMOmega_woCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(hname,"IMOmega_woCut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_woCuts[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
+		IMOmega_woCut[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
 
         sprintf(hname,"PtSq_Omega_AllCuts_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"#omega Meson - All ID Cuts, %s",myTgt.Get_Label(i).c_str());
@@ -1566,9 +1566,9 @@ void WriteHist(string RootFile){
         IMOmega[i]->GetYaxis()->SetTitle("Cut index");
 		IMOmega[i]->Write();
         
-        IMOmega_woCuts[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_woCuts[i]->GetYaxis()->SetTitle("Cut Index");
-        IMOmega_woCuts[i]->Write();
+        IMOmega_woCut[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_woCut[i]->GetYaxis()->SetTitle("Cut Index");
+        IMOmega_woCut[i]->Write();
 
         PtSq_Omega_AllCuts[i]->GetXaxis()->SetTitle("P^{2}_{T}  (GeV/c)^{2}");
         PtSq_Omega_AllCuts[i]->GetYaxis()->SetTitle("Counts");
