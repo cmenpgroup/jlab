@@ -234,7 +234,6 @@ public:
     bool Check_MassPi0(double mass);
     bool Check_QSquared(double Qsq);
     bool Check_OpAng_ElecPhoton(double OpAng);
-    bool Check_QSquared(double Qsq);
     bool Check_Wcut(double W);
     bool Check_BetaPhoton(double beta);
     bool Check_MassOmega(double mass);

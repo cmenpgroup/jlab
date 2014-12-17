@@ -65,7 +65,7 @@ TH2D *Pt_VS_IMOmega[3];
 TH2D *Pl_VS_IMOmega[3];
 TH2D *OpAng_VS_IMOmega[3];
 TH2D *IMOmega[3];
-TH2D *IMOmega_woCuts[3];
+TH2D *IMOmega_woCut[3];
 TH2D *IM2Photons[3];
 
 TH2D *IM2Photons_ME[3];
