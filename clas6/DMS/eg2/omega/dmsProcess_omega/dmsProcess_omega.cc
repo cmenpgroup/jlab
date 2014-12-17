@@ -683,15 +683,24 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutPi0Mass;
     bool cutZDiff_ElectronNPion;
     bool cutZDiff_ElectronPPion;
+    bool cutZDiff;
     bool cutQSquared;
     bool cutOpAng_ElecPhoton1;
     bool cutOpAng_ElecPhoton2;
+    bool cutOpAng_ElecPhoton;
     bool cutW;
     bool cutBetaPhoton1;
     bool cutBetaPhoton2;
+    bool cutBetaPhoton;
     bool cutOmegaMass;
     bool cutOmegaMass_sb;
-    bool cutsID;
+    
+    bool cuts_woPi0Mass;
+    bool cuts_woZDiff;
+    bool cuts_woQsquared;
+    bool cuts_woOpAng_ElecPhoton;
+    bool cuts_woW;
+    bool cuts_woBetaPhoton;
     bool cutsAll;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
@@ -756,15 +765,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutPi0Mass = false;
         cutZDiff_ElectronNPion = false;
         cutZDiff_ElectronPPion = false;
+        cutZDiff = false;
         cutQSquared = false;
         cutW = false;
         cutBetaPhoton1 = false;
         cutBetaPhoton2 = false;
+        cutBetaPhoton = false;
         cutOpAng_ElecPhoton1 = false;
         cutOpAng_ElecPhoton2 = false;
+        cutOpAng_ElecPhoton = false;
         cutOmegaMass = false;
-        cutsID = false;
         cutsAll = false;
+        cuts_woPi0Mass = false;
+        cuts_woZDiff = false;
+        cuts_woQsquared = false;
+        cuts_woW = false;
+        cuts_woBetaPhoton = false;
+        cuts_woOpAng_ElecPhoton = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
         if (DEBUG) reader.printEvent();
@@ -956,63 +973,99 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
 		OpAng_VS_IMOmega[Vz_index]->Fill(Omega.M(), TwoPhotonAngle); // variable = 2 photon opening angle
 
-        // plots of omega inv. mass after cuts
-        cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M());
-        cutZDiff_ElectronNPion = myCuts.Check_Zdiff_ElecPim(elecNPionZVertDiff);
-        cutZDiff_ElectronPPion = myCuts.Check_Zdiff_ElecPip(elecPPionZVertDiff);
-        cutQSquared = myCuts.Check_QSquared(Qsq);
-        cutOpAng_ElecPhoton1 = myCuts.Check_OpAng_ElecPhoton(elecPhoton1Angle);
-        cutOpAng_ElecPhoton2 = myCuts.Check_OpAng_ElecPhoton(elecPhoton2Angle);
-        cutBetaPhoton1 = myCuts.Check_BetaPhoton(photon1.Beta());
-        cutBetaPhoton2 = myCuts.Check_BetaPhoton(photon2.Beta());
-        cutW = myCuts.Check_Wcut(W);
-        cutOmegaMass = myCuts.Check_MassOmega(Omega.M());
-        cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M());
+        // set the cuts
+        cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M()); // pi0 mass cut
+        cutQSquared = myCuts.Check_QSquared(Qsq); // Q^2 cut
+        cutW = myCuts.Check_Wcut(W); // W cut
         
-        IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),0); // inv. mass of 2 photons
-		IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
-        if(cutPi0Mass) {
+        cutZDiff_ElectronNPion = myCuts.Check_Zdiff_ElecPim(elecNPionZVertDiff); // e-,pi- z-vertex matching cut
+        cutZDiff_ElectronPPion = myCuts.Check_Zdiff_ElecPip(elecPPionZVertDiff); // e-,pi+ z-vertex matching cut
+        cutZDiff = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion); // final e-,pion z-vertex matching cut
+
+        cutOpAng_ElecPhoton1 = myCuts.Check_OpAng_ElecPhoton(elecPhoton1Angle); // e-,photon 1 opening angle cut
+        cutOpAng_ElecPhoton2 = myCuts.Check_OpAng_ElecPhoton(elecPhoton2Angle); // e-,photon 2 opening angle cut
+        cutOpAng_ElecPhoton = (cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2); // final e-,photon opening angle cut
+        
+        cutBetaPhoton1 = myCuts.Check_BetaPhoton(photon1.Beta()); // photon 1 beta cut
+        cutBetaPhoton2 = myCuts.Check_BetaPhoton(photon2.Beta()); // photon 2 beta cut
+        cutBetaPhoton = (cutBetaPhoton1 && cutBetaPhoton2); // final photon beta cut
+        
+        cutOmegaMass = myCuts.Check_MassOmega(Omega.M()); // omega mass cut
+        cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M()); // sideband cuts on the omega mass
+        
+        // omega inv. mass histograms
+        IM2Photons[Vz_index]->Fill(TwoPhoton.M(),0); // inv. mass of 2 photons
+		IMOmega[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
+		IMOmega_woCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
+        
+        if(cutPi0Mass) { // applying the pi0 mass cut
             OpAng_VS_E_MassPi0Cut[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle);
-			IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),1);
-            IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),1);
+			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),1);
+            IMOmega[Vz_index]->Fill(Omega.M(),1);
         }
-        if(cutQSquared) {
-            IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),2);
-            IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),2);
+        cuts_woPi0Mass = (cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+        if(cuts_woPi0Mass){ // applying all cuts except the pi0 mass
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),1);
+            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),7);
         }
-        if(cutW){
-			IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),3);
-            IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),3);
+        
+        if(cutQSquared) { // applying the Q^2 cut
+            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),2);
+            IMOmega[Vz_index]->Fill(Omega.M(),2);
         }
-        if(cutZDiff_ElectronNPion && cutZDiff_ElectronPPion){
-			IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),4);
-            IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),4);
+        cuts_woQsquared = (cutPi0Mass && cutZDiff && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+        if(cuts_woQsquared){ // applying all cuts except Q^2
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),2);
         }
-        if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
-			IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),5);
-            IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),5);
+        
+        if(cutW){ // applying the W cut
+			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),3);
+            IMOmega[Vz_index]->Fill(Omega.M(),3);
+        }
+        cuts_woW = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton);
+        if(cuts_woW){ // applying all cuts except W
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),3);
+        }
+        
+        if(cutZDiff){ // applying the e-,pion z-vertex matching cut
+			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),4);
+            IMOmega[Vz_index]->Fill(Omega.M(),4);
+        }
+        cuts_woZDiff = (cutPi0Mass && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+        if(cuts_woZDiff){ // applying all cuts except the e-,pion z-vertex matching
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),4);
+        }
+        
+        if(cutOpAng_ElecPhoton) { // applying the e-,photon opening angle cut
+			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),5);
+            IMOmega[Vz_index]->Fill(Omega.M(),5);
 		}
-        if(cutBetaPhoton1 && cutBetaPhoton2){
-			IM2Photons_SingleCut[Vz_index]->Fill(TwoPhoton.M(),6);
-            IMOmega_SingleCut[Vz_index]->Fill(Omega.M(),6);
+        cuts_woOpAng_ElecPhoton = (cutPi0Mass && cutZDiff && cutQSquared && cutBetaPhoton && cutW);
+        if(cuts_woOpAng_ElecPhoton){ // applying all cuts except the e-,photon opening angle
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),5);
         }
         
-        cutsID = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion && cutQSquared && cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2 && cutBetaPhoton1 && cutBetaPhoton2 && cutW);
-        cutsAll = (cutsID && cutPi0Mass);
+        if(cutBetaPhoton){ // applying the photon beta cut
+			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),6);
+            IMOmega[Vz_index]->Fill(Omega.M(),6);
+        }
+        cuts_woBetaPhoton = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
+        if(cuts_woBetaPhoton){ // applying all cuts except the photon beta
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),6);
+        }
         
-        if(cutsID){
-            IM2Photons_IDCuts[Vz_index]->Fill(TwoPhoton.M());
-            if(cutPi0Mass){
-                W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
-                IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
-                IMOmega_AllCuts[Vz_index]->Fill(Omega.M());
-                PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
-                if(cutOmegaMass){
-                    PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
-                }
-                if(cutOmegaMass_sb){
-                    PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
-                }
+         // applying all cuts
+        cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+        if(cutsAll){
+            IMOmega[Vz_index]->Fill(Omega.M(),7);
+            W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
+            IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
+            PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
+            if(cutOmegaMass){
+                PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
+            }
+            if(cutOmegaMass_sb){
+                PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
             }
         }
     
@@ -1235,13 +1288,9 @@ void BookHist(){
 		sprintf(htitle,"Transverse Momentum of Reconstructed Particle, %s",myTgt.Get_Label(i).c_str());
 		TransMom[i] = new TH1D(hname, htitle, 500, 0, 5);
         
-		sprintf(hname,"IM2Photons_SingleCut_%s",myTgt.Get_Label(i).c_str());
+		sprintf(hname,"IM2Photons_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of Pi0 - Single Cut, %s",myTgt.Get_Label(i).c_str());
-		IM2Photons_SingleCut[i] = new TH2D(hname, htitle, 100, 0., 1., 8, -0.5, 7.5);
-        
-        sprintf(hname,"IM2Photons_IDCuts_%s",myTgt.Get_Label(i).c_str());
-        sprintf(htitle,"Reconstructed Mass of Pi0 - ID Cuts, %s",myTgt.Get_Label(i).c_str());
-        IM2Photons_IDCuts[i] = new TH1D(hname, htitle, 100, 0., 1.);
+		IM2Photons[i] = new TH2D(hname, htitle, 100, 0., 1., 8, -0.5, 7.5);
         
         sprintf(hname,"OpAng_VS_IM2Photons_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Opening Angle vs. Reconstructed Mass of Pi0, %s",myTgt.Get_Label(i).c_str());
@@ -1295,13 +1344,13 @@ void BookHist(){
 		sprintf(htitle,"Missing Mass Squared, %s",myTgt.Get_Label(i).c_str());
 		MMsq[i] = new TH1D(hname, htitle, 700, 0, 7);
 
-        sprintf(hname,"IMOmega_SingleCut_%s",myTgt.Get_Label(i).c_str());
+        sprintf(hname,"IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - Single Cut, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_SingleCut[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
+		IMOmega[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
         
-        sprintf(hname,"IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(hname,"IMOmega_woCuts_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_AllCuts[i] = new TH1D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi);
+		IMOmega_woCuts[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
 
         sprintf(hname,"PtSq_Omega_AllCuts_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"#omega Meson - All ID Cuts, %s",myTgt.Get_Label(i).c_str());
@@ -1457,14 +1506,10 @@ void WriteHist(string RootFile){
         TransMom[i]->GetXaxis()->SetTitle("#omega Transverse Momentum (GeV/c)");
         TransMom[i]->GetYaxis()->SetTitle("Counts");
 		TransMom[i]->Write();
-        
-        IM2Photons_IDCuts[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
-        IM2Photons_IDCuts[i]->GetYaxis()->SetTitle("Counts");
-		IM2Photons_IDCuts[i]->Write();
 
-        IM2Photons_SingleCut[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
-        IM2Photons_SingleCut[i]->GetYaxis()->SetTitle("Cut Index");
-        IM2Photons_SingleCut[i]->Write();
+        IM2Photons[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
+        IM2Photons[i]->GetYaxis()->SetTitle("Cut Index");
+        IM2Photons[i]->Write();
 
         OpAng_VS_IM2Photons[i]->GetXaxis()->SetTitle("#gamma #gamma Inv. Mass (GeV/c^{2})");
         OpAng_VS_IM2Photons[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
@@ -1518,13 +1563,13 @@ void WriteHist(string RootFile){
         MMsq[i]->GetYaxis()->SetTitle("Counts");
 		MMsq[i]->Write();
 
-        IMOmega_SingleCut[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_SingleCut[i]->GetYaxis()->SetTitle("Cut index");
-		IMOmega_SingleCut[i]->Write();
+        IMOmega[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega[i]->GetYaxis()->SetTitle("Cut index");
+		IMOmega[i]->Write();
         
-        IMOmega_AllCuts[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_AllCuts[i]->GetYaxis()->SetTitle("Counts");
-        IMOmega_AllCuts[i]->Write();
+        IMOmega_woCuts[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_woCuts[i]->GetYaxis()->SetTitle("Cut Index");
+        IMOmega_woCuts[i]->Write();
 
         PtSq_Omega_AllCuts[i]->GetXaxis()->SetTitle("P^{2}_{T}  (GeV/c)^{2}");
         PtSq_Omega_AllCuts[i]->GetYaxis()->SetTitle("Counts");
