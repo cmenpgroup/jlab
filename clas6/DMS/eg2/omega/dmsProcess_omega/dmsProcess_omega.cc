@@ -1248,7 +1248,7 @@ void BookHist(){
 
     sprintf(hname,"elecZVert_VS_Phi");
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
-    elecZVert_VS_Phi = new TH1D(hname,htitle, 360, -180., 180., 300, -40., -10.);
+    elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -40., -10.);
     
     sprintf(hname,"ZVertDiff");
     sprintf(htitle,"Difference Between Z Vertices of electron and other particle");
