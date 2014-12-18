@@ -773,6 +773,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutOpAng_ElecPhoton1 = false;
         cutOpAng_ElecPhoton2 = false;
         cutOpAng_ElecPhoton = false;
+        cutElecR = false;
         cutOmegaMass = false;
         cutsAll = false;
         cuts_woPi0Mass = false;
@@ -781,6 +782,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cuts_woW = false;
         cuts_woBetaPhoton = false;
         cuts_woOpAng_ElecPhoton = false;
+        cuts_woElecR = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
         if (DEBUG) reader.printEvent();
@@ -990,6 +992,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutBetaPhoton2 = myCuts.Check_BetaPhoton(photon2.Beta()); // photon 2 beta cut
         cutBetaPhoton = (cutBetaPhoton1 && cutBetaPhoton2); // final photon beta cut
         
+        cutElecR = (elec_vert.Perp()<=0.1);
+        
         cutOmegaMass = myCuts.Check_MassOmega(Omega.M()); // omega mass cut
         cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M()); // sideband cuts on the omega mass
         
@@ -1066,11 +1070,22 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         if(cuts_woBetaPhoton){ // applying all cuts except the photon beta
             IMOmega_woCut[Vz_index]->Fill(Omega.M(),6);
         }
+
+        if(cutElecR){ // applying the photon beta cut
+            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),7);
+            IMOmega[Vz_index]->Fill(Omega.M(),7);
+        }else{
+            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),7);
+        }
+        cuts_woElecR = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW && cutBetaPhoton);
+        if(cuts_woElecR){ // applying all cuts except the photon beta
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),7);
+        }
         
          // applying all cuts
-        cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+        cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW && cutElecR);
         if(cutsAll){
-            IMOmega[Vz_index]->Fill(Omega.M(),7);
+            IMOmega[Vz_index]->Fill(Omega.M(),8);
             W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
             IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
             PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
@@ -1085,7 +1100,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
             }
         }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),7);
+            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),8);
         }
     
         for(k=0; k<NUM_ENTRIES_OFFSET; k++){ // loop over number of mixed event iterations
@@ -1321,7 +1336,7 @@ void BookHist(){
         
 		sprintf(hname,"IM2Photons_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of Pi0 - Single Cut, %s",myTgt.Get_Label(i).c_str());
-		IM2Photons[i] = new TH2D(hname, htitle, 100, 0., 1., 8, -0.5, 7.5);
+		IM2Photons[i] = new TH2D(hname, htitle, 100, 0., 1., 9, -0.5, 8.5);
         
         sprintf(hname,"OpAng_VS_IM2Photons_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Opening Angle vs. Reconstructed Mass of Pi0, %s",myTgt.Get_Label(i).c_str());
@@ -1377,15 +1392,15 @@ void BookHist(){
 
         sprintf(hname,"IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - Single Cut, %s",myTgt.Get_Label(i).c_str());
-		IMOmega[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
+		IMOmega[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 9, -0.5, 8.5);
         
         sprintf(hname,"IMOmega_woCut_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, %s",myTgt.Get_Label(i).c_str());
-		IMOmega_woCut[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
+		IMOmega_woCut[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 9, -0.5, 8.5);
 
         sprintf(hname,"IMOmega_antiCut_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"Reconstructed Mass of #omega - Anti-Cuts, %s",myTgt.Get_Label(i).c_str());
-        IMOmega_antiCut[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 8, -0.5, 7.5);
+        IMOmega_antiCut[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 9, -0.5, 8.5);
         
         sprintf(hname,"PtSq_Omega_AllCuts_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"#omega Meson - All ID Cuts, %s",myTgt.Get_Label(i).c_str());
