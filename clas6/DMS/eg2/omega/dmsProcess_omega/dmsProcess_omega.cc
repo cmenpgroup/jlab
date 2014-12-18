@@ -688,6 +688,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutOpAng_ElecPhoton2;
     bool cutOpAng_ElecPhoton;
     bool cutW;
+    bool cutElecR;
     bool cutBetaPhoton1;
     bool cutBetaPhoton2;
     bool cutBetaPhoton;
@@ -699,6 +700,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cuts_woQsquared;
     bool cuts_woOpAng_ElecPhoton;
     bool cuts_woW;
+    bool cuts_woElecR;
     bool cuts_woBetaPhoton;
     bool cutsAll;
     
