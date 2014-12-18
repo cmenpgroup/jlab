@@ -893,7 +893,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         q2_VS_theta->Fill(4.0*elec.E()*sinHalfTheta*sinHalfTheta,Qsq);
         
         nu_EnergyTransfer->Fill(nu);
-		elecZVert->Fill(elec_vert.Z());
+		elecZVert->Fill(elec_vert.Z()); // fill electron z vertex histogram
+		elecZVert_VS_Phi->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert.Z()); // fill electron z vertex vs phi histogram
         
         hMx[Vz_index]->Fill(Mx); // histogram for Mx
         hW[Vz_index]->Fill(W); // histogram for W
@@ -1245,6 +1246,10 @@ void BookHist(){
     sprintf(htitle,"Z Vertex of Electron");
 	elecZVert = new TH1D(hname,htitle, 300, -40, -10);
 
+    sprintf(hname,"elecZVert_VS_Phi");
+    sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
+    elecZVert_VS_Phi = new TH1D(hname,htitle, 360, -180., 180., 300, -40., -10.);
+    
     sprintf(hname,"ZVertDiff");
     sprintf(htitle,"Difference Between Z Vertices of electron and other particle");
     ZVertDiff = new TH2D(hname,htitle, 300, -10, 10,4,0.5,4.5);
@@ -1278,7 +1283,7 @@ void BookHist(){
     for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
         sprintf(hname,"Xvert_VS_Yvert_%s",myDetPart.Get_DetPartLabel(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, %s",myDetPart.Get_DetPartLabel(i).c_str());
-        Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -400, 400, 100, -400, 400);
+        Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -1.0, 1.0, 100, -1.0, 1.0);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
@@ -1467,6 +1472,10 @@ void WriteHist(string RootFile){
     elecZVert->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert->GetYaxis()->SetTitle("Counts");
 	elecZVert->Write();
+
+    elecZVert_VS_Phi->GetXaxis()->SetTitle("#phi (deg.)");
+    elecZVert_VS_Phi->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVert_VS_Phi->Write();
     
     ZVertDiff->GetXaxis()->SetTitle(" #Delta Z (cm)");
     ZVertDiff->GetYaxis()->SetTitle("Particle");
