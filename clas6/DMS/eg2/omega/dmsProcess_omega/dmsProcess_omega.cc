@@ -1078,6 +1078,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Xvert_VS_Yvert_AllCuts[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
 
             if(cutOmegaMass){
+                Xvert_VS_Yvert_Omega[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
                 PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
             }
             if(cutOmegaMass_sb){
@@ -1293,7 +1294,11 @@ void BookHist(){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, All Cuts, %s",myTgt.Get_Label(i).c_str());
         Xvert_VS_Yvert_AllCuts[i] = new TH2D(hname,htitle, 100, -0.05, 0.05, 100, -0.05, 0.05);
-        
+
+        sprintf(hname,"Xvert_VS_Yvert_Omega_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"X Vertex vs Y Vertex, #omega, %s",myTgt.Get_Label(i).c_str());
+        Xvert_VS_Yvert_Omega[i] = new TH2D(hname,htitle, 100, -0.05, 0.05, 100, -0.05, 0.05);
+
 		sprintf(hname,"hW_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
 		hW[i] = new TH1D(hname, htitle, 250, 0, 5);
@@ -1524,6 +1529,10 @@ void WriteHist(string RootFile){
         Xvert_VS_Yvert_AllCuts[i]->GetXaxis()->SetTitle("X vertex (cm)");
         Xvert_VS_Yvert_AllCuts[i]->GetYaxis()->SetTitle("Y vertex (cm)");
         Xvert_VS_Yvert_AllCuts[i]->Write();
+
+        Xvert_VS_Yvert_Omega[i]->GetXaxis()->SetTitle("X vertex (cm)");
+        Xvert_VS_Yvert_Omega[i]->GetYaxis()->SetTitle("Y vertex (cm)");
+        Xvert_VS_Yvert_Omega[i]->Write();
         
         hMx[i]->GetXaxis()->SetTitle("M_{x} (GeV)");
         hMx[i]->GetYaxis()->SetTitle("Counts");

@@ -70,6 +70,7 @@ TH2D *IMOmega_woCut[3];
 TH2D *IMOmega_antiCut[3];
 TH2D *IM2Photons[3];
 TH2D *Xvert_VS_Yvert_AllCuts[3];
+TH2D *Xvert_VS_Yvert_Omega[3];
 
 TH2D *IM2Photons_ME[3];
 TH2D *IM2Photons_OpAng_ElecPhoton_Cut_ME[3];
