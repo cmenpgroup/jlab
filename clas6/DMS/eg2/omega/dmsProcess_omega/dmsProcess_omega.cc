@@ -1085,7 +1085,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         }
         
          // applying all cuts
-        cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW && cutElecR);
+        cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
         if(cutsAll){
             IMOmega[Vz_index]->Fill(Omega.M(),8);
             W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
