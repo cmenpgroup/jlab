@@ -1244,11 +1244,11 @@ void BookHist(){
     
     sprintf(hname,"elecZVert");
     sprintf(htitle,"Z Vertex of Electron");
-	elecZVert = new TH1D(hname,htitle, 300, -40, -10);
+	elecZVert = new TH1D(hname,htitle, 300, -35, -20);
 
     sprintf(hname,"elecZVert_VS_Phi");
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
-    elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -40., -10.);
+    elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
     
     sprintf(hname,"ZVertDiff");
     sprintf(htitle,"Difference Between Z Vertices of electron and other particle");
@@ -1283,7 +1283,7 @@ void BookHist(){
     for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
         sprintf(hname,"Xvert_VS_Yvert_%s",myDetPart.Get_DetPartLabel(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, %s",myDetPart.Get_DetPartLabel(i).c_str());
-        Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -1.0, 1.0, 100, -1.0, 1.0);
+        Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -0.05, 0.05, 100, -0.05, 0.05);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
