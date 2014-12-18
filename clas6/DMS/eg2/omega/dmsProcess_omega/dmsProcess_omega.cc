@@ -1278,7 +1278,7 @@ void BookHist(){
     for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
         sprintf(hname,"Xvert_VS_Yvert_%s",myDetPart.Get_DetPartLabel(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, %s",myDetPart.Get_DetPartLabel(i).c_str());
-        Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -5, 5, 100, -5, 5);
+        Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -400, 400, 100, -400, 400);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
