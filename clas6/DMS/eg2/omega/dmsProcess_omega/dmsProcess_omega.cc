@@ -1074,6 +1074,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
             IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
             PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
+
+            Xvert_VS_Yvert_AllCuts[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
+
             if(cutOmegaMass){
                 PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
             }
@@ -1287,6 +1290,10 @@ void BookHist(){
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
+        sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"X Vertex vs Y Vertex, All Cuts, %s",myTgt.Get_Label(i).c_str());
+        Xvert_VS_Yvert_AllCuts[i] = new TH2D(hname,htitle, 100, -0.05, 0.05, 100, -0.05, 0.05);
+        
 		sprintf(hname,"hW_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"W of Reaction, %s",myTgt.Get_Label(i).c_str());
 		hW[i] = new TH1D(hname, htitle, 250, 0, 5);
@@ -1514,6 +1521,10 @@ void WriteHist(string RootFile){
     }
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
+        Xvert_VS_Yvert_AllCuts[i]->GetXaxis()->SetTitle("X vertex (cm)");
+        Xvert_VS_Yvert_AllCuts[i]->GetYaxis()->SetTitle("Y vertex (cm)");
+        Xvert_VS_Yvert_AllCuts[i]->Write();
+        
         hMx[i]->GetXaxis()->SetTitle("M_{x} (GeV)");
         hMx[i]->GetYaxis()->SetTitle("Counts");
         hMx[i]->Write();
