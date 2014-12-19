@@ -205,6 +205,7 @@ class EG2Cuts
     vector<double> RangeOpAng_ElecPhoton;
     vector<double> RangeBetaPhoton;
     vector<double> RangeWcut;
+    vector<double> RangeElecR;
     vector<double> RangeMassOmega;
     vector<double> RangeMassOmega_sb;
 public:
@@ -225,6 +226,8 @@ public:
     double Get_Wcut_hi() {return RangeWcut[1];};
     double Get_OpAng_ElecPhoton_lo() {return RangeOpAng_ElecPhoton[0];};
     double Get_OpAng_ElecPhoton_hi() {return RangeOpAng_ElecPhoton[1];};
+    double Get_ElectronR_lo() {return RangeElecR[0];};
+    double Get_ElectronR_hi() {return RangeElecR[1];};
     double Get_MassOmega_lo() {return RangeMassOmega[0];};
     double Get_MassOmega_hi() {return RangeMassOmega[1];};
     double Get_MassOmega_sb_lo() {return RangeMassOmega_sb[0];};
@@ -235,6 +238,7 @@ public:
     bool Check_QSquared(double Qsq);
     bool Check_OpAng_ElecPhoton(double OpAng);
     bool Check_Wcut(double W);
+    bool Check_ElectronR(double vr);
     bool Check_BetaPhoton(double beta);
     bool Check_MassOmega(double mass);
     bool Check_MassOmega_sb(double mass);
@@ -251,6 +255,7 @@ EG2Cuts::EG2Cuts()
     CutsLabel.push_back("OpAng_ElecPhoton");
     CutsLabel.push_back("BetaPhoton");
     CutsLabel.push_back("Wcut");
+    CutsLabel.push_back("ElectronR");
     CutsLabel.push_back("MassOmega");
     CutsLabel.push_back("MassOmega_sideband");
     
@@ -273,6 +278,9 @@ EG2Cuts::EG2Cuts()
 
     RangeWcut.push_back(2.0); // Lower limit on W (in Gev)
     RangeWcut.push_back(100000.0); // Upper limit on W (in Gev)
+
+    RangeElecR.push_back(0.0); // Lower limit on electron radial vertex (in cm)
+    RangeElecR.push_back(0.1); // Upper limit on electron radial vertex (in cm)
     
     RangeBetaPhoton.push_back(0.95); // Lower limit on photon beta
     RangeBetaPhoton.push_back(1.05); // Upper limit photon beta
@@ -388,6 +396,8 @@ void EG2Cuts::Print_Cuts()
             cout << "[" << this->Get_BetaPhoton_lo() << "," << this->Get_BetaPhoton_hi() << "]" << endl;
         }else if (this->Get_CutsLabel(ii).compare("OpAng_ElecPhoton")==0) {
             cout << "[" << this->Get_OpAng_ElecPhoton_lo() << "," << this->Get_OpAng_ElecPhoton_hi() << "] (deg.)" << endl;
+        }else if (this->Get_CutsLabel(ii).compare("ElectronR")==0) {
+            cout << "[" << this->Get_ElectronR_lo() << "," << this->Get_ElectronR_hi() << "] (cm)" << endl;
         }else if (this->Get_CutsLabel(ii).compare("MassOmega")==0) {
             cout << "[" << this->Get_MassOmega_lo() << "," << this->Get_MassOmega_hi() << "] (GeV/c^2)" << endl;
         }else if (this->Get_CutsLabel(ii).compare("MassOmega_sideband")==0) {
@@ -994,7 +1004,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cutBetaPhoton2 = myCuts.Check_BetaPhoton(photon2.Beta()); // photon 2 beta cut
         cutBetaPhoton = (cutBetaPhoton1 && cutBetaPhoton2); // final photon beta cut
         
-        cutElecR = (elec_vert.Perp()<=0.1);
+        cutElecR = myCuts.Check_ElectronR(elec_vert.Perp()); // electron vertex radius (x,y)
         
         cutOmegaMass = myCuts.Check_MassOmega(Omega.M()); // omega mass cut
         cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M()); // sideband cuts on the omega mass
