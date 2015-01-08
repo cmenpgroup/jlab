@@ -867,6 +867,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 myMixEvt.Put_PiPlus(pPion_MixedEvt,1);
                 myMixEvt.Put_PiMinus(nPion_MixedEvt,1);
                 
+                cout << "Event pi0 " << endl;
+                PrintTLorentzVector(TwoPhoton);
+                
                 cout << "test " << endl;
                 PrintTLorentzVector(photon1_MixedEvt);
                 PrintTLorentzVector(photon2_MixedEvt);
