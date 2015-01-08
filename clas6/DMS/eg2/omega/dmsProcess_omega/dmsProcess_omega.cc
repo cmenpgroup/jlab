@@ -343,6 +343,14 @@ bool EG2Cuts::Check_Wcut(double W)
     return ret;
 }
 
+// check the cut on electron radius
+bool EG2Cuts::Check_ElectronR(double vr)
+{
+    bool ret = (vr >= this->Get_ElectronR_lo() && vr < this->Get_ElectronR_hi()) ? true : false;
+    
+    return ret;
+}
+
 // check the cut on photon beta
 bool EG2Cuts::Check_BetaPhoton(double beta)
 {
