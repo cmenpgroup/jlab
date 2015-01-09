@@ -460,6 +460,7 @@ public:
     void Put_PiMinus(TLorentzVector V, int iME);
     void Put_Pi0(TLorentzVector V, int iME);
     void Put_Omega(TLorentzVector V, int iME);
+    void Clear_TLorentzVectors();
     void Print_Info();
 };
 
@@ -492,6 +493,20 @@ OmegaMixedEvent::OmegaMixedEvent()
         PiPlus[i].SetPxPyPzE(0.,0.,0.,0.);
         PiMinus[i].SetPxPyPzE(0.,0.,0.,0.);
         Omega[i].SetPxPyPzE(0.,0.,0.,0.);
+    }
+}
+
+void OmegaMixedEvent::Clear_TLorentzVectors()
+{
+    int i;
+    
+    for(i=0; i < this->Get_nEvtIndex(); i++){
+        this->Photon1[i].SetPxPyPzE(0.,0.,0.,0.);
+        this->Photon2[i].SetPxPyPzE(0.,0.,0.,0.);
+        this->Pi0[i].SetPxPyPzE(0.,0.,0.,0.);
+        this->PiPlus[i].SetPxPyPzE(0.,0.,0.,0.);
+        this->PiMinus[i].SetPxPyPzE(0.,0.,0.,0.);
+        this->Omega[i].SetPxPyPzE(0.,0.,0.,0.);
     }
 }
 
@@ -624,7 +639,7 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
     TLorentzVector tempPhoton2 = this->Get_Photon2(0);
     TLorentzVector tempPiPlus = this->Get_PiPlus(0);
     TLorentzVector tempPiMinus = this->Get_PiMinus(0);
-    TLorentzVector tempPi0 = tempPhoton1 +tempPhoton2;
+    TLorentzVector tempPi0 = tempPhoton1 + tempPhoton2;
     TLorentzVector A;
 
     cout <<"Before " << iMethod <<endl;
@@ -827,6 +842,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
 		TLorentzVector photon2 = reader.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
 		TVector3 photon2_vert = reader.getVertex(ID_PHOTON, 1);
+        
+        myMixEvt.Clear_TLorentzVectors(); // initialize all particle TLorentzVectors to zero in myMixEvt
         
         myMixEvt.Put_Photon1(photon1,0);
         myMixEvt.Put_Photon2(photon2,0);
