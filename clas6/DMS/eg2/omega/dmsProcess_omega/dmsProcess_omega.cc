@@ -868,7 +868,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Omega = TwoPion + TwoPhoton; // omega Lorentz vector
 
         cout << "Event pi0 " << endl;
+        PrintTLorentzVector(photon1);
+        PrintTLorentzVector(photon2);
+        PrintTLorentzVector(pPion);
+        PrintTLorentzVector(nPion);
         PrintTLorentzVector(TwoPhoton);
+        PrintTLorentzVector(myMixEvt.Get_Pi0(0));
         
         if(NUM_ENTRIES_OFFSET*ENTRIES_OFFSET < entries){
             for(k=0; k<NUM_ENTRIES_OFFSET; k++){
@@ -887,12 +892,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 myMixEvt.Put_PiPlus(pPion_MixedEvt,1);
                 myMixEvt.Put_PiMinus(nPion_MixedEvt,1);
                 
-                cout << "Mixed pi0 " << k << endl;
-                PrintTLorentzVector(photon1_MixedEvt+photon2_MixedEvt);
-                
-                cout << "test " << endl;
+                cout << "Mixed test " << endl;
                 PrintTLorentzVector(photon1_MixedEvt);
                 PrintTLorentzVector(photon2_MixedEvt);
+                PrintTLorentzVector(pPion_MixedEvt);
+                PrintTLorentzVector(nPion_MixedEvt);
+                PrintTLorentzVector(photon1_MixedEvt+photon2_MixedEvt);
                 
                 cout << "test 1" <<endl;
                 PrintTLorentzVector((photon1_MixedEvt+photon2));
