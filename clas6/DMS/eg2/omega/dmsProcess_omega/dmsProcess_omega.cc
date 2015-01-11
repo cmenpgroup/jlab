@@ -745,7 +745,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
 
-    myMixEvt.Put_NumberOfEventsToMix(10); // add number of mixed event iterations
+    myMixEvt.Put_NumberOfEventsToMix(1); // add number of mixed event iterations
     myMixEvt.Put_OffsetOfEventsToMix(5); // add offset of the entry number for mixed events
     
     int NUM_MIXING_METHODS = myMixEvt.Get_nLabel(); // number of methods for mixing events
