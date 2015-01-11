@@ -551,11 +551,11 @@ void OmegaMixedEvent::Put_PiMinus(TLorentzVector V, int iME){
 }
 
 void OmegaMixedEvent::Put_Pi0(TLorentzVector V, int iME){
-    if(this->Check_evtIndex(iME)) this->PiMinus[iME] = V;
+    if(this->Check_evtIndex(iME)) this->Pi0[iME] = V;
 }
 
 void OmegaMixedEvent::Put_Omega(TLorentzVector V, int iME){
-    if(this->Check_evtIndex(iME)) this->PiMinus[iME] = V;
+    if(this->Check_evtIndex(iME)) this->Omega[iME] = V;
 }
 
 TLorentzVector OmegaMixedEvent::Get_Photon1(int iME){
