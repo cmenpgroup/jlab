@@ -909,7 +909,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 for(kk=0; kk<1; kk++){
                     myMixEvt.Mix_Omega(kk); // run mixing routine for each method
                     
-                    TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(0); // Two photon Lorentz vector from an out-of-time event
+                    TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(1); // Two photon Lorentz vector from an out-of-time event
                     Mass_TwoPhoton_ME[kk][k] = TwoPhoton_MixedEvt.M();
 
                     cout << "Method " << myMixEvt.Get_Label(kk) << endl;
