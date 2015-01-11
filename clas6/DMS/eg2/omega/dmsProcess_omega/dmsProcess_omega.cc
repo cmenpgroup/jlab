@@ -598,7 +598,7 @@ TLorentzVector OmegaMixedEvent::Get_Pi0(int iME){
     
     TLorentzVector ret(0.,0.,0.,0.); // init the return variable
     
-    if(this->Check_evtIndex(iME)) ret = PiPlus[iME];
+    if(this->Check_evtIndex(iME)) ret = Pi0[iME];
     
     return ret;
 }
