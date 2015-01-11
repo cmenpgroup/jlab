@@ -905,8 +905,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 cout << "test 2" <<endl;
                 PrintTLorentzVector((photon2_MixedEvt+photon1));
 
-//                for(kk=0; kk<NUM_MIXING_METHODS; kk++){
-                for(kk=0; kk<1; kk++){
+                for(kk=0; kk<NUM_MIXING_METHODS; kk++){
                     myMixEvt.Mix_Omega(kk); // run mixing routine for each method
                     
                     TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(1); // Two photon Lorentz vector from an out-of-time event
