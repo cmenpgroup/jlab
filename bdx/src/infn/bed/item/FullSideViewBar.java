@@ -2,7 +2,6 @@ package infn.bed.item;
 
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
 import infn.bed.bedview.BedView;
 import infn.bed.bedview.FullSideView;
 
@@ -177,7 +176,6 @@ public class FullSideViewBar extends RectangleItem {
 		_bar = bar + 1;
 
 		_name = "Bar: " + _bar;
-		getConstants();
 	}
 
 	/**
@@ -185,9 +183,7 @@ public class FullSideViewBar extends RectangleItem {
 	 * 
 	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"calibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(

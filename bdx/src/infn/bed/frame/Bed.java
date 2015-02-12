@@ -5,6 +5,10 @@ import infn.bed.bedview.BarSideView;
 import infn.bed.bedview.FullSideView;
 import infn.bed.bedview.plot.WavePlot;
 import infn.bed.event.AccumulationManager;
+import infn.bed.item.FrontViewBar;
+import infn.bed.item.FullSideViewBar;
+import infn.bed.item.FullSideViewVeto;
+import infn.bed.item.SideViewBar;
 
 import java.awt.EventQueue;
 import java.awt.Toolkit;
@@ -15,11 +19,15 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import cnuphys.bCNU.application.BaseMDIApplication;
 import cnuphys.bCNU.application.Desktop;
@@ -243,7 +251,40 @@ public class Bed extends BaseMDIApplication implements PropertyChangeListener {
 		JMenu menu = mmgr.getMenu(EventView.EVENTMENU);
 
 		menu.add(EventMenu.getRecentEvioFileMenu(), 1);
-
+		
+		JMenuItem calibrationItem = new JMenuItem("Open Calibration Constants File");
+		ActionListener calibAL = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { //TODO
+				JFileChooser chooser = new JFileChooser();
+			    FileNameExtensionFilter filter = new FileNameExtensionFilter(
+			        "DAT files", "dat");
+			    chooser.setFileFilter(filter);
+			    int returnVal = chooser.showOpenDialog(Bed.getInstance());
+		        if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            File calibrationFile = chooser.getSelectedFile();
+		            FullSideViewBar[] fsvBars = fullSideView.getBars();
+		            for(int i = 0; i < fsvBars.length; i++) {
+		            	fsvBars[i].getConstants(calibrationFile);
+		            }
+		            FullSideViewVeto[] fsvVetoes = fullSideView.getVetoes();
+		            for(int i = 0; i < fsvBars.length; i++) {
+		            	fsvVetoes[i].getConstants(calibrationFile);
+		            }
+		            FrontViewBar[] frontBars = barFrontView.getBars();
+		            for(int i = 0; i < frontBars.length; i++) {
+		            	frontBars[i].getConstants(calibrationFile);
+		            }
+		            SideViewBar[] sideBars = barSideView.getBars();
+		            for(int i = 0; i < sideBars.length; i++) {
+		            	sideBars[i].getConstants(calibrationFile);
+		            }
+		        } 
+			}
+		};
+		calibrationItem.addActionListener(calibAL);
+		menu.add(calibrationItem, 2);
+		
 		EventMenu.menuAdditions();
 
 		// add the accumulation dialog item,
@@ -269,6 +310,7 @@ public class Bed extends BaseMDIApplication implements PropertyChangeListener {
 			}
 		};
 		MenuManager.addMenuItem("Noise Algorithm Parameters...", menu, al2);
+		
 	}
 
 	/**

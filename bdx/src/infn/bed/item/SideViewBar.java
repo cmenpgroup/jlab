@@ -3,7 +3,6 @@ package infn.bed.item;
 import infn.bed.bedview.BarSideView;
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
 import infn.bed.bedview.BedView;
 
 import java.awt.Color;
@@ -177,7 +176,6 @@ public class SideViewBar extends RectangleItem {
 		_bar = bar + 1; // convert to 1-based
 
 		_name = "Bar: " + _bar;
-		getConstants();
 	}
 
 	/**
@@ -185,9 +183,7 @@ public class SideViewBar extends RectangleItem {
 	 * 
 	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"calibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(

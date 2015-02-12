@@ -5,8 +5,6 @@ import infn.bed.bedview.BedView;
 import infn.bed.event.AccumulationManager;
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -189,7 +187,6 @@ public class FrontViewBar extends RectangleItem {
 			_style.setFillColor(new Color(150, 150, 150));
 		}
 		_name = "Bar: " + _bar;
-		getConstants();
 	}
 
 	/**
@@ -197,9 +194,7 @@ public class FrontViewBar extends RectangleItem {
 	 * 
 	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"calibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(

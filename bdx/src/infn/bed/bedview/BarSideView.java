@@ -298,4 +298,8 @@ public class BarSideView extends BedView {
 		}
 		return -1;
 	}
+	
+	public SideViewBar[] getBars() {
+		return _superLayerItems;
+	}
 }

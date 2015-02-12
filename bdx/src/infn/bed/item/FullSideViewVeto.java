@@ -3,7 +3,6 @@ package infn.bed.item;
 import infn.bed.bedview.FullSideView;
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
 import infn.bed.bedview.BedView;
 
 import java.awt.Color;
@@ -176,17 +175,12 @@ public class FullSideViewVeto extends RectangleItem {
 		_veto = veto + 1;
 
 		_name = "Veto: " + _veto;
-		getConstants();
 	}
 
 	/**
 	 * Gets the calibration constants from a file and stores them
-	 * 
-	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"vetoCalibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(
@@ -195,6 +189,7 @@ public class FullSideViewVeto extends RectangleItem {
 				FileReader fileReader = new FileReader(file);
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				boolean notFound = true;
+				String vetoTag = "v" + _veto;
 				while (notFound) {
 					String s = bufferedReader.readLine();
 					if (s == null) {
@@ -202,10 +197,9 @@ public class FullSideViewVeto extends RectangleItem {
 					} else {
 						if (!s.startsWith("#") && (s.length() > 0)) {
 							String tokens[] = FileUtilities.tokens(s);
-							if (Integer.parseInt(tokens[0]) == _veto) {
+							if ((tokens[0]).equals(vetoTag)) {
 								notFound = false;
 								v_eff = Double.parseDouble(tokens[1]);
-								// 0.0005644778333082846496 exact value
 								A_left = Double.parseDouble(tokens[2]);
 								A_right = Double.parseDouble(tokens[3]);
 								lambda = Double.parseDouble(tokens[4]);

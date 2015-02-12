@@ -354,4 +354,12 @@ public class FullSideView extends BedView {
 		}
 		return -1;
 	}
+	
+	public FullSideViewBar[] getBars() {
+		return _superLayerBars;
+	}
+	
+	public FullSideViewVeto[] getVetoes() {
+		return _superLayerVetoes;
+	}
 }
