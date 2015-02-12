@@ -11,8 +11,6 @@
 
 using namespace std;
 
-int NUM_ENTRIES_OFFSET = 10; // number of mixed event iterations
-int ENTRIES_OFFSET = 5; //offset of the entry number for mixed events
 int MAX_SECTORS = 6; // max. number of CLAS sectors
 
 int ID_ELECTRON = 11; // PDG electron id
@@ -35,50 +33,53 @@ TH1D *q2;
 TH2D *q2_VS_theta;
 TH1D *nu_EnergyTransfer;
 TH1D *elecZVert;
+TH1D *OpAng_2Photons;
+TH1D *OpAng_elecPhoton1;
+TH1D *OpAng_elecPhoton2;
 TH2D *ZVertDiff;
 TH2D *Xvert_VS_Yvert[5];
 TH2D *Beta_VS_Momentum;
 TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
-TH1D *OpAng_2Photons;
-TH1D *OpAng_elecPhoton1;
-TH1D *OpAng_elecPhoton2;
+TH2D *elecZVert_VS_Phi;
 
-TH1D *W[3];
+TH1D *hW[3];
+TH1D *hMx[3];
 TH1D *z_fracE[3];
 TH1D *LongMom[3];
 TH1D *TransMom[3];
-TH1D *IM2Photons[3];
-TH1D *IM2Photons_OpAng_ElecPhoton_Cut[3];
-TH2D *OpAng_VS_IM2Photons[3];
-TH2D *OpAng_VS_E[3];
-TH2D *OpAng_VS_E_MassPi0Cut[3];
-TH2D *IM2Photons_VS_IMOmega[3];
-TH2D *Q2_VS_IMOmega[3];
-TH2D *Pt_VS_IMOmega[3];
-TH2D *Pl_VS_IMOmega[3];
-TH2D *OpAng_VS_IMOmega[3];
 TH1D *MissMom[3];
 TH1D *MMsq[3];
-TH1D *IMOmega[3];
-TH1D *IMOmega_OpAng_ElecPhoton_Cut[3];
-TH1D *IMOmega_MassPi0Cut[3];
-TH1D *IMOmega_ZVertCut[3];
-TH1D *IMOmega_QsqCut[3];
-TH1D *IMOmega_AllCuts[3];
 TH1D *PtSq_Omega_AllCuts[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaCut[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaSBCut[3];
 TH1D *elecZVertSector[6];
+TH2D *OpAng_VS_IM2Photons[3];
+TH2D *OpAng_VS_E[3];
+TH2D *OpAng_VS_E_MassPi0Cut[3];
+TH2D *IM2Pions_VS_IMOmega[3];
+TH2D *IM2Pions_VS_IMOmega_AllCuts[3];
+TH2D *IM2Photons_VS_IMOmega[3];
+TH2D *W_VS_IMOmega_AllCuts[3];
+TH2D *Q2_VS_IMOmega[3];
+TH2D *Pt_VS_IMOmega[3];
+TH2D *Pl_VS_IMOmega[3];
+TH2D *OpAng_VS_IMOmega[3];
+TH2D *IMOmega[3];
+TH2D *IMOmega_woCut[3];
+TH2D *IMOmega_antiCut[3];
+TH2D *IM2Photons[3];
+TH2D *Xvert_VS_Yvert_AllCuts[3];
+TH2D *Xvert_VS_Yvert_Omega[3];
 
-TH1D *IM2Photons_ME[3][2];
-TH1D *IM2Photons_OpAng_ElecPhoton_Cut_ME[3][2];
-TH1D *IMOmega_ME[3][2];
-TH1D *IMOmega_OpAng_ElecPhoton_Cut_ME[3][2];
-TH1D *IMOmega_MassPi0Cut_ME[3][2];
-TH1D *IMOmega_ZVertCut_ME[3][2];
-TH1D *IMOmega_QsqCut_ME[3][2];
-TH1D *IMOmega_AllCuts_ME[3][2];
+TH2D *IM2Photons_ME[3];
+TH2D *IM2Photons_OpAng_ElecPhoton_Cut_ME[3];
+TH2D *IMOmega_ME[3];
+TH2D *IMOmega_OpAng_ElecPhoton_Cut_ME[3];
+TH2D *IMOmega_MassPi0Cut_ME[3];
+TH2D *IMOmega_ZVertCut_ME[3];
+TH2D *IMOmega_QsqCut_ME[3];
+TH2D *IMOmega_AllCuts_ME[3];
 
 TH2D *RelativityOpAngPhotonsA;
 TH2D *RelativityOpAngPhotonsB;

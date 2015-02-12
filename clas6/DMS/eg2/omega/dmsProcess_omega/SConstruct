@@ -1,6 +1,8 @@
 import os
 env = Environment(ENV = os.environ)
 env.ParseConfig('root-config --cflags --glibs')
-#env.Install('/home/wood5/evioRoot/lib', source = 'libEvioRoot')
-t = env.Program(target='dmsProcess_omega', source=['dmsProcess_omega.cc','libEvioRoot.so'])
+env.Append(CPPPATH=['/home/wood5/evioRoot/src/root','/home/wood5/evioRoot/src/writer','/home/wood5/evioRoot/src/tools'])
+env.Append(LIBPATH=['/home/wood5/evioRoot/lib'])
+env.Append(LIBS=["EvioRoot"])
+t = env.Program(target='dmsProcess_omega', source=['dmsProcess_omega.cc'])
 Default(t)
