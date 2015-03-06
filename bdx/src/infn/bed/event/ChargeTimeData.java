@@ -1,20 +1,12 @@
 package infn.bed.event;
 
-import infn.bed.frame.Bed;
 import infn.bed.geometry.GeoConstants;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import org.jlab.coda.jevio.IEvioStructure;
 
-import cnuphys.bCNU.log.Log;
-import cnuphys.bCNU.util.FileUtilities;
 import cnuphys.lund.LundId;
 
 /**
@@ -122,158 +114,41 @@ public class ChargeTimeData implements ILoad {
 		ArrayList<Integer> layers = new ArrayList<Integer>();
 		ArrayList<Integer> paddles = new ArrayList<Integer>();
 
-		// TODO this can be cleaned up, I think
-		// relies on detectorTable.dat which converts from the index in samples
-		// to sector/layer/paddle or sector/intOrExt/channel
 		for (int i = 0; i < samples.size(); i++) {
-
-			// TODO convert to charge for a veto
-			// same algorithm except for double i increment?
 			if (i < (GeoConstants.NUM_BAR * 2)) { // if a bar
-				ArrayList<Short> leftSamples = samples.get(i); // assumes left
-																// info is first
+				// assumes info is first
+				ArrayList<Short> leftSamples = samples.get(i);
 				ArrayList<Short> rightSamples = samples.get(i + 1);
 
-				// for our timing algorithm, see fadc_time.pdf in docs
-
-				// declare time conversion variables
-				double a_L = 0, b_L = 0, charge = 0, time = 0, threshold = 0;
-				double fADCResistance = 50.0; // in ohms, resistance of fADC
-				boolean collectingPulse = false; // if we have a hit
-				threshold = getThreshold(); // gets threshold to look for hits
-											// above
-				File file = FileUtilities.findFile(Bed.dataPath,
-						"detectorTable.dat"); // translation table as mentioned
-												// above
-				int index = -1, sector = -1, layer = -1, paddle = -1;
-				if ((file != null) && file.exists()) {
-					Log.getInstance().info(
-							"Calibration constants file found: "
-									+ file.getPath());
-					try {
-						FileReader fileReader = new FileReader(file);
-						BufferedReader bufferedReader = new BufferedReader(
-								fileReader);
-						boolean notFound = true;
-						while (notFound) {
-							String s = bufferedReader.readLine();
-							if (s == null) {
-								break;
-							} else {
-								if (!s.startsWith("#") && (s.length() > 0)) {
-									String tokens[] = FileUtilities.tokens(s);
-									index = Integer.parseInt(tokens[0]);
-									sector = Integer.parseInt(tokens[1]);
-									layer = Integer.parseInt(tokens[2]);
-									paddle = Integer.parseInt(tokens[3]);
-									if (index == i) {
-										notFound = false; // we found our info
-									}
-								}
-							}
-						}
-						bufferedReader.close();
-					} catch (FileNotFoundException e) {
-						Log.getInstance().exception(e);
-						e.printStackTrace();
-					} catch (IOException e) {
-						Log.getInstance().exception(e);
-						e.printStackTrace();
-					}
-				} else {
-					Log.getInstance()
-							.warning(
-									"Translation table file not found at: "
-											+ ((file == null) ? "???" : file
-													.getPath()));
-					System.out.println("Failed to read in translation table!");
+				int[] barL = TranslationTable.bars[i];
+				int[] barR = TranslationTable.bars[i + 1];
+				@SuppressWarnings("unused") //TODO unused
+				int indexL = barL[0];
+				int sectorL = barL[1];
+				int layerL = barL[2];
+				int paddleL = barL[3];
+				@SuppressWarnings("unused")
+				int indexR = barR[0];
+				int sectorR = barR[1];
+				int layerR = barR[2];
+				int paddleR = barR[3];
+				
+				int leftHits = convertHits(leftSamples, leftCharges, leftTimes);
+				for (int hit = 0; hit < leftHits; hit++) {
+					sectors.add(sectorL);
+					layers.add(layerL);
+					paddles.add(paddleL);
 				}
-				/*
-				 * TODO The current charge algorithm is to just sum the ADC
-				 * values divided by the resistance multiplied by the time which
-				 * should be 4x the index. This is subject to change.
-				 */
-				for (int j = 1; j < (leftSamples.size() - 1); j++) {
-					if (leftSamples.get(j) > threshold
-							&& leftSamples.get(j - 1) < threshold) {
-						a_L = leftSamples.get(j + 1) - leftSamples.get(j - 1)
-								* 1.0 / 4.0;
-						b_L = leftSamples.get(j + 1) - a_L * (j - 1) * 4;
-						charge += (leftSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-						collectingPulse = true;
-					} else if ((leftSamples.get(j + 1) < leftSamples.get(j))
-							&& (leftSamples.get(j - 1) < leftSamples.get(j))
-							&& (leftSamples.get(j) > threshold)) {
-						time = leftSamples.get(j) / 2.0;
-						time -= b_L;
-						time /= a_L;
-						charge += (leftSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-					} else if ((leftSamples.get(j) > threshold)
-							&& (leftSamples.get(j + 1) < threshold)) { // end of
-																		// hit
-						charge += (leftSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-						// add and reset
-						leftCharges.add(charge);
-						leftTimes.add(time);
-						sectors.add(sector);
-						layers.add(layer);
-						paddles.add(paddle);
-						a_L = 0;
-						b_L = 0;
-						time = 0;
-						charge = 0;
-						collectingPulse = false;
-					} else if (collectingPulse) { // collecting, but not the
-													// extremes
-						charge += (leftSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-					}
+				int rightHits = convertHits(rightSamples, rightCharges,
+						rightTimes);
+				for (int hit = 0; hit < rightHits; hit++) {
+					sectors.add(sectorR);
+					layers.add(layerR);
+					paddles.add(paddleR);
 				}
-
-				// repeat for right
-				// TODO change this to a method and submit each side?
-				a_L = 0;
-				b_L = 0;
-				charge = 0;
-				time = 0;
-				collectingPulse = false;
-				for (int j = 1; j < (rightSamples.size() - 1); j++) {
-					if (rightSamples.get(j) > threshold
-							&& rightSamples.get(j - 1) < threshold) {
-						a_L = rightSamples.get(j + 1) - rightSamples.get(j - 1)
-								* 1.0 / 4.0;
-						b_L = rightSamples.get(j + 1) - a_L * (j - 1) * 4;
-						charge += (rightSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-						collectingPulse = true;
-					} else if ((rightSamples.get(j + 1) < rightSamples.get(j))
-							&& (rightSamples.get(j - 1) < rightSamples.get(j))
-							&& (rightSamples.get(j) > threshold)) {
-						time = rightSamples.get(j) / 2.0;
-						time -= b_L;
-						time /= a_L;
-						charge += (rightSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-					} else if ((rightSamples.get(j) > threshold)
-							&& (rightSamples.get(j + 1) < threshold)) {
-						charge += (rightSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-						rightCharges.add(charge);
-						rightTimes.add(time);
-						a_L = 0;
-						b_L = 0;
-						time = 0;
-						charge = 0;
-						collectingPulse = false;
-					} else if (collectingPulse) {
-						charge += (rightSamples.get(j) / fADCResistance)
-								* (j - 1) * 4;
-					}
-				}
-				i++; // must increment twice since we're doing two bars
+				i++; // we do 2 bar channels at once, not 2 veto channels
+			} else { //if a veto
+				//TODO veto charge
 			}
 		}
 
@@ -287,6 +162,48 @@ public class ChargeTimeData implements ILoad {
 		timeRight = getIntArrayDoubleCast(rightTimes);
 	}
 
+	private int convertHits(ArrayList<Short> samples,
+			ArrayList<Double> charges, ArrayList<Double> times) {
+		int numHits = 0;
+		double a_L = 0, b_L = 0, charge = 0, time = 0, threshold = 0;
+		double fADCResistance = 50.0; // in ohms, resistance of fADC
+		boolean collectingPulse = false; // if we have a hit
+		threshold = getThreshold(); // gets threshold to look for hits
+									// above
+		for (int j = 1; j < (samples.size() - 1); j++) {
+			if (samples.get(j) > threshold && samples.get(j - 1) < threshold) {
+				a_L = samples.get(j + 1) - samples.get(j - 1) * 1.0 / 4.0;
+				b_L = samples.get(j + 1) - a_L * (j - 1) * 4;
+				charge += (samples.get(j) / fADCResistance) * (j - 1) * 4;
+				collectingPulse = true;
+			} else if ((samples.get(j + 1) < samples.get(j))
+					&& (samples.get(j - 1) < samples.get(j))
+					&& (samples.get(j) > threshold)) {
+				time = samples.get(j) / 2.0;
+				time -= b_L;
+				time /= a_L;
+				charge += (samples.get(j) / fADCResistance) * (j - 1) * 4;
+			} else if ((samples.get(j) > threshold)
+					&& (samples.get(j + 1) < threshold)) { // end of
+															// hit
+				charge += (samples.get(j) / fADCResistance) * (j - 1) * 4;
+				// add and reset
+				charges.add(charge);
+				times.add(time);
+				numHits++;
+				a_L = 0;
+				b_L = 0;
+				time = 0;
+				charge = 0;
+				collectingPulse = false;
+			} else if (collectingPulse) { // collecting, but not the
+											// extremes
+				charge += (samples.get(j) / fADCResistance) * (j - 1) * 4;
+			}
+		}
+		return numHits;
+	}
+
 	/**
 	 * Returns the threshold for the ADC. Should be in ADC channel units
 	 * (uncalibrated)
@@ -294,7 +211,7 @@ public class ChargeTimeData implements ILoad {
 	 * @return The ADC channel above which hits are detected.
 	 */
 	private double getThreshold() {
-		return 300;
+		return 300; // TODO change threshold for final product
 	}
 
 	/**

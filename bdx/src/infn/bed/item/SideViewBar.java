@@ -3,7 +3,6 @@ package infn.bed.item;
 import infn.bed.bedview.BarSideView;
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
 import infn.bed.bedview.BedView;
 
 import java.awt.Color;
@@ -145,9 +144,9 @@ public class SideViewBar extends RectangleItem {
 	private BarSideView _view;
 
 	/**
-	 * Color for hit cells
+	 * Upper energy level (MeV) for color scaling
 	 */
-	private static final Color defaultHitCellFill = Color.red;
+	private static final float upperEnergyScale = 50f;
 
 	/**
 	 * The rectangle the bar is drawn in
@@ -177,7 +176,6 @@ public class SideViewBar extends RectangleItem {
 		_bar = bar + 1; // convert to 1-based
 
 		_name = "Bar: " + _bar;
-		getConstants();
 	}
 
 	/**
@@ -185,9 +183,7 @@ public class SideViewBar extends RectangleItem {
 	 * 
 	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"calibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(
@@ -306,10 +302,14 @@ public class SideViewBar extends RectangleItem {
 						if (totalE[i] > 0) {
 
 							// draw red rectangle
-							_style.setFillColor(defaultHitCellFill);
-							WorldGraphicsUtilities.drawWorldRectangle(g,
-									container, _worldRectangle,
-									_style.getFillColor(),
+							double scale = totalE[i] / upperEnergyScale;
+							WorldGraphicsUtilities.drawWorldRectangle(
+									g,
+									container,
+									_worldRectangle,
+									new Color((int) (Math.ceil(scale * 255)),
+											0, (int) Math
+													.ceil(255 - scale * 255)),
 									_style.getLineColor());
 						}
 					}

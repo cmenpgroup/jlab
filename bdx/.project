@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>bdx</name>
+	<name>bdxlocal</name>
 	<comment></comment>
 	<projects>
+		<project>bCNU</project>
+		<project>clas-io</project>
+		<project>clasJlib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -249,4 +249,7 @@ public class BarFrontView extends BedView {
 		return -1;
 	}
 
+	public FrontViewBar[] getBars() {
+		return _superLayerItems;
+	}
 }

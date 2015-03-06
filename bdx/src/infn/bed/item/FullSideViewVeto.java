@@ -3,7 +3,6 @@ package infn.bed.item;
 import infn.bed.bedview.FullSideView;
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
 import infn.bed.bedview.BedView;
 
 import java.awt.Color;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 
 import cnuphys.bCNU.event.EventControl;
-import cnuphys.bCNU.format.DoubleFormat;
 import cnuphys.bCNU.graphics.container.IContainer;
 import cnuphys.bCNU.graphics.world.WorldGraphicsUtilities;
 import cnuphys.bCNU.item.RectangleItem;
@@ -145,9 +143,9 @@ public class FullSideViewVeto extends RectangleItem {
 	private FullSideView _view;
 
 	/**
-	 * Color for hit cells
+	 * Upper energy level (MeV) for color scaling
 	 */
-	private static final Color defaultHitCellFill = Color.red;
+	private static final float upperEnergyScale = 50f;
 
 	/**
 	 * The rectangle the veto is drawn in
@@ -177,17 +175,12 @@ public class FullSideViewVeto extends RectangleItem {
 		_veto = veto + 1;
 
 		_name = "Veto: " + _veto;
-		getConstants();
 	}
 
 	/**
 	 * Gets the calibration constants from a file and stores them
-	 * 
-	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"vetoCalibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(
@@ -196,6 +189,7 @@ public class FullSideViewVeto extends RectangleItem {
 				FileReader fileReader = new FileReader(file);
 				BufferedReader bufferedReader = new BufferedReader(fileReader);
 				boolean notFound = true;
+				String vetoTag = "v" + _veto;
 				while (notFound) {
 					String s = bufferedReader.readLine();
 					if (s == null) {
@@ -203,10 +197,9 @@ public class FullSideViewVeto extends RectangleItem {
 					} else {
 						if (!s.startsWith("#") && (s.length() > 0)) {
 							String tokens[] = FileUtilities.tokens(s);
-							if (Integer.parseInt(tokens[0]) == _veto) {
+							if ((tokens[0]).equals(vetoTag)) {
 								notFound = false;
 								v_eff = Double.parseDouble(tokens[1]);
-								// 0.0005644778333082846496 exact value
 								A_left = Double.parseDouble(tokens[2]);
 								A_right = Double.parseDouble(tokens[3]);
 								lambda = Double.parseDouble(tokens[4]);
@@ -305,10 +298,14 @@ public class FullSideViewVeto extends RectangleItem {
 						if (totalE[i] > 0) {
 
 							// draw red rectangle
-							_style.setFillColor(defaultHitCellFill);
-							WorldGraphicsUtilities.drawWorldRectangle(g,
-									container, _worldRectangle,
-									_style.getFillColor(),
+							double scale = totalE[i] / upperEnergyScale;
+							WorldGraphicsUtilities.drawWorldRectangle(
+									g,
+									container,
+									_worldRectangle,
+									new Color((int) (Math.ceil(scale * 255)),
+											0, (int) Math
+													.ceil(255 - scale * 255)),
 									_style.getLineColor());
 						}
 					}
@@ -452,7 +449,14 @@ public class FullSideViewVeto extends RectangleItem {
 	public void getFeedbackStrings(IContainer container, Point screenPoint,
 			Point2D.Double worldPoint, List<String> feedbackStrings) {
 		if (_worldRectangle.contains(worldPoint)) {
-
+			String inVeto = "In veto: " + _veto;
+			feedbackStrings.add(inVeto);
+			if (_view.getMode() == BedView.Mode.SINGLE_EVENT) {
+				singleEventFeedbackStrings(feedbackStrings);
+			} else {
+				accumulatedFeedbackStrings(feedbackStrings);
+			}
+			/*
 			double x = 0;
 			double y = worldPoint.y;
 			double z = 3 - worldPoint.x;
@@ -463,13 +467,7 @@ public class FullSideViewVeto extends RectangleItem {
 					+ "cm, " + DoubleFormat.doubleFormat(y, 1) + "cm, "
 					+ DoubleFormat.doubleFormat(z, 1) + "cm";
 			feedbackStrings.add(rtp);
-
-			if (_view.getMode() == BedView.Mode.SINGLE_EVENT) {
-				singleEventFeedbackStrings(feedbackStrings);
-			} else {
-				accumulatedFeedbackStrings(feedbackStrings);
-			}
-
+			 */
 		}
 	}
 

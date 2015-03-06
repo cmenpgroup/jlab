@@ -2,7 +2,6 @@ package infn.bed.item;
 
 import infn.bed.event.ChargeTimeData;
 import infn.bed.event.EventManager;
-import infn.bed.frame.Bed;
 import infn.bed.bedview.BedView;
 import infn.bed.bedview.FullSideView;
 
@@ -145,9 +144,9 @@ public class FullSideViewBar extends RectangleItem {
 	private FullSideView _view;
 
 	/**
-	 * Color for hit cells
+	 * Upper energy level (MeV) for color scaling
 	 */
-	private static final Color defaultHitCellFill = Color.red;
+	private static final float upperEnergyScale = 50f;
 
 	/**
 	 * The rectangle the bar is drawn in
@@ -177,7 +176,6 @@ public class FullSideViewBar extends RectangleItem {
 		_bar = bar + 1;
 
 		_name = "Bar: " + _bar;
-		getConstants();
 	}
 
 	/**
@@ -185,9 +183,7 @@ public class FullSideViewBar extends RectangleItem {
 	 * 
 	 * TODO change file for real constants
 	 */
-	private void getConstants() {
-		File file = FileUtilities.findFile(Bed.dataPath,
-				"calibrationConstantsSimulation.dat");
+	public void getConstants(File file) {
 
 		if ((file != null) && file.exists()) {
 			Log.getInstance().info(
@@ -303,10 +299,14 @@ public class FullSideViewBar extends RectangleItem {
 						if (totalE[i] > 0) {
 
 							// draw red rectangle
-							_style.setFillColor(defaultHitCellFill);
-							WorldGraphicsUtilities.drawWorldRectangle(g,
-									container, _worldRectangle,
-									_style.getFillColor(),
+							double scale = totalE[i] / upperEnergyScale;
+							WorldGraphicsUtilities.drawWorldRectangle(
+									g,
+									container,
+									_worldRectangle,
+									new Color((int) (Math.ceil(scale * 255)),
+											0, (int) Math
+													.ceil(255 - scale * 255)),
 									_style.getLineColor());
 						}
 					}
@@ -426,10 +426,12 @@ public class FullSideViewBar extends RectangleItem {
 	public void getFeedbackStrings(IContainer container, Point screenPoint,
 			Point2D.Double worldPoint, List<String> feedbackStrings) {
 		if (_worldRectangle.contains(worldPoint)) {
-
+			//double gap = worldRect.width / 48;
+			//double boxWidth = worldRect.width / 12 - 2 * gap;
+			//double boxHeight = worldRect.height / 12 - 2 * gap;
 			double x = 0;
-			double y = worldPoint.y;
-			double z = 3 - worldPoint.x;
+			double y = 8.0 * (worldPoint.y - (1.5 - _worldRectangle.height)); //undo shrink/translation
+			double z = 3 - 8.0 * (worldPoint.x - (1.5 * (1 - _worldRectangle.width))); //undo shrink/translation
 			z *= 10;
 			y *= 10;
 
