@@ -299,14 +299,25 @@ public class FullSideViewVeto extends RectangleItem {
 
 							// draw red rectangle
 							double scale = totalE[i] / upperEnergyScale;
-							WorldGraphicsUtilities.drawWorldRectangle(
-									g,
-									container,
-									_worldRectangle,
-									new Color((int) (Math.ceil(scale * 255)),
-											0, (int) Math
-													.ceil(255 - scale * 255)),
-									_style.getLineColor());
+							try {
+								WorldGraphicsUtilities
+										.drawWorldRectangle(
+												g,
+												container,
+												_worldRectangle,
+												new Color(
+														(int) (Math
+																.ceil(scale * 255)),
+														0,
+														(int) Math
+																.ceil(255 - scale * 255)),
+												_style.getLineColor());
+							} catch (Exception e) {
+								WorldGraphicsUtilities.drawWorldRectangle(g,
+										container, _worldRectangle, new Color(
+												255, 0, 0), _style
+												.getLineColor());
+							}
 						}
 					}
 				}
@@ -457,16 +468,12 @@ public class FullSideViewVeto extends RectangleItem {
 				accumulatedFeedbackStrings(feedbackStrings);
 			}
 			/*
-			double x = 0;
-			double y = worldPoint.y;
-			double z = 3 - worldPoint.x;
-			z *= 10;
-			y *= 10;
-
-			String rtp = "approx xyz " + DoubleFormat.doubleFormat(x, 1)
-					+ "cm, " + DoubleFormat.doubleFormat(y, 1) + "cm, "
-					+ DoubleFormat.doubleFormat(z, 1) + "cm";
-			feedbackStrings.add(rtp);
+			 * double x = 0; double y = worldPoint.y; double z = 3 -
+			 * worldPoint.x; z *= 10; y *= 10;
+			 * 
+			 * String rtp = "approx xyz " + DoubleFormat.doubleFormat(x, 1) +
+			 * "cm, " + DoubleFormat.doubleFormat(y, 1) + "cm, " +
+			 * DoubleFormat.doubleFormat(z, 1) + "cm"; feedbackStrings.add(rtp);
 			 */
 		}
 	}
