@@ -712,6 +712,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     int Sector_index;
     int Vz_index;
+    int BankIndex_part;
+    
     bool cutPi0Mass;
     bool cutZDiff_ElectronNPion;
     bool cutZDiff_ElectronPPion;
@@ -827,6 +829,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         // get the first electron lorentz vector and vertex
 		TLorentzVector elec = reader.getLorentzVector(ID_ELECTRON, 0, MASS_ELECTRON);
 		TVector3 elec_vert = reader.getVertex(ID_ELECTRON, 0);
+        BankIndex_part = reader.getIndexByPid(ID_ELECTRON, 0);
         
 		//TLorentzVector prot = reader.getLorentzVector(ID_PROTON, 0, MASS_PROTON);
 		//TVector3 prot_vert = reader.getVertex(ID_PROTON, 0);
@@ -988,6 +991,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
 
+        // plots of electron ID
+        CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part));
+        
         Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
             elecZVertSector[Sector_index-1]->Fill(elec_vert.Z());
@@ -1341,6 +1347,11 @@ void BookHist(){
     sprintf(htitle,"Opening Angle Between e^{-} and #gamma_{2}");
 	OpAng_elecPhoton2 = new TH1D(hname,htitle, 180, 0, 180);
     
+    // particle ID histogram
+    sprintf(hname,"CCnphe");
+    sprintf(htitle,"CC Number of Photo-electrons");
+    CCnphe = new TH1D(hname,htitle, 100, 0, 100);
+    
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         sprintf(hname,"Theta_VS_Phi_%s",myPartList.Get_PartLabel(i).c_str());
         sprintf(htitle,"Theta vs Phi for %s",myPartList.Get_PartLabel(i).c_str());
@@ -1575,6 +1586,10 @@ void WriteHist(string RootFile){
     OpAng_elecPhoton2->GetXaxis()->SetTitle("Opening Angle between e^{-} and #gamma_{2} (deg.)");
     OpAng_elecPhoton2->GetYaxis()->SetTitle("Counts");
     OpAng_elecPhoton2->Write();
+    
+    CCnphe->GetXaxis()->SetTitle("Number of Photo-electrons");
+    CCnphe->GetYaxis()->SetTitle("Counts");
+    CCnphe->Write();
     
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");

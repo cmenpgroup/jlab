@@ -107,11 +107,15 @@ void OmegaMixedEvent_OneTarget(char *rootFile, Int_t iRun=0, Int_t iTgt=0, Int_t
 	Int_t i;
 	Float_t yield;
 
-	TH1D *hist; // original histogram
-    TH1D *histME1;
-    TH1D *histME2;
+	TH1D *hData; // original histogram
+    TH2D *hData2D;
+    TH2D *hME2D;
+    TH1D *hME1;
+    TH1D *hME2;
     
-    char hname[50];
+    char hnameData[50];
+    char hnameData2D[50];
+    char hnameME2D[50];
     char hnameME1[50];
     char hnameME2[50];
     
@@ -121,21 +125,29 @@ void OmegaMixedEvent_OneTarget(char *rootFile, Int_t iRun=0, Int_t iTgt=0, Int_t
 	printf("Analyzing file %s\n",rootFile);  
 	TFile *fd = new TFile(rootFile,"READ"); // open up the ROOT file
 	
-    sprintf(hname,"%s_%s",HistName[iCut],TgtName[iTgt]);
-    cout << hname << endl;
-	hist = (TH1D*)fd->Get(hname); // get the histogram from the ROOT file
+    sprintf(hnameData2D,"IMOmega_%s",TgtName[iTgt]);
+    cout << hnameData2D << endl;
+	hData2D = (TH2D*)fd->Get(hnameData2D); // get the histogram from the ROOT file
 
-    sprintf(hnameME1,"%s_ME1_%s",HistName[iCut],TgtName[iTgt]);
+    sprintf(hnameData,"%s-8",hnameData2D);
+    cout << hnameData << endl;
+    hData = (TH1D*)hData2D->ProjectionX(hnameData,9,9,"");
+    
+    sprintf(hnameME2D,"%s_ME_%s",HistName[iCut],TgtName[iTgt]);
+    cout << hnameME2D << endl;
+	hME2D = (TH2D*)fd->Get(hnameME2D); // get the histogram from the ROOT file
+    
+    sprintf(hnameME1,"%s-1",hnameME2D);
     cout << hnameME1 << endl;
-	histME1 = (TH1D*)fd->Get(hnameME1); // get the histogram from the ROOT file
+    hME1 = (TH1D*)hME2D->ProjectionX(hnameME1,1,1,"");
     
-    sprintf(hnameME2,"%s_ME2_%s",HistName[iCut],TgtName[iTgt]);
+    sprintf(hnameME2,"%s-2",hnameME2D);
     cout << hnameME2 << endl;
-	histME2 = (TH1D*)fd->Get(hnameME2); // get the histogram from the ROOT file
+    hME2 = (TH1D*)hME2D->ProjectionX(hnameME2,2,2,"");
     
-    sprintf(plotFilePrefix,"OmegaMixedEvent_%s_%s_P%i",RunName[iRun],hname);
+    sprintf(plotFilePrefix,"OmegaMixedEvent_%s_%s_P%i",RunName[iRun],hnameData2D);
     
-    yield = FitOmega_MixedEvtBgd(hist,histME1,histME2,plotFilePrefix, iClose);
+    yield = FitOmega_MixedEvtBgd(hData,hME1,hME2,plotFilePrefix, iClose);
 
 	// open text file for the yields
 	char OutFile[100];

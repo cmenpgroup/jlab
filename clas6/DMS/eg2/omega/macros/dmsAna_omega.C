@@ -1,5 +1,5 @@
 void dmsAna_omega(char* inputName, int targMass, char* version){
-	gSystem->Load("libEvioRoot.so");
+	gSystem->Load("/home/wood5/evioRoot/lib/libEvioRoot.so");
 	TEventReader reader;
 	reader.addFile(inputName);
 	int nentries = reader.getEntries();

@@ -43,6 +43,8 @@ TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
 
+TH1D *CCnphe;
+
 TH1D *hW[3];
 TH1D *hMx[3];
 TH1D *z_fracE[3];
