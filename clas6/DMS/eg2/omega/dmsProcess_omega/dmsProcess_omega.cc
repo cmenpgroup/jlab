@@ -708,11 +708,11 @@ void OmegaMixedEvent::Print_Info()
 }
 
 int process (string inFile, int MaxEvents, int dEvents, int targMass) {
-    int i, j, k, kk;
+    int i, ii, j, k, kk;
     
     int Sector_index;
     int Vz_index;
-    int BankIndex_part;
+    int BankIndex_part[5];
     
     bool cutPi0Mass;
     bool cutZDiff_ElectronNPion;
@@ -829,23 +829,27 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         // get the first electron lorentz vector and vertex
 		TLorentzVector elec = reader.getLorentzVector(ID_ELECTRON, 0, MASS_ELECTRON);
 		TVector3 elec_vert = reader.getVertex(ID_ELECTRON, 0);
-        BankIndex_part = reader.getIndexByPid(ID_ELECTRON, 0);
+        BankIndex_part[0] = reader.getIndexByPid(ID_ELECTRON, 0);
         
 		//TLorentzVector prot = reader.getLorentzVector(ID_PROTON, 0, MASS_PROTON);
 		//TVector3 prot_vert = reader.getVertex(ID_PROTON, 0);
         
 		TLorentzVector nPion = reader.getLorentzVector(ID_PION_NEG, 0,MASS_PION_CHARGED);
 		TVector3 nPion_vert = reader.getVertex(ID_PION_NEG, 0);
+        	BankIndex_part[1] = reader.getIndexByPid(ID_PION_NEG, 0);
         
 		TLorentzVector pPion = reader.getLorentzVector(ID_PION_POS, 0, MASS_PION_CHARGED);
 		TVector3 pPion_vert = reader.getVertex(ID_PION_POS, 0);
-        
+                BankIndex_part[2] = reader.getIndexByPid(ID_PION_POS, 0);
+
 		TLorentzVector photon1 = reader.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON);
 		TVector3 photon1_vert = reader.getVertex(ID_PHOTON, 0);
-        
+                BankIndex_part[3] = reader.getIndexByPid(ID_PHOTON, 0);
+
 		TLorentzVector photon2 = reader.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
 		TVector3 photon2_vert = reader.getVertex(ID_PHOTON, 1);
-        
+                BankIndex_part[4] = reader.getIndexByPid(ID_PHOTON, 1);
+
         myMixEvt.Clear_TLorentzVectors(); // initialize all particle TLorentzVectors to zero in myMixEvt
         
         myMixEvt.Put_Photon1(photon1,0);
@@ -992,8 +996,17 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
 
         // plots of electron ID
-        CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part));
-        
+/*	cout<<"Test "<<BankIndex_part<<" ";
+	cout<<reader.getProperty("pid",BankIndex_part)<<" ";
+	cout<<reader.getProperty("ectime",BankIndex_part)<<" ";
+	cout<<reader.getProperty("ectot",BankIndex_part)<<endl;
+  */      
+	for(ii=0; ii<5; ii++){
+	        CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
+        	ECtot_VS_P[ii]->Fill(elec.P(),reader.getProperty("ectot",BankIndex_part[ii]));
+        	ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
+	}
+
         Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
             elecZVertSector[Sector_index-1]->Fill(elec_vert.Z());
@@ -1350,8 +1363,8 @@ void BookHist(){
     // particle ID histogram
     sprintf(hname,"CCnphe");
     sprintf(htitle,"CC Number of Photo-electrons");
-    CCnphe = new TH1D(hname,htitle, 100, 0, 100);
-    
+    CCnphe = new TH2D(hname,htitle, 100, 0, 100, 5, 0, 5);
+
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         sprintf(hname,"Theta_VS_Phi_%s",myPartList.Get_PartLabel(i).c_str());
         sprintf(htitle,"Theta vs Phi for %s",myPartList.Get_PartLabel(i).c_str());
@@ -1362,6 +1375,14 @@ void BookHist(){
         sprintf(hname,"Xvert_VS_Yvert_%s",myDetPart.Get_DetPartLabel(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, %s",myDetPart.Get_DetPartLabel(i).c_str());
         Xvert_VS_Yvert[i] = new TH2D(hname,htitle, 100, -0.05, 0.05, 100, -0.05, 0.05);
+
+    	sprintf(hname,"ECtot_VS_P_%s",myDetPart.Get_DetPartLabel(i).c_str());
+    	sprintf(htitle,"ECtot vs P, %s",myDetPart.Get_DetPartLabel(i).c_str());
+    	ECtot_VS_P[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 1.0);
+
+    	sprintf(hname,"ECin_VS_ECout_%s",myDetPart.Get_DetPartLabel(i).c_str());
+    	sprintf(htitle,"ECin vs ECout, %s",myDetPart.Get_DetPartLabel(i).c_str());
+    	ECin_VS_ECout[i] = new TH2D(hname,htitle, 100, 0, 1.0, 100, 0, 1.0);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
@@ -1588,9 +1609,9 @@ void WriteHist(string RootFile){
     OpAng_elecPhoton2->Write();
     
     CCnphe->GetXaxis()->SetTitle("Number of Photo-electrons");
-    CCnphe->GetYaxis()->SetTitle("Counts");
+    CCnphe->GetYaxis()->SetTitle("Particle");
     CCnphe->Write();
-    
+
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
         Theta_VS_Phi[i]->GetYaxis()->SetTitle("#phi (deg.)");
@@ -1601,6 +1622,14 @@ void WriteHist(string RootFile){
         Xvert_VS_Yvert[i]->GetXaxis()->SetTitle("X vertex (cm)");
         Xvert_VS_Yvert[i]->GetYaxis()->SetTitle("Y vertex (cm)");
         Xvert_VS_Yvert[i]->Write();
+
+	ECtot_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    	ECtot_VS_P[i]->GetYaxis()->SetTitle("EC total energy");
+	ECtot_VS_P[i]->Write();
+
+	ECin_VS_ECout[i]->GetXaxis()->SetTitle("EC inner energy");
+    	ECin_VS_ECout[i]->GetYaxis()->SetTitle("EC outer energy");
+	ECin_VS_ECout[i]->Write();
     }
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
