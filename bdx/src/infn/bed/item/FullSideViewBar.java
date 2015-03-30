@@ -300,14 +300,25 @@ public class FullSideViewBar extends RectangleItem {
 
 							// draw red rectangle
 							double scale = totalE[i] / upperEnergyScale;
-							WorldGraphicsUtilities.drawWorldRectangle(
-									g,
-									container,
-									_worldRectangle,
-									new Color((int) (Math.ceil(scale * 255)),
-											0, (int) Math
-													.ceil(255 - scale * 255)),
-									_style.getLineColor());
+							try {
+								WorldGraphicsUtilities
+										.drawWorldRectangle(
+												g,
+												container,
+												_worldRectangle,
+												new Color(
+														(int) (Math
+																.ceil(scale * 255)),
+														0,
+														(int) Math
+																.ceil(255 - scale * 255)),
+												_style.getLineColor());
+							} catch (Exception e) {
+								WorldGraphicsUtilities.drawWorldRectangle(g,
+										container, _worldRectangle, new Color(
+												255, 0, 0), _style
+												.getLineColor());
+							}
 						}
 					}
 				}
@@ -426,12 +437,14 @@ public class FullSideViewBar extends RectangleItem {
 	public void getFeedbackStrings(IContainer container, Point screenPoint,
 			Point2D.Double worldPoint, List<String> feedbackStrings) {
 		if (_worldRectangle.contains(worldPoint)) {
-			//double gap = worldRect.width / 48;
-			//double boxWidth = worldRect.width / 12 - 2 * gap;
-			//double boxHeight = worldRect.height / 12 - 2 * gap;
+			// double gap = worldRect.width / 48;
+			// double boxWidth = worldRect.width / 12 - 2 * gap;
+			// double boxHeight = worldRect.height / 12 - 2 * gap;
 			double x = 0;
-			double y = 8.0 * (worldPoint.y - (1.5 - _worldRectangle.height)); //undo shrink/translation
-			double z = 3 - 8.0 * (worldPoint.x - (1.5 * (1 - _worldRectangle.width))); //undo shrink/translation
+			double y = 8.0 * (worldPoint.y - (1.5 - _worldRectangle.height)); // undo
+																				// shrink/translation
+			double z = 3 - 8.0 * (worldPoint.x - (1.5 * (1 - _worldRectangle.width))); // undo
+																						// shrink/translation
 			z *= 10;
 			y *= 10;
 

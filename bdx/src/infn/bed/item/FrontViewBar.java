@@ -305,14 +305,25 @@ public class FrontViewBar extends RectangleItem {
 									_worldRectangle.width / 40.0,
 									_worldRectangle.height);
 							double scale = totalE[i] / upperEnergyScale;
-							WorldGraphicsUtilities.drawWorldRectangle(
-									g,
-									container,
-									hitRect,
-									new Color((int) (Math.ceil(scale * 255)),
-											0, (int) Math
-													.ceil(255 - scale * 255)),
-									_style.getLineColor());
+							try {
+								WorldGraphicsUtilities
+										.drawWorldRectangle(
+												g,
+												container,
+												hitRect,
+												new Color(
+														(int) (Math
+																.ceil(scale * 255)),
+														0,
+														(int) Math
+																.ceil(255 - scale * 255)),
+												_style.getLineColor());
+							} catch (Exception e) {
+								WorldGraphicsUtilities.drawWorldRectangle(g,
+										container, hitRect,
+										new Color(255, 0, 0),
+										_style.getLineColor());
+							}
 						}
 					}
 				}

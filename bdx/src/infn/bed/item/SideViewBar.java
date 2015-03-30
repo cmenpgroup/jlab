@@ -303,14 +303,25 @@ public class SideViewBar extends RectangleItem {
 
 							// draw red rectangle
 							double scale = totalE[i] / upperEnergyScale;
-							WorldGraphicsUtilities.drawWorldRectangle(
-									g,
-									container,
-									_worldRectangle,
-									new Color((int) (Math.ceil(scale * 255)),
-											0, (int) Math
-													.ceil(255 - scale * 255)),
-									_style.getLineColor());
+							try {
+								WorldGraphicsUtilities
+										.drawWorldRectangle(
+												g,
+												container,
+												_worldRectangle,
+												new Color(
+														(int) (Math
+																.ceil(scale * 255)),
+														0,
+														(int) Math
+																.ceil(255 - scale * 255)),
+												_style.getLineColor());
+							} catch (Exception e) {
+								WorldGraphicsUtilities.drawWorldRectangle(g,
+										container, _worldRectangle, new Color(
+												255, 0, 0), _style
+												.getLineColor());
+							}
 						}
 					}
 				}
