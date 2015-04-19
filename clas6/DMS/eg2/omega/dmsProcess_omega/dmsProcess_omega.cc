@@ -742,6 +742,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, Mx, z_fracEnergy, W;
     double sinHalfTheta;
+    double partMom;
     
     EG2Target myTgt;
     EG2Cuts myCuts;
@@ -1001,14 +1002,24 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 	cout<<reader.getProperty("ectime",BankIndex_part)<<" ";
 	cout<<reader.getProperty("ectot",BankIndex_part)<<endl;
   */      
-	for(ii=0; ii<5; ii++){
-	        CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
-	        ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
-	        ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
+        for(ii=0; ii<5; ii++){
+            switch (ii) {
+                case 0: partMom = elec.P(); break;
+                case 1: partMom = nPion.P(); break;
+                case 2: partMom = pPion.P(); break;
+                case 3: partMom = photon1.P(); break;
+                case 4: partMom = photon1.P(); break;
+                default: partMom = -1.0; break;
+            }
+        
+            CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
+            ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
+            ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
             ECw->Fill(reader.getProperty("ecw",BankIndex_part[ii]),ii);
-            ECtot_VS_P[ii]->Fill(elec.P(),reader.getProperty("ectot",BankIndex_part[ii]));
-        	ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
-	}
+            ECtot_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii]));
+            ECtotP_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii])/partMom);
+            ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
+        }
 
         Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
@@ -1398,6 +1409,10 @@ void BookHist(){
     	sprintf(hname,"ECin_VS_ECout_%s",myDetPart.Get_DetPartLabel(i).c_str());
     	sprintf(htitle,"ECin vs ECout, %s",myDetPart.Get_DetPartLabel(i).c_str());
     	ECin_VS_ECout[i] = new TH2D(hname,htitle, 100, 0, 1.0, 100, 0, 1.0);
+
+        sprintf(hname,"ECtotP_VS_P_%s",myDetPart.Get_DetPartLabel(i).c_str());
+        sprintf(htitle,"ECtot/P vs P, %s",myDetPart.Get_DetPartLabel(i).c_str());
+        ECtotP_VS_P[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
@@ -1650,13 +1665,17 @@ void WriteHist(string RootFile){
         Xvert_VS_Yvert[i]->GetYaxis()->SetTitle("Y vertex (cm)");
         Xvert_VS_Yvert[i]->Write();
 
-	ECtot_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+        ECtot_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
     	ECtot_VS_P[i]->GetYaxis()->SetTitle("EC total energy");
-	ECtot_VS_P[i]->Write();
+        ECtot_VS_P[i]->Write();
 
-	ECin_VS_ECout[i]->GetXaxis()->SetTitle("EC inner energy");
+        ECtotP_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+        ECtotP_VS_P[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
+        ECtotP_VS_P[i]->Write();
+        
+        ECin_VS_ECout[i]->GetXaxis()->SetTitle("EC inner energy");
     	ECin_VS_ECout[i]->GetYaxis()->SetTitle("EC outer energy");
-	ECin_VS_ECout[i]->Write();
+        ECin_VS_ECout[i]->Write();
     }
 
     for(i=0; i<myTgt.Get_nIndex(); i++){
