@@ -743,6 +743,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double Qsq, nu, Mx, z_fracEnergy, W;
     double sinHalfTheta;
     double partMom;
+    double timeEC, timeSC, pathEC, pathSC;
+    double dt_EC-SC[5];
     
     EG2Target myTgt;
     EG2Cuts myCuts;
@@ -837,19 +839,19 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
 		TLorentzVector nPion = reader.getLorentzVector(ID_PION_NEG, 0,MASS_PION_CHARGED);
 		TVector3 nPion_vert = reader.getVertex(ID_PION_NEG, 0);
-        	BankIndex_part[1] = reader.getIndexByPid(ID_PION_NEG, 0);
+        BankIndex_part[1] = reader.getIndexByPid(ID_PION_NEG, 0);
         
 		TLorentzVector pPion = reader.getLorentzVector(ID_PION_POS, 0, MASS_PION_CHARGED);
 		TVector3 pPion_vert = reader.getVertex(ID_PION_POS, 0);
-                BankIndex_part[2] = reader.getIndexByPid(ID_PION_POS, 0);
+        BankIndex_part[2] = reader.getIndexByPid(ID_PION_POS, 0);
 
 		TLorentzVector photon1 = reader.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON);
 		TVector3 photon1_vert = reader.getVertex(ID_PHOTON, 0);
-                BankIndex_part[3] = reader.getIndexByPid(ID_PHOTON, 0);
+        BankIndex_part[3] = reader.getIndexByPid(ID_PHOTON, 0);
 
 		TLorentzVector photon2 = reader.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
 		TVector3 photon2_vert = reader.getVertex(ID_PHOTON, 1);
-                BankIndex_part[4] = reader.getIndexByPid(ID_PHOTON, 1);
+        BankIndex_part[4] = reader.getIndexByPid(ID_PHOTON, 1);
 
         myMixEvt.Clear_TLorentzVectors(); // initialize all particle TLorentzVectors to zero in myMixEvt
         
@@ -964,8 +966,20 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		ZVertDiff->Fill(elecPhoton1ZVertDiff,3);
 		ZVertDiff->Fill(elecPhoton2ZVertDiff,4);
         
-		// plots of x vs y vertices
-		Xvert_VS_Yvert[0]->Fill(elec_vert.X(), elec_vert.Y());
+        // plots of x vs y vertices
+        Xvert->Fill(elec_vert.X(), 0);
+        Xvert->Fill(nPion_vert.X(), 1);
+        Xvert->Fill(pPion_vert.X(), 2);
+        Xvert->Fill(photon1_vert.X(), 3);
+        Xvert->Fill(photon2_vert.X(), 4);
+
+        Yvert->Fill(elec_vert.Y(), 0);
+        Yvert->Fill(nPion_vert.Y(), 1);
+        Yvert->Fill(pPion_vert.Y(), 2);
+        Yvert->Fill(photon1_vert.Y(), 3);
+        Yvert->Fill(photon2_vert.Y(), 4);
+        
+        Xvert_VS_Yvert[0]->Fill(elec_vert.X(), elec_vert.Y());
 		Xvert_VS_Yvert[1]->Fill(nPion_vert.X(), nPion_vert.Y());
 		Xvert_VS_Yvert[2]->Fill(pPion_vert.X(), pPion_vert.Y());
 		Xvert_VS_Yvert[3]->Fill(photon1_vert.X(), photon1_vert.Y());
@@ -1008,7 +1022,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 case 1: partMom = nPion.P(); break;
                 case 2: partMom = pPion.P(); break;
                 case 3: partMom = photon1.P(); break;
-                case 4: partMom = photon1.P(); break;
+                case 4: partMom = photon2.P(); break;
                 default: partMom = -1.0; break;
             }
         
@@ -1019,6 +1033,14 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             ECtot_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii]));
             ECtotP_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii])/partMom);
             ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
+            
+            timeEC = reader.getProperty("ectime",BankIndex_part[ii]);
+            timeSC = reader.getProperty("sctime",BankIndex_part[ii]);
+            pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
+            pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
+            dt_EC-SC[ii] = timeEC - timeSC -0.7;
+            dtime_EC-SC->Fill(dt_EC-SC[ii],ii)
+
         }
 
         Sector_index = GetSectorByPhi(elec.Phi());
@@ -1349,6 +1371,14 @@ void BookHist(){
     sprintf(hname,"elecZVert_VS_Phi");
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
     elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
+
+    sprintf(hname,"Xvert");
+    sprintf(htitle,"X vertex");
+    Xvert = new TH2D(hname,htitle, 300, -10, 10,5,-0.5,4.5);
+
+    sprintf(hname,"Yvert");
+    sprintf(htitle,"Y vertex");
+    Yvert = new TH2D(hname,htitle, 300, -10, 10,5,-0.5,4.5);
     
     sprintf(hname,"ZVertDiff");
     sprintf(htitle,"Difference Between Z Vertices of electron and other particle");
@@ -1377,19 +1407,23 @@ void BookHist(){
     // particle ID histogram
     sprintf(hname,"CCnphe");
     sprintf(htitle,"CC Number of Photo-electrons");
-    CCnphe = new TH2D(hname,htitle, 100, 0, 100, 5, 0, 5);
+    CCnphe = new TH2D(hname,htitle, 100, 0, 100, 5, -0.5, 4.5);
 
     sprintf(hname,"ECu");
     sprintf(htitle,"EC U-view");
-    ECu = new TH2D(hname,htitle, 450, 0, 450, 5, 0, 5);
+    ECu = new TH2D(hname,htitle, 450, 0, 450, 5, -0.5, 4.5);
     
     sprintf(hname,"ECv");
     sprintf(htitle,"EC V-view");
-    ECv = new TH2D(hname,htitle, 450, 0, 450, 5, 0, 5);
+    ECv = new TH2D(hname,htitle, 450, 0, 450, 5, -0.5, 4.5);
     
     sprintf(hname,"ECw");
     sprintf(htitle,"EC W-view");
-    ECw = new TH2D(hname,htitle, 450, 0, 450, 5, 0, 5);
+    ECw = new TH2D(hname,htitle, 450, 0, 450, 5, -0.5, 4.5);
+    
+    sprintf(hname,"dtime_EC-SC");
+    sprintf(htitle,"#Delta t(EC-SC)");
+    dtime_EC-SC = new TH2D(hname,htitle, 100, -5.0, 5.0, 5, -0.5, 4.5);
     
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         sprintf(hname,"Theta_VS_Phi_%s",myPartList.Get_PartLabel(i).c_str());
@@ -1614,6 +1648,14 @@ void WriteHist(string RootFile){
     elecZVert_VS_Phi->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert_VS_Phi->Write();
     
+    Xvert->GetXaxis()->SetTitle("X vertex (cm)");
+    Xvert->GetYaxis()->SetTitle("Particle");
+    Xvert->Write();
+
+    Yvert->GetXaxis()->SetTitle("Y vertex (cm)");
+    Yvert->GetYaxis()->SetTitle("Particle");
+    Yvert->Write();
+    
     ZVertDiff->GetXaxis()->SetTitle(" #Delta Z (cm)");
     ZVertDiff->GetYaxis()->SetTitle("Particle");
 	ZVertDiff->Write();
@@ -1653,6 +1695,10 @@ void WriteHist(string RootFile){
     ECw->GetXaxis()->SetTitle("EC W (cm)");
     ECw->GetYaxis()->SetTitle("Particle");
     ECw->Write();
+
+    dtime_EC-SC->GetXaxis()->SetTitle("#Delta t(EC-SC) (ns)");
+    dtime_EC-SC->GetYaxis()->SetTitle("Particle");
+    dtime_EC-SC->Write();
     
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
