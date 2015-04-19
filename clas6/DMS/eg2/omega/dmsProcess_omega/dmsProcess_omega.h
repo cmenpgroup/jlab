@@ -49,7 +49,7 @@ TH2D *CCnphe;
 TH2D *ECu;
 TH2D *ECv;
 TH2D *ECw;
-TH2D *dtime_EC-SC;
+TH2D *dtime_ECSC;
 TH2D *ECtot_VS_P[5];
 TH2D *ECtotP_VS_P[5];
 TH2D *ECin_VS_ECout[5];

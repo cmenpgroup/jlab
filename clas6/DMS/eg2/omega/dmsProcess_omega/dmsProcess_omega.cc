@@ -744,7 +744,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double sinHalfTheta;
     double partMom;
     double timeEC, timeSC, pathEC, pathSC;
-    double dt_EC-SC[5];
+    double dt_ECminusSC[5];
     
     EG2Target myTgt;
     EG2Cuts myCuts;
@@ -1038,8 +1038,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             timeSC = reader.getProperty("sctime",BankIndex_part[ii]);
             pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
             pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
-            dt_EC-SC[ii] = timeEC - timeSC -0.7;
-            dtime_EC-SC->Fill(dt_EC-SC[ii],ii)
+            dt_ECminusSC[ii] = timeEC - timeSC - 0.7;
+            dtime_ECSC->Fill(dt_ECminusSC[ii],ii)
 
         }
 
@@ -1421,9 +1421,9 @@ void BookHist(){
     sprintf(htitle,"EC W-view");
     ECw = new TH2D(hname,htitle, 450, 0, 450, 5, -0.5, 4.5);
     
-    sprintf(hname,"dtime_EC-SC");
+    sprintf(hname,"dtime_ECSC");
     sprintf(htitle,"#Delta t(EC-SC)");
-    dtime_EC-SC = new TH2D(hname,htitle, 100, -5.0, 5.0, 5, -0.5, 4.5);
+    dtime_ECSC = new TH2D(hname,htitle, 100, -5.0, 5.0, 5, -0.5, 4.5);
     
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         sprintf(hname,"Theta_VS_Phi_%s",myPartList.Get_PartLabel(i).c_str());
@@ -1696,9 +1696,9 @@ void WriteHist(string RootFile){
     ECw->GetYaxis()->SetTitle("Particle");
     ECw->Write();
 
-    dtime_EC-SC->GetXaxis()->SetTitle("#Delta t(EC-SC) (ns)");
-    dtime_EC-SC->GetYaxis()->SetTitle("Particle");
-    dtime_EC-SC->Write();
+    dtime_ECSC->GetXaxis()->SetTitle("#Delta t(EC-SC) (ns)");
+    dtime_ECSC->GetYaxis()->SetTitle("Particle");
+    dtime_ECSC->Write();
     
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
