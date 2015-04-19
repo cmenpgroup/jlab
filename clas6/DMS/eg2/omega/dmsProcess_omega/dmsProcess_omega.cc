@@ -1003,7 +1003,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
   */      
 	for(ii=0; ii<5; ii++){
 	        CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
-        	ECtot_VS_P[ii]->Fill(elec.P(),reader.getProperty("ectot",BankIndex_part[ii]));
+	        ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
+	        ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
+            ECw->Fill(reader.getProperty("ecw",BankIndex_part[ii]),ii);
+            ECtot_VS_P[ii]->Fill(elec.P(),reader.getProperty("ectot",BankIndex_part[ii]));
         	ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
 	}
 
@@ -1365,6 +1368,18 @@ void BookHist(){
     sprintf(htitle,"CC Number of Photo-electrons");
     CCnphe = new TH2D(hname,htitle, 100, 0, 100, 5, 0, 5);
 
+    sprintf(hname,"ECu");
+    sprintf(htitle,"EC U-view");
+    ECu = new TH2D(hname,htitle, 450, 0, 450, 5, 0, 5);
+    
+    sprintf(hname,"ECv");
+    sprintf(htitle,"EC V-view");
+    ECv = new TH2D(hname,htitle, 450, 0, 450, 5, 0, 5);
+    
+    sprintf(hname,"ECw");
+    sprintf(htitle,"EC W-view");
+    ECw = new TH2D(hname,htitle, 450, 0, 450, 5, 0, 5);
+    
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         sprintf(hname,"Theta_VS_Phi_%s",myPartList.Get_PartLabel(i).c_str());
         sprintf(htitle,"Theta vs Phi for %s",myPartList.Get_PartLabel(i).c_str());
@@ -1612,6 +1627,18 @@ void WriteHist(string RootFile){
     CCnphe->GetYaxis()->SetTitle("Particle");
     CCnphe->Write();
 
+    ECu->GetXaxis()->SetTitle("EC U (cm)");
+    ECu->GetYaxis()->SetTitle("Particle");
+    ECu->Write();
+    
+    ECv->GetXaxis()->SetTitle("EC V (cm)");
+    ECv->GetYaxis()->SetTitle("Particle");
+    ECv->Write();
+    
+    ECw->GetXaxis()->SetTitle("EC W (cm)");
+    ECw->GetYaxis()->SetTitle("Particle");
+    ECw->Write();
+    
     for(i=0; i<myPartList.Get_nPartLabel(); i++){
         Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
         Theta_VS_Phi[i]->GetYaxis()->SetTitle("#phi (deg.)");

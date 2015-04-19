@@ -44,6 +44,9 @@ TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
 
 TH2D *CCnphe;
+TH2D *ECu;
+TH2D *ECv;
+TH2D *ECw;
 TH2D *ECtot_VS_P[5];
 TH2D *ECin_VS_ECout[5];
 
