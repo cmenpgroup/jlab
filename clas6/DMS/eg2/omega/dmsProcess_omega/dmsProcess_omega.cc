@@ -1039,8 +1039,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
             pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
             dt_ECminusSC[ii] = timeEC - timeSC - 0.7;
-            dtime_ECSC->Fill(dt_ECminusSC[ii],ii)
-
+            dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
         }
 
         Sector_index = GetSectorByPhi(elec.Phi());
