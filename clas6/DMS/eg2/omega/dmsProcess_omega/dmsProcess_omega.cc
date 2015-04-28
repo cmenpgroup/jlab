@@ -591,7 +591,7 @@ void ElectronID::Print_ElectronID()
         }else if (this->Get_elecIDLabel(ii).compare("EC W-view")==0) {
             cout << "[" << this->Get_ElecECw_lo() << "," << this->Get_ElecECw_hi() << "] (cm)" << endl;
         }else if (this->Get_elecIDLabel(ii).compare("ECin")==0) {
-            cout << "[" << this->Get_ElecECin_lo() << "," << this->Get_ElecECin_hi() << "] (cm)" << endl;
+            cout << "[" << this->Get_ElecECin_lo() << "," << this->Get_ElecECin_hi() << "] (GeV)" << endl;
         }else if (this->Get_elecIDLabel(ii).compare("CC Nphe")==0) {
             cout << "[" << this->Get_ElecCCnphe_lo() << "," << this->Get_ElecCCnphe_hi() << "]" << endl;
         }else if (this->Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
@@ -1690,27 +1690,27 @@ void BookHist(){
     // electron ID histogram
     sprintf(hname,"Mom_elecID");
     sprintf(htitle,"Momentum");
-    Mom_elecID = new TH2D(hname,htitle, 500, 0, 5.0, nElecID, -0.5, nElecID + 0.5);
+    Mom_elecID = new TH2D(hname,htitle, 500, 0, 5.0, nElecID, -0.5, nElecID - 0.5);
     
     sprintf(hname,"CCnphe_elecID");
     sprintf(htitle,"CC Number of Photo-electrons");
-    CCnphe_elecID = new TH2D(hname,htitle, 100, 0, 100, nElecID, -0.5, nElecID + 0.5);
+    CCnphe_elecID = new TH2D(hname,htitle, 100, 0, 100, nElecID, -0.5, nElecID - 0.5);
     
     sprintf(hname,"ECu_elecID");
     sprintf(htitle,"EC U-view");
-    ECu_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID + 0.5);
+    ECu_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID - 0.5);
     
     sprintf(hname,"ECv_elecID");
     sprintf(htitle,"EC V-view");
-    ECv_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID + 0.5);
+    ECv_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID - 0.5);
     
     sprintf(hname,"ECw_elecID");
     sprintf(htitle,"EC W-view");
-    ECw_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID + 0.5);
+    ECw_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID - 0.5);
     
     sprintf(hname,"dtime_ECSC_elecID");
     sprintf(htitle,"#Delta t(EC-SC)");
-    dtime_ECSC_elecID = new TH2D(hname,htitle, 100, -5.0, 5.0, nElecID, -0.5, nElecID + 0.5);
+    dtime_ECSC_elecID = new TH2D(hname,htitle, 100, -5.0, 5.0, nElecID, -0.5, nElecID - 0.5);
     
     for(i=0; i<myElecID.Get_nElecID(); i++){
         sprintf(hname,"ECtot_VS_P_elecID_0%i",i);
@@ -2006,48 +2006,6 @@ void WriteHist(string RootFile){
         ECin_VS_ECout[i]->Write();
     }
 
-    Mom_elecID->GetXaxis()->SetTitle("Momentum (GeV)");
-    Mom_elecID->GetYaxis()->SetTitle("e- ID Cut");
-    Mom_elecID->Write();
-    
-    CCnphe_elecID->GetXaxis()->SetTitle("Number of Photo-electrons");
-    CCnphe_elecID->GetYaxis()->SetTitle("e- ID Cut");
-    CCnphe_elecID->Write();
-    
-    ECu_elecID->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_elecID->GetYaxis()->SetTitle("e- ID Cut");
-    ECu_elecID->Write();
-    
-    ECv_elecID->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_elecID->GetYaxis()->SetTitle("e- ID Cut");
-    ECv_elecID->Write();
-    
-    ECw_elecID->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_elecID->GetYaxis()->SetTitle("e- ID Cut");
-    ECw_elecID->Write();
-    
-    dtime_ECSC_elecID->GetXaxis()->SetTitle("#Delta t(EC-SC) (ns)");
-    dtime_ECSC_elecID->GetYaxis()->SetTitle("e- ID Cut");
-    dtime_ECSC_elecID->Write();
-    
-    for(i=0; i<myElecID.Get_nElecID(); i++){
-        ECtot_VS_P_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
-        ECtot_VS_P_elecID[i]->GetYaxis()->SetTitle("EC total energy");
-        ECtot_VS_P_elecID[i]->Write();
-        
-        ECtotP_VS_P_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
-        ECtotP_VS_P_elecID[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
-        ECtotP_VS_P_elecID[i]->Write();
-        
-        ECin_VS_ECout_elecID[i]->GetXaxis()->SetTitle("EC inner energy");
-        ECin_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
-        ECin_VS_ECout_elecID[i]->Write();
-
-        Mom_VS_ECout_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
-        Mom_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
-        Mom_VS_ECout_elecID[i]->Write();
-    }
-    
     for(i=0; i<myTgt.Get_nIndex(); i++){
         Xvert_VS_Yvert_AllCuts[i]->GetXaxis()->SetTitle("X vertex (cm)");
         Xvert_VS_Yvert_AllCuts[i]->GetYaxis()->SetTitle("Y vertex (cm)");
@@ -2201,6 +2159,52 @@ void WriteHist(string RootFile){
 	BetaPi0->Write();
 	GammaPi0->Write();
 
+    // create a directory for electron ID
+    TDirectory *cdElecID = out->mkdir("ElectronID");
+    cdElecID->cd();
+    
+    Mom_elecID->GetXaxis()->SetTitle("Momentum (GeV)");
+    Mom_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    Mom_elecID->Write();
+    
+    CCnphe_elecID->GetXaxis()->SetTitle("Number of Photo-electrons");
+    CCnphe_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    CCnphe_elecID->Write();
+    
+    ECu_elecID->GetXaxis()->SetTitle("EC U (cm)");
+    ECu_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    ECu_elecID->Write();
+    
+    ECv_elecID->GetXaxis()->SetTitle("EC V (cm)");
+    ECv_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    ECv_elecID->Write();
+    
+    ECw_elecID->GetXaxis()->SetTitle("EC W (cm)");
+    ECw_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    ECw_elecID->Write();
+    
+    dtime_ECSC_elecID->GetXaxis()->SetTitle("#Delta t(EC-SC) (ns)");
+    dtime_ECSC_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    dtime_ECSC_elecID->Write();
+    
+    for(i=0; i<myElecID.Get_nElecID(); i++){
+        ECtot_VS_P_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
+        ECtot_VS_P_elecID[i]->GetYaxis()->SetTitle("EC total energy");
+        ECtot_VS_P_elecID[i]->Write();
+        
+        ECtotP_VS_P_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+        ECtotP_VS_P_elecID[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
+        ECtotP_VS_P_elecID[i]->Write();
+        
+        ECin_VS_ECout_elecID[i]->GetXaxis()->SetTitle("EC inner energy");
+        ECin_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        ECin_VS_ECout_elecID[i]->Write();
+        
+        Mom_VS_ECout_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
+        Mom_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        Mom_VS_ECout_elecID[i]->Write();
+    }
+    
     out->Close();
 }
 
