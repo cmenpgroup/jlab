@@ -1243,23 +1243,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
             emdt = reader.getProperty("ectime",BankIndex_part[ii]) - reader.getProperty("sctime",BankIndex_part[ii]) - 0.7;
             
-            if (this->Get_elecIDLabel(ii).compare("No cuts")==0) {
+            if (myElecID.Get_elecIDLabel(ii).compare("No cuts")==0) {
                 cuts_ElecID = true;
-            }else if (this->Get_elecIDLabel(ii).compare("Momentum")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("Momentum")==0) {
                 cuts_ElecID = myElecID.Check_ElecMom(elec.P());
-            }else if (this->Get_elecIDLabel(ii).compare("EC U-view")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("EC U-view")==0) {
                 cuts_ElecID = myElecID.Check_ElecECu(emECu);
-            }else if (this->Get_elecIDLabel(ii).compare("EC V-view")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("EC V-view")==0) {
                 cuts_ElecID = myElecID.Check_ElecECv(emECv);
-            }else if (this->Get_elecIDLabel(ii).compare("EC W-view")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("EC W-view")==0) {
                 cuts_ElecID = myElecID.Check_ElecECw(emECw);
-            }else if (this->Get_elecIDLabel(ii).compare("ECin")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("ECin")==0) {
                 cuts_ElecID = myElecID.Check_ElecECin(emECin);
-            }else if (this->Get_elecIDLabel(ii).compare("CC Nphe")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("CC Nphe")==0) {
                 cuts_ElecID = myElecID.Check_ElecCCnphe(emCCnphe);
-            }else if (this->Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
                 cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
-            }else if (this->Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
+            }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
                 cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot);
             }else{
                 cuts_ElecID = true;
