@@ -64,6 +64,9 @@ TH2D *ECtot_VS_P_elecID[9];
 TH2D *ECtotP_VS_P_elecID[9];
 TH2D *ECin_VS_ECout_elecID[9];
 TH2D *Mom_VS_ECout_elecID[9];
+TH2D *ECu_VS_ECout_elecID[9];
+TH2D *ECv_VS_ECout_elecID[9];
+TH2D *ECw_VS_ECout_elecID[9];
 
 TH1D *hW[3];
 TH1D *hMx[3];

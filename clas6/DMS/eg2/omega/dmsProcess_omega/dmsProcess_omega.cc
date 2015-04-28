@@ -1276,6 +1276,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 ECtotP_VS_P_elecID[ii]->Fill(elec.P(),emECtot/elec.P());
                 ECin_VS_ECout_elecID[ii]->Fill(emECin,emECout);
                 Mom_VS_ECout_elecID[ii]->Fill(elec.P(),emECout);
+                ECu_VS_ECout_elecID[ii]->Fill(emECu,emECout);
+                ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
+                ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
             }
         }
         
@@ -1728,6 +1731,18 @@ void BookHist(){
         sprintf(hname,"Mom_VS_ECout_elecID_0%i",i);
         sprintf(htitle,"Mom. vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
         Mom_VS_ECout_elecID[i] = new TH2D(hname,htitle, 500, 0, 5.0, 100, 0, 0.25);
+
+        sprintf(hname,"ECu_VS_ECout_elecID_0%i",i);
+        sprintf(htitle,"EC U-view vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
+        ECu_VS_ECout_elecID[i] = new TH2D(hname,htitle, 450, 0, 450, 100, 0, 0.25);
+
+        sprintf(hname,"ECv_VS_ECout_elecID_0%i",i);
+        sprintf(htitle,"EC V-view vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
+        ECv_VS_ECout_elecID[i] = new TH2D(hname,htitle, 450, 0, 450, 100, 0, 0.25);
+        
+        sprintf(hname,"ECw_VS_ECout_elecID_0%i",i);
+        sprintf(htitle,"EC W-view vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
+        ECw_VS_ECout_elecID[i] = new TH2D(hname,htitle, 450, 0, 450, 100, 0, 0.25);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
@@ -1909,6 +1924,10 @@ void WriteHist(string RootFile){
     
 	TFile *out = new TFile(RootFile.c_str(), "recreate");
 	out->cd();
+  
+    // create a directory for check on kinematics
+    TDirectory *cdKine = out->mkdir("Kinematics");
+    cdKine->cd();
     
     q2->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
     q2->GetYaxis()->SetTitle("Counts");
@@ -1961,6 +1980,22 @@ void WriteHist(string RootFile){
     OpAng_elecPhoton2->GetXaxis()->SetTitle("Opening Angle between e^{-} and #gamma_{2} (deg.)");
     OpAng_elecPhoton2->GetYaxis()->SetTitle("Counts");
     OpAng_elecPhoton2->Write();
+ 
+    for(i=0; i<myPartList.Get_nPartLabel(); i++){
+        Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
+        Theta_VS_Phi[i]->GetYaxis()->SetTitle("#phi (deg.)");
+        Theta_VS_Phi[i]->Write();
+    }
+    
+    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
+        Xvert_VS_Yvert[i]->GetXaxis()->SetTitle("X vertex (cm)");
+        Xvert_VS_Yvert[i]->GetYaxis()->SetTitle("Y vertex (cm)");
+        Xvert_VS_Yvert[i]->Write();
+    }
+    
+    // create a directory for check on detector info
+    TDirectory *cdDetectors = out->mkdir("Detectors");
+    cdDetectors->cd();
     
     CCnphe->GetXaxis()->SetTitle("Number of Photo-electrons");
     CCnphe->GetYaxis()->SetTitle("Particle");
@@ -1982,17 +2017,7 @@ void WriteHist(string RootFile){
     dtime_ECSC->GetYaxis()->SetTitle("Particle");
     dtime_ECSC->Write();
     
-    for(i=0; i<myPartList.Get_nPartLabel(); i++){
-        Theta_VS_Phi[i]->GetXaxis()->SetTitle("#theta (deg.)");
-        Theta_VS_Phi[i]->GetYaxis()->SetTitle("#phi (deg.)");
-        Theta_VS_Phi[i]->Write();
-    }
-    
     for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
-        Xvert_VS_Yvert[i]->GetXaxis()->SetTitle("X vertex (cm)");
-        Xvert_VS_Yvert[i]->GetYaxis()->SetTitle("Y vertex (cm)");
-        Xvert_VS_Yvert[i]->Write();
-
         ECtot_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
     	ECtot_VS_P[i]->GetYaxis()->SetTitle("EC total energy");
         ECtot_VS_P[i]->Write();
@@ -2161,7 +2186,11 @@ void WriteHist(string RootFile){
         elecZVertSector[i]->Write();
     }
 
-	RelativityOpAngPhotonsA->Write();
+    // create a directory for check on relativisitic kinematics
+    TDirectory *cdRel = out->mkdir("Relativity");
+    cdRel->cd();
+    
+    RelativityOpAngPhotonsA->Write();
 	RelativityOpAngPhotonsB->Write();
 	BetaPi0->Write();
 	GammaPi0->Write();
@@ -2210,6 +2239,18 @@ void WriteHist(string RootFile){
         Mom_VS_ECout_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
         Mom_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
         Mom_VS_ECout_elecID[i]->Write();
+
+        ECu_VS_ECout_elecID[i]->GetXaxis()->SetTitle("EC U (cm)");
+        ECu_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        ECu_VS_ECout_elecID[i]->Write();
+
+        ECv_VS_ECout_elecID[i]->GetXaxis()->SetTitle("EC V (cm)");
+        ECv_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        ECv_VS_ECout_elecID[i]->Write();
+        
+        ECw_VS_ECout_elecID[i]->GetXaxis()->SetTitle("EC W (cm)");
+        ECw_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        ECw_VS_ECout_elecID[i]->Write();
     }
     
     out->Close();
