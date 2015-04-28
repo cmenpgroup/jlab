@@ -2006,7 +2006,13 @@ void WriteHist(string RootFile){
         ECin_VS_ECout[i]->Write();
     }
 
+    // create a directory for electron ID
+    TDirectory *cdTgt[myTgt.Get_nIndex()];
+    
     for(i=0; i<myTgt.Get_nIndex(); i++){
+        cdTgt[i] = out->mkdir(myTgt.Get_Label(i).c_str());
+        cdTgt[i]->cd();
+
         Xvert_VS_Yvert_AllCuts[i]->GetXaxis()->SetTitle("X vertex (cm)");
         Xvert_VS_Yvert_AllCuts[i]->GetYaxis()->SetTitle("Y vertex (cm)");
         Xvert_VS_Yvert_AllCuts[i]->Write();
@@ -2148,6 +2154,7 @@ void WriteHist(string RootFile){
         IMOmega_AllCuts_ME[i]->Write();
     }
     
+    out->cd();
     for(i=0; i<MAX_SECTORS; i++){
         elecZVertSector[i]->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
         elecZVertSector[i]->GetYaxis()->SetTitle("Counts");
