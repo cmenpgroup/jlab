@@ -417,6 +417,194 @@ void EG2Cuts::Print_Cuts()
     cout << endl;
 }
 
+class ElectronID
+{
+    vector<string> elecIDLabel;
+    vector<double> RangeElecMom;
+    vector<double> RangeECu;
+    vector<double> RangeECv;
+    vector<double> RangeECw;
+    vector<double> RangeECin;
+    vector<double> Range_dtECSC;
+    vector<double> RangeCCnphe;
+    
+public:
+    ElectronID();
+    int Get_nElecID() {return elecIDLabel.size();};
+    string Get_elecIDLabel(int num) {return elecIDLabel[num];};
+    double Get_ElecMom_lo() {return RangeElecMom[0];};
+    double Get_ElecMom_hi() {return RangeElecMom[1];};
+    double Get_ElecECu_lo() {return RangeECu[0];};
+    double Get_ElecECu_hi() {return RangeECu[1];};
+    double Get_ElecECv_lo() {return RangeECv[0];};
+    double Get_ElecECv_hi() {return RangeECv[1];};
+    double Get_ElecECw_lo() {return RangeECw[0];};
+    double Get_ElecECw_hi() {return RangeECw[1];};
+    double Get_ElecECin_lo() {return RangeECin[0];};
+    double Get_ElecECin_hi() {return RangeECin[1];};
+    double Get_ElecCCnphe_lo() {return RangeCCnphe[0];};
+    double Get_ElecCCnphe_hi() {return RangeCCnphe[1];};
+    double Get_Elec_dtECSC_lo() {return Range_dtECSC[0];};
+    double Get_Elec_dtECSC_hi() {return Range_dtECSC[1];};
+    
+    bool Check_ElecMom(double mom);
+    bool Check_ElecECu(double ecu);
+    bool Check_ElecECv(double ecv);
+    bool Check_ElecECw(double ecw);
+    bool Check_ElecECin(double ecin);
+    bool Check_Elec_dtECSC(double dt);
+    bool Check_ElecCCnphe(double nphe);
+    bool Check_ElecECoverP(double mom, double ectot);
+    
+    void Print_ElectronID();
+};
+
+ElectronID::ElectronID()
+{
+    elecIDLabel.push_back("No Cuts");
+    elecIDLabel.push_back("Momentum");
+    elecIDLabel.push_back("EC U-view");
+    elecIDLabel.push_back("EC V-view");
+    elecIDLabel.push_back("EC W-view");
+    elecIDLabel.push_back("ECtot/P VS P");
+    elecIDLabel.push_back("ECin");
+    elecIDLabel.push_back("CC Nphe");
+    elecIDLabel.push_back("dt(EC-SC)");
+    
+    RangeElecMom.push_back(0.64); // Lower limit on e- momentum (in GeV)
+    RangeElecMom.push_back(1000.0); // Upper limit on e- momentum (in GeV)
+    
+    RangeECu.push_back(40); // Lower limit on EC U-view (in cm)
+    RangeECu.push_back(400); // Upper limit on EC U-view (in cm)
+
+    RangeECv.push_back(0); // Lower limit on EC V-view (in cm)
+    RangeECv.push_back(360); // Upper limit on EC V-view (in cm)
+
+    RangeECw.push_back(0); // Lower limit on EC W-view (in cm)
+    RangeECw.push_back(390); // Upper limit on EC W-view (in cm)
+
+    RangeECin.push_back(0.06); // Lower limit on EC inner energy (in GeV)
+    RangeECin.push_back(10.0); // Upper limit on EC inner energy (in GeV)
+    
+    RangeCCnphe.push_back(0); // Lower limit on CC num. photo-electrons
+    RangeCCnphe.push_back(1000); // Upper limit on CC num. photo-electrons
+
+    double dtCentroid = 0.0;
+    double dtWidth = 0.06;
+    double dt0Nsigmas = 5.0;
+    double dtLo = dtCentroid - dtNsigmas*dtWidth;
+    double dtHi = dtCentroid + dtNsigmas*dtWidth;
+    Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)
+    Range_dtECSC.push_back(dtHi); // Upper limit on time difference between EC and SC (in ns)
+}
+
+// check the cut on electron momentum
+bool ElectronID::Check_ElecMom(double mom)
+{
+    bool ret = (mom >= this->Get_ElecMom_lo() && mom < this->Get_ElecMom_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron EC U-view
+bool ElectronID::Check_ElecECu(double ecu)
+{
+    bool ret = (ecu >= this->Get_ElecECu_lo() && ecu < this->Get_ElecECu_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron EC V-view
+bool ElectronID::Check_ElecECv(double ecv)
+{
+    bool ret = (ecv >= this->Get_ElecECv_lo() && ecv < this->Get_ElecECv_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron EC W-view
+bool ElectronID::Check_ElecECw(double ecw)
+{
+    bool ret = (ecw >= this->Get_ElecECw_lo() && ecw < this->Get_ElecECw_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron EC inner energy
+bool ElectronID::Check_ElecECin(double ecin)
+{
+    bool ret = (ecin >= this->Get_ElecECin_lo() && ecin < this->Get_ElecECin_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron time difference between EC and SC
+bool ElectronID::Check_Elec_dtECSC(double dt)
+{
+    bool ret = (dt >= this->Get_Elec_dtECSC_lo() && dt < this->Get_Elec_dtECSC_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron CC num. of photo-electrons
+bool ElectronID::Check_ElecCCnphe(double nphe)
+{
+    bool ret = (nphe >= this->Get_ElecCCnphe_lo() && nphe < this->Get_ElecCCnphe_hi()) ? true : false;
+    
+    return ret;
+}
+
+// check the cut on electron EC inner energy
+bool ElectronID::Check_ElecECoverP(double mom, double ectot)
+{
+    double a = 0.262;
+    double b = 0.0231;
+    double c = -0.00354;
+    double d = 0.00932;
+    double f = 0.029;
+    double centroid = a + b*mom + c*mom*mom;
+    double sigma = sqrt(d*d + f*f/sqrt(mom));
+    double Nsigma = 2.5;
+    
+    double samplingFrac = fabs(ectot/mom - centroid);
+    
+    bool ret = (samplingFrac < Nsigma*sigma) ? true : false;
+    
+    return ret;
+}
+
+// print the cut information
+void ElectronID::Print_ElectronID()
+{
+    int ii;
+    cout<<"Electron ID Info"<<endl;
+    cout<<"========================="<<endl;
+    
+    for(ii=0;ii<this->Get_nElecID();ii++){
+        cout << this->Get_elecIDLabel(ii) << "\t";
+        if (this->Get_elecIDLabel(ii).compare("Momentum")==0) {
+            cout << "[" << this->Get_ElecMom_lo() << "," << this->Get_ElecMom_hi() << "] (GeV)" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("EC U-view")==0) {
+            cout << "[" << this->Get_ElecECu_lo() << "," << this->Get_ElecECu_hi() << "] (cm)" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("EC V-view")==0) {
+            cout << "[" << this->Get_ElecECv_lo() << "," << this->Get_ElecECv_hi() << "] (cm)" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("EC W-view")==0) {
+            cout << "[" << this->Get_ElecECw_lo() << "," << this->Get_ElecECw_hi() << "] (cm)" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("ECin")==0) {
+            cout << "[" << this->Get_ElecECin_lo() << "," << this->Get_ElecECin_hi() << "] (cm)" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("CC Nphe")==0) {
+            cout << "[" << this->Get_ElecCCnphe_lo() << "," << this->Get_ElecCCnphe_hi() << "]" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
+            cout << "[" << this->Get_Elec_dtECSC_lo() << "," << this->Get_Elec_dtECSC_hi() << "] (ns)" << endl;
+        }else if (this->Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
+            cout << "Depends on the momentum dependent sampling fraction" << endl;
+        }else{
+            cout << endl;
+        }
+    }
+    cout << endl;
+}
+
 class OmegaMixedEvent
 {
     int nEvtToMix;
@@ -739,6 +927,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cuts_woBetaPhoton;
     bool cutsAll;
     
+    bool cuts_ElecID;
+    
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, Mx, z_fracEnergy, W;
     double sinHalfTheta;
@@ -746,9 +936,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double timeEC, timeSC, pathEC, pathSC;
     double dt_ECminusSC[5];
     
+    double emECu, emECv, emECw, emECin, emECtot, emCCnphe, emdt; // variables for electron id cuts
+    
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
+    ElectronID myElecID;
 
     myMixEvt.Put_NumberOfEventsToMix(1); // add number of mixed event iterations
     myMixEvt.Put_OffsetOfEventsToMix(5); // add offset of the entry number for mixed events
@@ -759,6 +952,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
+    myElecID.Print_ElectronID();
     
     TLorentzVector BeamMinusElectron;
     TLorentzVector W_TLV;
@@ -1009,13 +1203,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(pPion.P(), pPion.Beta());
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
-
-        // plots of electron ID
-/*	cout<<"Test "<<BankIndex_part<<" ";
-	cout<<reader.getProperty("pid",BankIndex_part)<<" ";
-	cout<<reader.getProperty("ectime",BankIndex_part)<<" ";
-	cout<<reader.getProperty("ectot",BankIndex_part)<<endl;
-  */      
+     
         for(ii=0; ii<5; ii++){
             switch (ii) {
                 case 0: partMom = elec.P(); break;
@@ -1042,6 +1230,55 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
         }
 
+        // Testing the electron ID
+        for(ii=0; ii<myElecID.Get_nElecID(); ii++){
+            cuts_ElecID = false; // intialize the cuts
+            
+            emECtot = reader.getProperty("ectot",BankIndex_part[0]);
+            emECin = reader.getProperty("ecin",BankIndex_part[0]);
+            emECout = reader.getProperty("ecout",BankIndex_part[0]);
+            emECu = reader.getProperty("ecu",BankIndex_part[0]);
+            emECv = reader.getProperty("ecv",BankIndex_part[0]);
+            emECw = reader.getProperty("ecw",BankIndex_part[0]);
+            emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
+            emdt = reader.getProperty("ectime",BankIndex_part[ii]) - reader.getProperty("sctime",BankIndex_part[ii]) - 0.7;
+            
+            if (this->Get_elecIDLabel(ii).compare("No cuts")==0) {
+                cuts_ElecID = true;
+            }else if (this->Get_elecIDLabel(ii).compare("Momentum")==0) {
+                cuts_ElecID = myElecID.Check_ElecMom(elec.P());
+            }else if (this->Get_elecIDLabel(ii).compare("EC U-view")==0) {
+                cuts_ElecID = myElecID.Check_ElecECu(emECu);
+            }else if (this->Get_elecIDLabel(ii).compare("EC V-view")==0) {
+                cuts_ElecID = myElecID.Check_ElecECv(emECv);
+            }else if (this->Get_elecIDLabel(ii).compare("EC W-view")==0) {
+                cuts_ElecID = myElecID.Check_ElecECw(emECw);
+            }else if (this->Get_elecIDLabel(ii).compare("ECin")==0) {
+                cuts_ElecID = myElecID.Check_ElecECin(emECin);
+            }else if (this->Get_elecIDLabel(ii).compare("CC Nphe")==0) {
+                cuts_ElecID = myElecID.Check_ElecCCnphe(emCCnphe);
+            }else if (this->Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
+                cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
+            }else if (this->Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
+                cuts_ElecID = myElecID.Check_ElecECoverP(mom,ectot);
+            }else{
+                cuts_ElecID = true;
+            }
+            
+            if(cuts_ElecID){
+                CCnphe_elecID->Fill(emCCnphe,ii);
+                Mom_elecID->Fill(elec.P(),ii);
+                ECu_elecID->Fill(emECu,ii);
+                ECv_elecID->Fill(emECv,ii);
+                ECw_elecID->Fill(emECw,ii);
+                dtime_ECSC_elecID->Fill(emdt,ii);
+                ECtot_VS_P_elecID[ii]->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_elecID[ii]->Fill(elec.P(),emECtot/elec.P());
+                ECin_VS_ECout_elecID[ii]->Fill(emECin,emECout);
+                Mom_VS_ECout_elecID[ii]->Fill(elec.P(),emECout);
+            }
+        }
+        
         Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
             elecZVertSector[Sector_index-1]->Fill(elec_vert.Z());
@@ -1348,8 +1585,10 @@ void BookHist(){
     ParticleList myPartList;
     EG2Target myTgt;
     OmegaMixedEvent myMixEvt;
+    ElectronID myElecID;
     
     int nME_Methods = myMixEvt.Get_nLabel();
+    int nElecID = myElecID.Get_nElecID();
     
     sprintf(hname,"q2");
     sprintf(htitle,"Q^{2}");
@@ -1441,11 +1680,54 @@ void BookHist(){
 
     	sprintf(hname,"ECin_VS_ECout_%s",myDetPart.Get_DetPartLabel(i).c_str());
     	sprintf(htitle,"ECin vs ECout, %s",myDetPart.Get_DetPartLabel(i).c_str());
-    	ECin_VS_ECout[i] = new TH2D(hname,htitle, 100, 0, 1.0, 100, 0, 1.0);
+    	ECin_VS_ECout[i] = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
 
         sprintf(hname,"ECtotP_VS_P_%s",myDetPart.Get_DetPartLabel(i).c_str());
         sprintf(htitle,"ECtot/P vs P, %s",myDetPart.Get_DetPartLabel(i).c_str());
         ECtotP_VS_P[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
+    }
+
+    // electron ID histogram
+    sprintf(hname,"Mom_elecID");
+    sprintf(htitle,"Momentum");
+    Mom_elecID = new TH2D(hname,htitle, 500, 0, 5.0, nElecID, -0.5, nElecID + 0.5);
+    
+    sprintf(hname,"CCnphe_elecID");
+    sprintf(htitle,"CC Number of Photo-electrons");
+    CCnphe_elecID = new TH2D(hname,htitle, 100, 0, 100, nElecID, -0.5, nElecID + 0.5);
+    
+    sprintf(hname,"ECu_elecID");
+    sprintf(htitle,"EC U-view");
+    ECu_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID + 0.5);
+    
+    sprintf(hname,"ECv_elecID");
+    sprintf(htitle,"EC V-view");
+    ECv_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID + 0.5);
+    
+    sprintf(hname,"ECw_elecID");
+    sprintf(htitle,"EC W-view");
+    ECw_elecID = new TH2D(hname,htitle, 450, 0, 450, nElecID, -0.5, nElecID + 0.5);
+    
+    sprintf(hname,"dtime_ECSC_elecID");
+    sprintf(htitle,"#Delta t(EC-SC)");
+    dtime_ECSC_elecID = new TH2D(hname,htitle, 100, -5.0, 5.0, nElecID, -0.5, nElecID + 0.5);
+    
+    for(i=0; ii<myElecID.Get_nElecID(); i++){
+        sprintf(hname,"ECtot_VS_P_elecID_0%i",i);
+        sprintf(htitle,"ECtot vs P, %s",myElecID.Get_elecIDLabel(i).c_str());
+        ECtot_VS_P_elecID[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 1.0);
+        
+        sprintf(hname,"ECin_VS_ECout_elecID_0%i",i);
+        sprintf(htitle,"ECin vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
+        ECin_VS_ECout_elecID[i] = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
+        
+        sprintf(hname,"ECtotP_VS_P_elecID_0%i",i);
+        sprintf(htitle,"ECtot/P vs P, %s",myElecID.Get_elecIDLabel(i).c_str());
+        ECtotP_VS_P_elecID[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
+
+        sprintf(hname,"Mom_VS_ECout_elecID_0%i",i);
+        sprintf(htitle,"Mom. vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
+        Mom_VS_ECout_elecID[i] = new TH2D(hname,htitle, 500, 0, 5.0, 100, 0, 0.25);
     }
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
@@ -1623,6 +1905,7 @@ void WriteHist(string RootFile){
     DetectedParticles myDetPart;
     ParticleList myPartList;
     EG2Target myTgt;
+    ElectronID myElecID;
     
 	TFile *out = new TFile(RootFile.c_str(), "recreate");
 	out->cd();
@@ -1723,6 +2006,48 @@ void WriteHist(string RootFile){
         ECin_VS_ECout[i]->Write();
     }
 
+    Mom_elecID->GetXaxis()->SetTitle("Momentum (GeV)");
+    Mom_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    Mom_elecID->Write();
+    
+    CCnphe_elecID->GetXaxis()->SetTitle("Number of Photo-electrons");
+    CCnphe_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    CCnphe_elecID->Write();
+    
+    ECu_elecID->GetXaxis()->SetTitle("EC U (cm)");
+    ECu_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    ECu_elecID->Write();
+    
+    ECv_elecID->GetXaxis()->SetTitle("EC V (cm)");
+    ECv_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    ECv_elecID->Write();
+    
+    ECw_elecID->GetXaxis()->SetTitle("EC W (cm)");
+    ECw_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    ECw_elecID->Write();
+    
+    dtime_ECSC_elecID->GetXaxis()->SetTitle("#Delta t(EC-SC) (ns)");
+    dtime_ECSC_elecID->GetYaxis()->SetTitle("e- ID Cut");
+    dtime_ECSC_elecID->Write();
+    
+    for(i=0; i<myElecID.Get_nElecID(); i++){
+        ECtot_VS_P_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
+        ECtot_VS_P_elecID[i]->GetYaxis()->SetTitle("EC total energy");
+        ECtot_VS_P_elecID[i]->Write();
+        
+        ECtotP_VS_P_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+        ECtotP_VS_P_elecID[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
+        ECtotP_VS_P_elecID[i]->Write();
+        
+        ECin_VS_ECout_elecID[i]->GetXaxis()->SetTitle("EC inner energy");
+        ECin_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        ECin_VS_ECout_elecID[i]->Write();
+
+        Mom_VS_ECout_elecID[i]->GetXaxis()->SetTitle("Momentum (GeV)");
+        Mom_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
+        Mom_VS_ECout_elecID[i]->Write();
+    }
+    
     for(i=0; i<myTgt.Get_nIndex(); i++){
         Xvert_VS_Yvert_AllCuts[i]->GetXaxis()->SetTitle("X vertex (cm)");
         Xvert_VS_Yvert_AllCuts[i]->GetYaxis()->SetTitle("Y vertex (cm)");

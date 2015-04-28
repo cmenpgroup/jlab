@@ -54,6 +54,17 @@ TH2D *ECtot_VS_P[5];
 TH2D *ECtotP_VS_P[5];
 TH2D *ECin_VS_ECout[5];
 
+TH2D *Mom_elecID;
+TH2D *CCnphe_elecID;
+TH2D *ECu_elecID;
+TH2D *ECv_elecID;
+TH2D *ECw_elecID;
+TH2D *dtime_ECSC_elecID;
+TH2D *ECtot_VS_P_elecID[9];
+TH2D *ECtotP_VS_P_elecID[9];
+TH2D *ECin_VS_ECout_elecID[9];
+TH2D *Mom_VS_ECout_elecID[9];
+
 TH1D *hW[3];
 TH1D *hMx[3];
 TH1D *z_fracE[3];
