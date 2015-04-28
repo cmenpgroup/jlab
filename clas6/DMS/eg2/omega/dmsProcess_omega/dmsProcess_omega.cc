@@ -491,7 +491,7 @@ ElectronID::ElectronID()
 
     double dtCentroid = 0.0;
     double dtWidth = 0.06;
-    double dt0Nsigmas = 5.0;
+    double dtNsigmas = 5.0;
     double dtLo = dtCentroid - dtNsigmas*dtWidth;
     double dtHi = dtCentroid + dtNsigmas*dtWidth;
     Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)
@@ -936,7 +936,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double timeEC, timeSC, pathEC, pathSC;
     double dt_ECminusSC[5];
     
-    double emECu, emECv, emECw, emECin, emECtot, emCCnphe, emdt; // variables for electron id cuts
+    double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
     
     EG2Target myTgt;
     EG2Cuts myCuts;
@@ -1260,7 +1260,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }else if (this->Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
                 cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
             }else if (this->Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
-                cuts_ElecID = myElecID.Check_ElecECoverP(mom,ectot);
+                cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot);
             }else{
                 cuts_ElecID = true;
             }
@@ -1712,7 +1712,7 @@ void BookHist(){
     sprintf(htitle,"#Delta t(EC-SC)");
     dtime_ECSC_elecID = new TH2D(hname,htitle, 100, -5.0, 5.0, nElecID, -0.5, nElecID + 0.5);
     
-    for(i=0; ii<myElecID.Get_nElecID(); i++){
+    for(i=0; i<myElecID.Get_nElecID(); i++){
         sprintf(hname,"ECtot_VS_P_elecID_0%i",i);
         sprintf(htitle,"ECtot vs P, %s",myElecID.Get_elecIDLabel(i).c_str());
         ECtot_VS_P_elecID[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 1.0);
