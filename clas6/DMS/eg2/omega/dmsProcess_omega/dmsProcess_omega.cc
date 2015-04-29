@@ -1280,6 +1280,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
                 ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
             }
+            
+            if (emECout < 0.01){
+                Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
+                Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+                elecZVert_ECoutCut->Fill(elec_vert.Z());
+                q2_ECoutCut->Fill(Qsq);
+            }
         }
         
         Sector_index = GetSectorByPhi(elec.Phi());
@@ -1604,7 +1611,7 @@ void BookHist(){
     sprintf(hname,"nu_EnergyTransfer");
     sprintf(htitle,"\nu");
     nu_EnergyTransfer = new TH1D(hname,htitle, 100, 0., 5.);
-    
+
     sprintf(hname,"elecZVert");
     sprintf(htitle,"Z Vertex of Electron");
 	elecZVert = new TH1D(hname,htitle, 300, -35, -20);
@@ -1624,7 +1631,7 @@ void BookHist(){
     sprintf(hname,"ZVertDiff");
     sprintf(htitle,"Difference Between Z Vertices of electron and other particle");
     ZVertDiff = new TH2D(hname,htitle, 300, -10, 10,4,0.5,4.5);
-
+    
     sprintf(hname,"Beta_VS_Momentum");
     sprintf(htitle,"Beta vs Momentum");
 	Beta_VS_Momentum = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
@@ -1744,6 +1751,22 @@ void BookHist(){
         sprintf(htitle,"EC W-view vs ECout, %s",myElecID.Get_elecIDLabel(i).c_str());
         ECw_VS_ECout_elecID[i] = new TH2D(hname,htitle, 450, 0, 450, 100, 0, 0.25);
     }
+    
+    sprintf(hname,"Theta_VS_Phi_ECoutCut");
+    sprintf(htitle,"Theta vs Phi for e-, EC_{out} < 0.01 GeV");
+    Theta_VS_Phi_ECoutCut = new TH2D(hname,htitle, 180, 0, 180, 360, -180, 180);
+    
+    sprintf(hname,"q2_ECoutCut");
+    sprintf(htitle,"Q^{2}, EC_{out} < 0.01 GeV");
+    q2_ECoutCut = new TH1D(hname,htitle, 100, 0., 4.);
+    
+    sprintf(hname,"elecZVert_ECoutCut");
+    sprintf(htitle,"Z Vertex of Electron, EC_{out} < 0.01 GeV");
+    elecZVert_ECoutCut = new TH1D(hname,htitle, 300, -35, -20);
+    
+    sprintf(hname,"Beta_VS_Momentum_ECoutCut");
+    sprintf(htitle,"Beta vs Momentum");
+    Beta_VS_Momentum_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
@@ -2252,6 +2275,22 @@ void WriteHist(string RootFile){
         ECw_VS_ECout_elecID[i]->GetYaxis()->SetTitle("EC outer energy");
         ECw_VS_ECout_elecID[i]->Write();
     }
+    
+    q2_ECoutCut->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
+    q2_ECoutCut->GetYaxis()->SetTitle("Counts");
+    q2_ECoutCut->Write();
+    
+    elecZVert_ECoutCut->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVert_ECoutCut->GetYaxis()->SetTitle("Counts");
+    elecZVert_ECoutCut->Write();
+    
+    Beta_VS_Momentum_ECoutCut->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    Beta_VS_Momentum_ECoutCut->GetYaxis()->SetTitle("#beta");
+    Beta_VS_Momentum_ECoutCut->Write();
+    
+    Theta_VS_Phi_ECoutCut->GetXaxis()->SetTitle("#theta (deg.)");
+    Theta_VS_Phi_ECoutCut->GetYaxis()->SetTitle("#phi (deg.)");
+    Theta_VS_Phi_ECoutCut->Write();
     
     out->Close();
 }

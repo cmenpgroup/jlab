@@ -68,6 +68,11 @@ TH2D *ECu_VS_ECout_elecID[9];
 TH2D *ECv_VS_ECout_elecID[9];
 TH2D *ECw_VS_ECout_elecID[9];
 
+TH1D *q2_ECoutCut;
+TH1D *elecZVert_ECoutCut;
+TH2D *Beta_VS_Momentum_ECoutCut;
+TH2D *Theta_VS_Phi_ECoutCut;
+
 TH1D *hW[3];
 TH1D *hMx[3];
 TH1D *z_fracE[3];
