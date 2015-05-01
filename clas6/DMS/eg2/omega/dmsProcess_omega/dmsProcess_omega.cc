@@ -1286,6 +1286,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
                 elecZVert_ECoutCut->Fill(elec_vert.Z());
                 q2_ECoutCut->Fill(Qsq);
+
+                ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
             }
         }
         
@@ -1767,6 +1770,14 @@ void BookHist(){
     sprintf(hname,"Beta_VS_Momentum_ECoutCut");
     sprintf(htitle,"Beta vs Momentum");
     Beta_VS_Momentum_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
+    
+    sprintf(hname,"ECtot_VS_P_ECoutCut");
+    sprintf(htitle,"ECtot vs P, EC_{out} < 0.01 GeV");
+    ECtot_VS_P_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 1.0);
+    
+    sprintf(hname,"ECtotP_VS_P_ECoutCut");
+    sprintf(htitle,"ECtot/P vs P, EC_{out} < 0.01 GeV");
+    ECtotP_VS_P_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
@@ -2291,6 +2302,14 @@ void WriteHist(string RootFile){
     Theta_VS_Phi_ECoutCut->GetXaxis()->SetTitle("#theta (deg.)");
     Theta_VS_Phi_ECoutCut->GetYaxis()->SetTitle("#phi (deg.)");
     Theta_VS_Phi_ECoutCut->Write();
+
+    ECtot_VS_P_ECoutCut->GetXaxis()->SetTitle("Momentum (GeV)");
+    ECtot_VS_P_ECoutCut->GetYaxis()->SetTitle("EC total energy");
+    ECtot_VS_P_ECoutCut->Write();
+    
+    ECtotP_VS_P_ECoutCut->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    ECtotP_VS_P_ECoutCut->GetYaxis()->SetTitle("EC_{total}/Mom.");
+    ECtotP_VS_P_ECoutCut->Write();
     
     out->Close();
 }
