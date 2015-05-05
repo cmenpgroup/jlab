@@ -1289,6 +1289,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
                 ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
                 ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
+                ECtot_VS_ECin_ECoutCut->Fill(emECin,emECtot);
             }
         }
         
@@ -1778,6 +1779,10 @@ void BookHist(){
     sprintf(hname,"ECtotP_VS_P_ECoutCut");
     sprintf(htitle,"ECtot/P vs P, EC_{out} < 0.01 GeV");
     ECtotP_VS_P_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
+
+    sprintf(hname,"ECtot_VS_ECin_ECoutCut");
+    sprintf(htitle,"ECtot vs ECin, EC_{out} < 0.01 GeV");
+    ECtot_VS_ECin_ECoutCut = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 1.0);
     
 	for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
@@ -2310,6 +2315,10 @@ void WriteHist(string RootFile){
     ECtotP_VS_P_ECoutCut->GetXaxis()->SetTitle("Momentum (GeV/c)");
     ECtotP_VS_P_ECoutCut->GetYaxis()->SetTitle("EC_{total}/Mom.");
     ECtotP_VS_P_ECoutCut->Write();
+
+    ECtot_VS_ECin_ECoutCut->GetXaxis()->SetTitle("EC_{in} (GeV)");
+    ECtot_VS_ECin_ECoutCut->GetYaxis()->SetTitle("EC_{total} (GeV)");
+    ECtot_VS_ECin_ECoutCut->Write();
     
     out->Close();
 }

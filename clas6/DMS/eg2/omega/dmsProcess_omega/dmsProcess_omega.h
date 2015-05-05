@@ -74,6 +74,7 @@ TH2D *Beta_VS_Momentum_ECoutCut;
 TH2D *Theta_VS_Phi_ECoutCut;
 TH2D *ECtotP_VS_P_ECoutCut;
 TH2D *ECtot_VS_P_ECoutCut;
+TH2D *ECtot_VS_ECin_ECoutCut;
 
 TH1D *hW[3];
 TH1D *hMx[3];
