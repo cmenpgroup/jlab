@@ -1289,7 +1289,17 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
                 ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
                 ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
-                ECtot_VS_ECin_ECoutCut->Fill(emECin,emECtot);
+                ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
+            }
+            else {
+                Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
+                Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+                elecZVert_AntiECoutCut->Fill(elec_vert.Z());
+                q2_AntiECoutCut->Fill(Qsq);
+                
+                ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
+                ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
             }
         }
         
@@ -1769,7 +1779,7 @@ void BookHist(){
     elecZVert_ECoutCut = new TH1D(hname,htitle, 300, -35, -20);
     
     sprintf(hname,"Beta_VS_Momentum_ECoutCut");
-    sprintf(htitle,"Beta vs Momentum");
+    sprintf(htitle,"Beta vs Momentum, EC_{out} < 0.01 GeV");
     Beta_VS_Momentum_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
     
     sprintf(hname,"ECtot_VS_P_ECoutCut");
@@ -1780,11 +1790,39 @@ void BookHist(){
     sprintf(htitle,"ECtot/P vs P, EC_{out} < 0.01 GeV");
     ECtotP_VS_P_ECoutCut = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
 
-    sprintf(hname,"ECtot_VS_ECin_ECoutCut");
-    sprintf(htitle,"ECtot vs ECin, EC_{out} < 0.01 GeV");
-    ECtot_VS_ECin_ECoutCut = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 1.0);
+    sprintf(hname,"ECtotMinusECin_ECoutCut");
+    sprintf(htitle,"ECtot - ECin, EC_{out} < 0.01 GeV");
+    ECtotMinusECin_ECoutCut = new TH1D(hname,htitle, 100,-5.0,5.0);
     
-	for(i=0; i<myTgt.Get_nIndex(); i++){
+    sprintf(hname,"Theta_VS_Phi_AntiECoutCut");
+    sprintf(htitle,"Theta vs Phi for e-, EC_{out} >= 0.01 GeV");
+    Theta_VS_Phi_AntiECoutCut = new TH2D(hname,htitle, 180, 0, 180, 360, -180, 180);
+    
+    sprintf(hname,"q2_AntiECoutCut");
+    sprintf(htitle,"Q^{2}, EC_{out} >= 0.01 GeV");
+    q2_AntiECoutCut = new TH1D(hname,htitle, 100, 0., 4.);
+    
+    sprintf(hname,"elecZVert_AntiECoutCut");
+    sprintf(htitle,"Z Vertex of Electron, EC_{out} >= 0.01 GeV");
+    elecZVert_AntiECoutCut = new TH1D(hname,htitle, 300, -35, -20);
+    
+    sprintf(hname,"Beta_VS_Momentum_AntiECoutCut");
+    sprintf(htitle,"Beta vs Momentum, EC_{out} >= 0.01 GeV");
+    Beta_VS_Momentum_AntiECoutCut = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
+    
+    sprintf(hname,"ECtot_VS_P_AntiECoutCut");
+    sprintf(htitle,"ECtot vs P, EC_{out} >= 0.01 GeV");
+    ECtot_VS_P_AntiECoutCut = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 1.0);
+    
+    sprintf(hname,"ECtotP_VS_P_AntiECoutCut");
+    sprintf(htitle,"ECtot/P vs P, EC_{out} >= 0.01 GeV");
+    ECtotP_VS_P_AntiECoutCut = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
+    
+    sprintf(hname,"ECtotMinusECin_AntiECoutCut");
+    sprintf(htitle,"ECtot - ECin, EC_{out} >= 0.01 GeV");
+    ECtotMinusECin_AntiECoutCut = new TH1D(hname,htitle, 100,-5.0,5.0);
+    
+    for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, All Cuts, %s",myTgt.Get_Label(i).c_str());
         Xvert_VS_Yvert_AllCuts[i] = new TH2D(hname,htitle, 100, -0.05, 0.05, 100, -0.05, 0.05);
@@ -2316,9 +2354,37 @@ void WriteHist(string RootFile){
     ECtotP_VS_P_ECoutCut->GetYaxis()->SetTitle("EC_{total}/Mom.");
     ECtotP_VS_P_ECoutCut->Write();
 
-    ECtot_VS_ECin_ECoutCut->GetXaxis()->SetTitle("EC_{in} (GeV)");
-    ECtot_VS_ECin_ECoutCut->GetYaxis()->SetTitle("EC_{total} (GeV)");
-    ECtot_VS_ECin_ECoutCut->Write();
+    ECtotMinusECin_ECoutCut->GetXaxis()->SetTitle("EC_{total} - EC_{in} (GeV)");
+    ECtotMinusECin_ECoutCut->GetYaxis()->SetTitle("Counts");
+    ECtotMinusECin_ECoutCut->Write();
+    
+    q2_AntiECoutCut->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
+    q2_AntiECoutCut->GetYaxis()->SetTitle("Counts");
+    q2_AnitECoutCut->Write();
+    
+    elecZVert_AntiECoutCut->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVert_AntiECoutCut->GetYaxis()->SetTitle("Counts");
+    elecZVert_AntiECoutCut->Write();
+    
+    Beta_VS_Momentum_AntiECoutCut->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    Beta_VS_Momentum_AntiECoutCut->GetYaxis()->SetTitle("#beta");
+    Beta_VS_Momentum_AntiECoutCut->Write();
+    
+    Theta_VS_Phi_AntiECoutCut->GetXaxis()->SetTitle("#theta (deg.)");
+    Theta_VS_Phi_AntiECoutCut->GetYaxis()->SetTitle("#phi (deg.)");
+    Theta_VS_Phi_AntiECoutCut->Write();
+    
+    ECtot_VS_P_AntiECoutCut->GetXaxis()->SetTitle("Momentum (GeV)");
+    ECtot_VS_P_AntiECoutCut->GetYaxis()->SetTitle("EC total energy");
+    ECtot_VS_P_AntiECoutCut->Write();
+    
+    ECtotP_VS_P_AntiECoutCut->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    ECtotP_VS_P_AntiECoutCut->GetYaxis()->SetTitle("EC_{total}/Mom.");
+    ECtotP_VS_P_AntiECoutCut->Write();
+    
+    ECtotMinusECin_AntiECoutCut->GetXaxis()->SetTitle("EC_{total} - EC_{in} (GeV)");
+    ECtotMinusECin_AntiECoutCut->GetYaxis()->SetTitle("Counts");
+    ECtotMinusECin_AntiECoutCut->Write();
     
     out->Close();
 }
