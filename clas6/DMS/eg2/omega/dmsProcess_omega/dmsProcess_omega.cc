@@ -1281,6 +1281,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
             }
             
+            if(myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw)){
+                ECin_VS_ECout_ECfid->Fill(emECin,emECout);
+            }
+            
             if (emECout < 0.01){
                 Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
                 Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
@@ -1792,7 +1796,7 @@ void BookHist(){
 
     sprintf(hname,"ECtotMinusECin_ECoutCut");
     sprintf(htitle,"ECtot - ECin, EC_{out} < 0.01 GeV");
-    ECtotMinusECin_ECoutCut = new TH1D(hname,htitle, 100,-5.0,5.0);
+    ECtotMinusECin_ECoutCut = new TH1D(hname,htitle, 100,-1.0,1.0);
     
     sprintf(hname,"Theta_VS_Phi_AntiECoutCut");
     sprintf(htitle,"Theta vs Phi for e-, EC_{out} >= 0.01 GeV");
@@ -1820,7 +1824,11 @@ void BookHist(){
     
     sprintf(hname,"ECtotMinusECin_AntiECoutCut");
     sprintf(htitle,"ECtot - ECin, EC_{out} >= 0.01 GeV");
-    ECtotMinusECin_AntiECoutCut = new TH1D(hname,htitle, 100,-5.0,5.0);
+    ECtotMinusECin_AntiECoutCut = new TH1D(hname,htitle, 100,-1.0,1.0);
+    
+    sprintf(hname,"ECin_VS_ECout_ECfid");
+    sprintf(htitle,"ECin vs ECout, EC fid. cut");
+    ECin_VS_ECout_ECfid = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
     
     for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
@@ -2385,6 +2393,10 @@ void WriteHist(string RootFile){
     ECtotMinusECin_AntiECoutCut->GetXaxis()->SetTitle("EC_{total} - EC_{in} (GeV)");
     ECtotMinusECin_AntiECoutCut->GetYaxis()->SetTitle("Counts");
     ECtotMinusECin_AntiECoutCut->Write();
+    
+    ECin_VS_ECout_ECfid->GetXaxis()->SetTitle("EC inner energy");
+    ECin_VS_ECout_ECfid->GetYaxis()->SetTitle("EC outer energy");
+    ECin_VS_ECout_ECfid->Write();
     
     out->Close();
 }

@@ -84,6 +84,8 @@ TH2D *Theta_VS_Phi_AntiECoutCut;
 TH2D *ECtotP_VS_P_AntiECoutCut;
 TH2D *ECtot_VS_P_AntiECoutCut;
 
+TH2D *ECin_VS_ECout_ECfid;
+
 TH1D *hW[3];
 TH1D *hMx[3];
 TH1D *z_fracE[3];
