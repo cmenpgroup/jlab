@@ -2360,7 +2360,7 @@ void WriteHist(string RootFile){
     
     q2_AntiECoutCut->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
     q2_AntiECoutCut->GetYaxis()->SetTitle("Counts");
-    q2_AnitECoutCut->Write();
+    q2_AntiECoutCut->Write();
     
     elecZVert_AntiECoutCut->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert_AntiECoutCut->GetYaxis()->SetTitle("Counts");
