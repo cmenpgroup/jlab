@@ -928,6 +928,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cutsAll;
     
     bool cuts_ElecID;
+    bool ElecID_All;
+    bool ElecID_Mom;
+    bool ElecID_ECvsP;
+    bool ElecID_ECfid;
+    bool ElecID_dtECSC;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, Mx, z_fracEnergy, W;
@@ -1017,6 +1022,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cuts_woBetaPhoton = false;
         cuts_woOpAng_ElecPhoton = false;
         cuts_woElecR = false;
+        
+        ElecID_All = false;
+        ElecID_Mom =false;
+        ElecID_ECvsP = false;
+        ElecID_ECfid = false;
+        ElecID_dtECSC = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
         if (DEBUG) reader.printEvent();
@@ -1230,18 +1241,54 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
         }
 
+        // Electron ID cuts
+        emECtot = reader.getProperty("ectot",BankIndex_part[0]);
+        emECin = reader.getProperty("ecin",BankIndex_part[0]);
+        emECout = reader.getProperty("ecout",BankIndex_part[0]);
+        emECu = reader.getProperty("ecu",BankIndex_part[0]);
+        emECv = reader.getProperty("ecv",BankIndex_part[0]);
+        emECw = reader.getProperty("ecw",BankIndex_part[0]);
+        emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
+        emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
+      
+        ElecID_Mom = myElecID.Check_ElecMom(elec.P());
+        ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot);
+        ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
+        ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
+        ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
+        
+        if(ElecID_ECfid){
+            ECin_VS_ECout_ECfid->Fill(emECin,emECout);
+        }
+        
+        if(ElecID_All){
+            ECin_VS_ECout_elecID_All->Fill(emECin,emECout);
+        }
+
+        if (emECout < 0.01){
+            Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
+            Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+            elecZVert_ECoutCut->Fill(elec_vert.Z());
+            q2_ECoutCut->Fill(Qsq);
+            
+            ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
+            ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
+            ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
+        }
+        else {
+            Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
+            Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+            elecZVert_AntiECoutCut->Fill(elec_vert.Z());
+            q2_AntiECoutCut->Fill(Qsq);
+            
+            ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
+            ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
+            ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
+        }
+        
         // Testing the electron ID
         for(ii=0; ii<myElecID.Get_nElecID(); ii++){
             cuts_ElecID = false; // intialize the cuts
-            
-            emECtot = reader.getProperty("ectot",BankIndex_part[0]);
-            emECin = reader.getProperty("ecin",BankIndex_part[0]);
-            emECout = reader.getProperty("ecout",BankIndex_part[0]);
-            emECu = reader.getProperty("ecu",BankIndex_part[0]);
-            emECv = reader.getProperty("ecv",BankIndex_part[0]);
-            emECw = reader.getProperty("ecw",BankIndex_part[0]);
-            emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
-            emdt = reader.getProperty("ectime",BankIndex_part[ii]) - reader.getProperty("sctime",BankIndex_part[ii]) - 0.7;
             
             if (myElecID.Get_elecIDLabel(ii).compare("No cuts")==0) {
                 cuts_ElecID = true;
@@ -1262,7 +1309,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
                 cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot);
             }else{
-                cuts_ElecID = true;
+                cuts_ElecID = false;
             }
             
             if(cuts_ElecID){
@@ -1279,31 +1326,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 ECu_VS_ECout_elecID[ii]->Fill(emECu,emECout);
                 ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
                 ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
-            }
-            
-            if(myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw)){
-                ECin_VS_ECout_ECfid->Fill(emECin,emECout);
-            }
-            
-            if (emECout < 0.01){
-                Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
-                Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
-                elecZVert_ECoutCut->Fill(elec_vert.Z());
-                q2_ECoutCut->Fill(Qsq);
-
-                ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
-                ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
-                ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
-            }
-            else {
-                Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
-                Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
-                elecZVert_AntiECoutCut->Fill(elec_vert.Z());
-                q2_AntiECoutCut->Fill(Qsq);
-                
-                ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
-                ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
-                ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
             }
         }
         
@@ -1770,9 +1792,13 @@ void BookHist(){
         ECw_VS_ECout_elecID[i] = new TH2D(hname,htitle, 450, 0, 450, 100, 0, 0.25);
     }
     
+    sprintf(hname,"ECin_VS_ECout_elecID_All");
+    sprintf(htitle,"ECin vs ECout, all e- cuts");
+    ECin_VS_ECout_elecID_All = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
+    
     sprintf(hname,"Theta_VS_Phi_ECoutCut");
     sprintf(htitle,"Theta vs Phi for e-, EC_{out} < 0.01 GeV");
-    Theta_VS_Phi_ECoutCut = new TH2D(hname,htitle, 180, 0, 180, 360, -180, 180);
+    Theta_VS_Phi_ECoutCut = new TH2D(hname,htitle, 80, 0, 80, 360, -180, 180);
     
     sprintf(hname,"q2_ECoutCut");
     sprintf(htitle,"Q^{2}, EC_{out} < 0.01 GeV");
@@ -1800,7 +1826,7 @@ void BookHist(){
     
     sprintf(hname,"Theta_VS_Phi_AntiECoutCut");
     sprintf(htitle,"Theta vs Phi for e-, EC_{out} >= 0.01 GeV");
-    Theta_VS_Phi_AntiECoutCut = new TH2D(hname,htitle, 180, 0, 180, 360, -180, 180);
+    Theta_VS_Phi_AntiECoutCut = new TH2D(hname,htitle, 80, 0, 80, 360, -180, 180);
     
     sprintf(hname,"q2_AntiECoutCut");
     sprintf(htitle,"Q^{2}, EC_{out} >= 0.01 GeV");
@@ -2397,6 +2423,10 @@ void WriteHist(string RootFile){
     ECin_VS_ECout_ECfid->GetXaxis()->SetTitle("EC inner energy");
     ECin_VS_ECout_ECfid->GetYaxis()->SetTitle("EC outer energy");
     ECin_VS_ECout_ECfid->Write();
+
+    ECin_VS_ECout_elecID_All->GetXaxis()->SetTitle("EC inner energy");
+    ECin_VS_ECout_elecID_All->GetYaxis()->SetTitle("EC outer energy");
+    ECin_VS_ECout_elecID_All->Write();
     
     out->Close();
 }
