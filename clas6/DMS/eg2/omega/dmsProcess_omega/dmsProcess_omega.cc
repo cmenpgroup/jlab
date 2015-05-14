@@ -428,6 +428,28 @@ class ElectronID
     vector<double> Range_dtECSC;
     vector<double> RangeCCnphe;
     
+    // parameters to calculate the EC sampling fraction of total energy vs P
+    double EC_SamplingFrac_C[6][5] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
+        {2.78E-1,1.87E-2,-2.38E-3,1.399E-2,3.75E-2},
+        {2.62E-1,2.31E-2,-3.54E-3,9.32E-3,2.90E-2},
+        {2.51E-1,2.01E-2,-3.32E-3,8.21E-3,2.99E-2},
+        {2.63E-1,9.55E-2,-1.02E-3,2.25E-2,3.06E-2},
+        {2.55E-1,2.32E-2,-3.05E-3,1.17E-2,3.64E-2}};
+
+    double EC_SamplingFrac_Fe[6][5] = {{2.22E-1,2.23E-2,-2.41E-3,9.23E-3,2.98E-2},
+        {2.34E-1,1.95E-2,-2.08E-3,8.66E-3,3.09E-2},
+        {2.52E-1,2.42E-2,-3.39E-3,1.08E-2,2.64E-2},
+        {2.51E-1,2.08E-2,-3.27E-3,7.22E-3,2.98E-2},
+        {2.72E-1,1.18E-2,-1.87E-3,1.84E-2,3.48E-2},
+        {2.52E-1,2.28E-2,-3.11E-3,4.11E-3,3.55E-2}};
+    
+    double EC_SamplingFrac_Pb[6][5] = {{2.53E-1,1.38E-2,-1.40E-3,7.67E-3,3.54E-2},
+        {2.49E-1,1.47E-2,-1.49E-3,7.53E-3,3.38E-2},
+        {2.54E-1,2.26E-2,-3.05E-3,8.13E-3,2.77E-2},
+        {2.55E-1,1.90E-2,-3.05E-3,7.20E-3,3.04E-2},
+        {2.76E-1,1.11E-2,-1.76E-3,1.81E-2,3.53E-2},
+        {2.62E-1,1.92E-2,-2.62E-3,1.99E-3,3.76E-2}};
+    
 public:
     ElectronID();
     int Get_nElecID() {return elecIDLabel.size();};
@@ -454,7 +476,7 @@ public:
     bool Check_ElecECin(double ecin);
     bool Check_Elec_dtECSC(double dt);
     bool Check_ElecCCnphe(double nphe);
-    bool Check_ElecECoverP(double mom, double ectot);
+    bool Check_ElecECoverP(double mom, double ectot, int sector, int targMass);
     
     void Print_ElectronID();
 };
@@ -496,6 +518,7 @@ ElectronID::ElectronID()
     double dtHi = dtCentroid + dtNsigmas*dtWidth;
     Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)
     Range_dtECSC.push_back(dtHi); // Upper limit on time difference between EC and SC (in ns)
+    
 }
 
 // check the cut on electron momentum
@@ -555,21 +578,62 @@ bool ElectronID::Check_ElecCCnphe(double nphe)
 }
 
 // check the cut on electron EC inner energy
-bool ElectronID::Check_ElecECoverP(double mom, double ectot)
+bool ElectronID::Check_ElecECoverP(double mom, double ectot, int sector, int targMass)
 {
-    double a = 0.262;
+/*    double a = 0.262;
     double b = 0.0231;
     double c = -0.00354;
     double d = 0.00932;
-    double f = 0.029;
-    double centroid = a + b*mom + c*mom*mom;
-    double sigma = sqrt(d*d + f*f/sqrt(mom));
-    double Nsigma = 2.5;
+    double f = 0.029; */
     
-    double samplingFrac = fabs(ectot/mom - centroid);
+    int iSector = sector -1;
+    double a, b, c, d, f; // coefficients for calculating the sampling fraction
     
-    bool ret = (samplingFrac < Nsigma*sigma) ? true : false;
+    bool ret = false; // initialize to false
     
+    if(sector>=1 && sector<=6){ //check that the sector is between 1 and 6
+        switch (targMass){
+            case 12:
+                a = EC_SamplingFrac_C[iSector][0];
+                b = EC_SamplingFrac_C[iSector][1];
+                c = EC_SamplingFrac_C[iSector][2];
+                d = EC_SamplingFrac_C[iSector][3];
+                f = EC_SamplingFrac_C[iSector][4];
+                break;
+            case 56:
+                a = EC_SamplingFrac_Fe[iSector][0];
+                b = EC_SamplingFrac_Fe[iSector][1];
+                c = EC_SamplingFrac_Fe[iSector][2];
+                d = EC_SamplingFrac_Fe[iSector][3];
+                f = EC_SamplingFrac_Fe[iSector][4];
+                break;
+            case 208:
+                a = EC_SamplingFrac_Pb[iSector][0];
+                b = EC_SamplingFrac_Pb[iSector][1];
+                c = EC_SamplingFrac_Pb[iSector][2];
+                d = EC_SamplingFrac_Pb[iSector][3];
+                f = EC_SamplingFrac_Pb[iSector][4];
+                break;
+            default:
+                a = 0.262;
+                b = 0.0231;
+                c = -0.00354;
+                d = 0.00932;
+                f = 0.029;
+                break;
+        }
+    
+        double centroid = a + b*mom + c*mom*mom;
+        double sigma = sqrt(d*d + f*f/sqrt(mom));
+        double Nsigma = 2.5;
+    
+        double diff = fabs(ectot/mom - centroid);
+    
+        ret = (diff < Nsigma*sigma) ? true : false;
+    }
+    else{
+        cout<<"ElectronID::Check_ElecECoverP: Sector "<<sector<<" is out of range."<<endl;
+    }
     return ret;
 }
 
@@ -603,6 +667,87 @@ void ElectronID::Print_ElectronID()
         }
     }
     cout << endl;
+}
+
+class EC_geometry
+{
+    double EC_U;
+    double EC_V;
+    double EC_W;
+    double EC_theta;
+    double EC_phi;
+    double ylow;
+    double yhi;
+    double rho;
+public:
+    EC_geometry();
+    void Put_UVW(double u, double v, double w);
+    double Get_EC_theta(return EC_theta);
+    double Get_ylow(return ylow);
+    double Get_yhi(return yhi);
+    double Get_rho(return rho);
+    double Get_U(return EC_U);
+    double Get_V(return EC_V);
+    double Get_W(return EC_W);
+    double Get_Xlocal();
+    double Get_Ylocal();
+    bool Check_U();
+    bool Check_V();
+    bool Check_W();
+    void Print_EC_geometry();
+};
+
+EC_geometry::EC_geometry()
+{
+    EC_theta = 0.4363323; // radians
+    ylow = -182.974;
+    yhi = 189.956;
+    rho = 1.097621; // radians
+    
+    EC_U = -1.0;
+    EC_V = -1.0;
+    EC_W = -1.0;
+}
+
+double EC_geometry::Get_Xlocal()
+{
+    double ret = 0.0;
+    if(this->Check_U() && this->Check_V() && this->Check_W()) ret = this->Get_W()*cos(this->Get_rho()) - 0.5*this->Get_V();
+    return ret;
+}
+
+double EC_geometry::Get_Ylocal()
+{
+    double ret = 0.0;
+    if(this->Check_U() && this->Check_V() && this->Check_W()) ret = this->Get_ylow() + this->Get_U()*sin(this->Get_rho());
+    return ret;
+}
+
+void EC_geometry::Put_UVW(double u, double v, double w){
+    this->EC_U = u;
+    this->EC_V = v;
+    this->EC_W = w;
+}
+
+// check that the U-view is a positive number (ie has been filled)
+bool EC_geometry::Check_U()
+{
+    bool ret = (this->Get_U() >= 0) ? true : false;
+    return ret;
+}
+
+// check that the V-view is a positive number (ie has been filled)
+bool EC_geometry::Check_V()
+{
+    bool ret = (this->Get_V() >= 0) ? true : false;
+    return ret;
+}
+
+// check that the W-view is a positive number (ie has been filled)
+bool EC_geometry::Check_W()
+{
+    bool ret = (this->Get_W() >= 0) ? true : false;
+    return ret;
 }
 
 class OmegaMixedEvent
@@ -1151,6 +1296,14 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         W = W_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
+        // Find the electron sector
+        Sector_index = GetSectorByPhi(elec.Phi());
+        if(Sector_index){
+            elecZVertSector[Sector_index-1]->Fill(elec_vert.Z());
+        }else{
+            cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
+        }
+        
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
@@ -1215,6 +1368,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
      
+        //
+        // Start of  Electron ID
+        //
         for(ii=0; ii<5; ii++){
             switch (ii) {
                 case 0: partMom = elec.P(); break;
@@ -1252,7 +1408,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
       
         ElecID_Mom = myElecID.Check_ElecMom(elec.P());
-        ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot);
+        ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
         ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
         ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
         ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
@@ -1307,7 +1463,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }else if (myElecID.Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
                 cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
             }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
-                cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot);
+                cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
             }else{
                 cuts_ElecID = false;
             }
@@ -1328,13 +1484,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
             }
         }
-        
-        Sector_index = GetSectorByPhi(elec.Phi());
-        if(Sector_index){
-            elecZVertSector[Sector_index-1]->Fill(elec_vert.Z());
-        }else{
-            cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
-        }
+        //
+        // End of  Electron ID
+        //
         
         // plot of two photon opening angle
 		TwoPhotonAngle = TMath::RadToDeg()*photon1.Angle(photon2.Vect());
