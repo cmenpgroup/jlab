@@ -750,6 +750,19 @@ bool EC_geometry::Check_W()
     return ret;
 }
 
+// print the cut information
+void EC_geometry::Print_EC_geometry()
+{
+    cout<<"EC Geometry Constants"<<endl;
+    cout<<"========================="<<endl;
+
+    cout << "EC theta = " << this->Get_EC_theta()*180.0/3.14159 << endl;
+    cout << "ylow = " << this->Get_ylow() << " (cm)" << endl;
+    cout << "yhi = " << this->Get_yhi() << " (cm)" << endl;
+    cout << "rho = " << this->Get_rho()*180.0/3.14159 << " (cm)" << endl;
+    cout << endl;
+}
+
 class OmegaMixedEvent
 {
     int nEvtToMix;
@@ -1092,7 +1105,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
     ElectronID myElecID;
-
+    EC_geometry myECgeom;
+    
     myMixEvt.Put_NumberOfEventsToMix(1); // add number of mixed event iterations
     myMixEvt.Put_OffsetOfEventsToMix(5); // add offset of the entry number for mixed events
     
@@ -1407,6 +1421,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
         emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
       
+        myECgeom.Put_UVW(emECu,emECv,emECw);
+        EC_XvsY_local->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+        
         ElecID_Mom = myElecID.Check_ElecMom(elec.P());
         ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
         ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
@@ -2008,6 +2025,10 @@ void BookHist(){
     sprintf(htitle,"ECin vs ECout, EC fid. cut");
     ECin_VS_ECout_ECfid = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
     
+    sprintf(hname,"EC_XvsY_local");
+    sprintf(htitle,"EC local X vs local Y");
+    EC_XvsY_local = new TH2D(hname,htitle, 100, -100, 100, 100, 0, -100,100);
+    
     for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, All Cuts, %s",myTgt.Get_Label(i).c_str());
@@ -2579,6 +2600,10 @@ void WriteHist(string RootFile){
     ECin_VS_ECout_elecID_All->GetXaxis()->SetTitle("EC inner energy");
     ECin_VS_ECout_elecID_All->GetYaxis()->SetTitle("EC outer energy");
     ECin_VS_ECout_elecID_All->Write();
+
+    EC_XvsY_local->GetXaxis()->SetTitle("EC X_{local} (cm)");
+    EC_XvsY_local->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+    EC_XvsY_local->Write();
     
     out->Close();
 }
