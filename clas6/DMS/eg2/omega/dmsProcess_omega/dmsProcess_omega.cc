@@ -671,13 +671,13 @@ class EC_geometry
 public:
     EC_geometry();
     void Put_UVW(double u, double v, double w);
-    double Get_EC_theta() {return EC_theta};
-    double Get_ylow() {return ylow};
-    double Get_yhi() {return yhi};
-    double Get_rho() {return rho};
-    double Get_U() {return EC_U};
-    double Get_V() {return EC_V};
-    double Get_W() {return EC_W};
+    double Get_EC_theta() {return EC_theta;};
+    double Get_ylow() {return ylow;};
+    double Get_yhi() {return yhi;};
+    double Get_rho() {return rho;};
+    double Get_U() {return EC_U;};
+    double Get_V() {return EC_V;};
+    double Get_W() {return EC_W;};
     double Get_Xlocal();
     double Get_Ylocal();
     bool Check_U();
