@@ -429,21 +429,21 @@ class ElectronID
     vector<double> RangeCCnphe;
     
     // parameters to calculate the EC sampling fraction of total energy vs P
-    const double EC_SamplingFrac_C[6][5] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
+    double EC_SamplingFrac_C[6][5] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
         {2.78E-1,1.87E-2,-2.38E-3,1.399E-2,3.75E-2},
         {2.62E-1,2.31E-2,-3.54E-3,9.32E-3,2.90E-2},
         {2.51E-1,2.01E-2,-3.32E-3,8.21E-3,2.99E-2},
         {2.63E-1,9.55E-2,-1.02E-3,2.25E-2,3.06E-2},
         {2.55E-1,2.32E-2,-3.05E-3,1.17E-2,3.64E-2}};
 
-    const double EC_SamplingFrac_Fe[6][5] = {{2.22E-1,2.23E-2,-2.41E-3,9.23E-3,2.98E-2},
+    double EC_SamplingFrac_Fe[6][5] = {{2.22E-1,2.23E-2,-2.41E-3,9.23E-3,2.98E-2},
         {2.34E-1,1.95E-2,-2.08E-3,8.66E-3,3.09E-2},
         {2.52E-1,2.42E-2,-3.39E-3,1.08E-2,2.64E-2},
         {2.51E-1,2.08E-2,-3.27E-3,7.22E-3,2.98E-2},
         {2.72E-1,1.18E-2,-1.87E-3,1.84E-2,3.48E-2},
         {2.52E-1,2.28E-2,-3.11E-3,4.11E-3,3.55E-2}};
     
-    const double EC_SamplingFrac_Pb[6][5] = {{2.53E-1,1.38E-2,-1.40E-3,7.67E-3,3.54E-2},
+    double EC_SamplingFrac_Pb[6][5] = {{2.53E-1,1.38E-2,-1.40E-3,7.67E-3,3.54E-2},
         {2.49E-1,1.47E-2,-1.49E-3,7.53E-3,3.38E-2},
         {2.54E-1,2.26E-2,-3.05E-3,8.13E-3,2.77E-2},
         {2.55E-1,1.90E-2,-3.05E-3,7.20E-3,3.04E-2},
@@ -585,9 +585,9 @@ double ElectronID::Get_EC_SamplingFraction(int coeff, int sector, int targMass)
     if(sector>=1 && sector<=6){ //check that the sector is between 1 and 6
         if(coeff>=0 && coeff<5){
             switch (targMass){
-                case 12: ret = EC_SamplingFrac_C[sector-1][coeff]; break;
-                case 56: ret = EC_SamplingFrac_Fe[sector-1][coeff]; break;
-                case 208: ret = EC_SamplingFrac_Pb[sector-1][coeff]; break;
+                case 12: ret = this->EC_SamplingFrac_C[sector-1][coeff]; break;
+                case 56: ret = this->EC_SamplingFrac_Fe[sector-1][coeff]; break;
+                case 208: ret = this->EC_SamplingFrac_Pb[sector-1][coeff]; break;
                 default:
                     cout<<"ElectronID::Get_EC_SamplingFraction: Target Mass "<< targMass <<" is unknown."<<endl;
                     ret = 0.0;
@@ -671,13 +671,13 @@ class EC_geometry
 public:
     EC_geometry();
     void Put_UVW(double u, double v, double w);
-    double Get_EC_theta(return EC_theta);
-    double Get_ylow(return ylow);
-    double Get_yhi(return yhi);
-    double Get_rho(return rho);
-    double Get_U(return EC_U);
-    double Get_V(return EC_V);
-    double Get_W(return EC_W);
+    double Get_EC_theta() {return EC_theta};
+    double Get_ylow() {return ylow};
+    double Get_yhi() {return yhi};
+    double Get_rho() {return rho};
+    double Get_U() {return EC_U};
+    double Get_V() {return EC_V};
+    double Get_W() {return EC_W};
     double Get_Xlocal();
     double Get_Ylocal();
     bool Check_U();
