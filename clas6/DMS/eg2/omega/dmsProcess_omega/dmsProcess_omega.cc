@@ -428,14 +428,15 @@ class ElectronID
     vector<double> Range_dtECSC;
     vector<double> RangeCCnphe;
     
+    double EC_SamplingFrac_C[6][5];
     // parameters to calculate the EC sampling fraction of total energy vs P
-    double EC_SamplingFrac_C[6][5] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
+/*    double EC_SamplingFrac_C[6][5] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
         {2.78E-1,1.87E-2,-2.38E-3,1.399E-2,3.75E-2},
         {2.62E-1,2.31E-2,-3.54E-3,9.32E-3,2.90E-2},
         {2.51E-1,2.01E-2,-3.32E-3,8.21E-3,2.99E-2},
         {2.63E-1,9.55E-2,-1.02E-3,2.25E-2,3.06E-2},
         {2.55E-1,2.32E-2,-3.05E-3,1.17E-2,3.64E-2}};
-
+*/
     double EC_SamplingFrac_Fe[6][5] = {{2.22E-1,2.23E-2,-2.41E-3,9.23E-3,2.98E-2},
         {2.34E-1,1.95E-2,-2.08E-3,8.66E-3,3.09E-2},
         {2.52E-1,2.42E-2,-3.39E-3,1.08E-2,2.64E-2},
@@ -519,7 +520,13 @@ ElectronID::ElectronID()
     double dtHi = dtCentroid + dtNsigmas*dtWidth;
     Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)
     Range_dtECSC.push_back(dtHi); // Upper limit on time difference between EC and SC (in ns)
-    
+   
+    EC_SamplingFrac_C[][] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
+        {2.78E-1,1.87E-2,-2.38E-3,1.399E-2,3.75E-2},
+        {2.62E-1,2.31E-2,-3.54E-3,9.32E-3,2.90E-2},
+        {2.51E-1,2.01E-2,-3.32E-3,8.21E-3,2.99E-2},
+        {2.63E-1,9.55E-2,-1.02E-3,2.25E-2,3.06E-2},
+        {2.55E-1,2.32E-2,-3.05E-3,1.17E-2,3.64E-2}};
 }
 
 // check the cut on electron momentum
