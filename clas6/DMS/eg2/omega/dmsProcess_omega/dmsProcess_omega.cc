@@ -2016,7 +2016,7 @@ void BookHist(){
     
     sprintf(hname,"EC_XvsY_local");
     sprintf(htitle,"EC local X vs local Y");
-    EC_XvsY_local = new TH2D(hname,htitle, 100, -100, 100, 100, 0, -100,100);
+    EC_XvsY_local = new TH2D(hname,htitle, 100, -100, 100, 100, -100,100);
     
     for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
