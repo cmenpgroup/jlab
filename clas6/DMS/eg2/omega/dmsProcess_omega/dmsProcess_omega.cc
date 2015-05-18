@@ -504,12 +504,23 @@ ElectronID::ElectronID()
     Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)
     Range_dtECSC.push_back(dtHi); // Upper limit on time difference between EC and SC (in ns)
    
-    EC_SamplingFrac_C[][] = {{2.52E-1,1.22E-2,-7.94E-3,9.55E-3,3.41E-2},
-        {2.78E-1,1.87E-2,-2.38E-3,1.399E-2,3.75E-2},
-        {2.62E-1,2.31E-2,-3.54E-3,9.32E-3,2.90E-2},
-        {2.51E-1,2.01E-2,-3.32E-3,8.21E-3,2.99E-2},
-        {2.63E-1,9.55E-2,-1.02E-3,2.25E-2,3.06E-2},
-        {2.55E-1,2.32E-2,-3.05E-3,1.17E-2,3.64E-2}};
+    EC_SamplingFrac_C[0][0] = 2.52E-1; EC_SamplingFrac_C[0][1] = 1.22E-2; EC_SamplingFrac_C[0][2] = -7.94E-3;
+    EC_SamplingFrac_C[0][3] = 9.55E-3; EC_SamplingFrac_C[0][4] = 3.41E-2;
+
+    EC_SamplingFrac_C[1][0] = 2.78E-1; EC_SamplingFrac_C[1][1] = 1.87E-2; EC_SamplingFrac_C[1][2] = -2.38E-3;
+    EC_SamplingFrac_C[1][3] = 1.399E-2; EC_SamplingFrac_C[1][4] = 3.75E-2;
+
+    EC_SamplingFrac_C[2][0] = 2.62E-1; EC_SamplingFrac_C[2][1] = 2.31E-2; EC_SamplingFrac_C[2][2] = -3.54E-3;
+    EC_SamplingFrac_C[2][3] = 9.32E-3; EC_SamplingFrac_C[2][4] = 2.90E-2;
+
+    EC_SamplingFrac_C[3][0] = 2.51E-1; EC_SamplingFrac_C[3][1] = 2.01E-2; EC_SamplingFrac_C[3][2] = -3.32E-3;
+    EC_SamplingFrac_C[3][3] = 8.21E-3; EC_SamplingFrac_C[3][4] = 2.99E-2;
+
+    EC_SamplingFrac_C[4][0] = 2.63E-1; EC_SamplingFrac_C[4][1] = 9.55E-2; EC_SamplingFrac_C[4][2] = -1.02E-3;
+    EC_SamplingFrac_C[4][3] = 2.25E-2; EC_SamplingFrac_C[4][4] = 3.06E-2;
+
+    EC_SamplingFrac_C[5][0] = 2.55E-1; EC_SamplingFrac_C[5][1] = 2.32E-2; EC_SamplingFrac_C[5][2] = -3.05E-3;
+    EC_SamplingFrac_C[5][3] = 1.17E-2; EC_SamplingFrac_C[5][4] = 3.64E-2;
     
     EC_SamplingFrac_Fe[][] = {{2.22E-1,2.23E-2,-2.41E-3,9.23E-3,2.98E-2},
         {2.34E-1,1.95E-2,-2.08E-3,8.66E-3,3.09E-2},
