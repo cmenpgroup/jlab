@@ -468,6 +468,7 @@ public:
     double Get_ElecCCnphe_hi() {return RangeCCnphe[1];};
     double Get_Elec_dtECSC_lo() {return Range_dtECSC[0];};
     double Get_Elec_dtECSC_hi() {return Range_dtECSC[1];};
+    double Get_EC_SamplingFraction(int coeff, int sector, int targMass);
     
     bool Check_ElecMom(double mom);
     bool Check_ElecECu(double ecu);
@@ -577,63 +578,51 @@ bool ElectronID::Check_ElecCCnphe(double nphe)
     return ret;
 }
 
+double ElectronID::Get_EC_SamplingFraction(int coeff, int sector, int targMass)
+{
+    double ret = 0.0;
+    
+    if(sector>=1 && sector<=6){ //check that the sector is between 1 and 6
+        if(coeff>=0 && coeff<5){
+            switch (targMass){
+                case 12: ret = EC_SamplingFrac_C[sector-1][coeff]; break;
+                case 56: ret = EC_SamplingFrac_Fe[sector-1][coeff]; break;
+                case 208: ret = EC_SamplingFrac_Pb[sector-1][coeff]; break;
+                default:
+                    cout<<"ElectronID::Get_EC_SamplingFraction: Target Mass "<< targMass <<" is unknown."<<endl;
+                    ret = 0.0;
+                    break;
+            }
+        }
+        else{
+            cout<<"ElectronID::Get_EC_SamplingFraction: Coefficient "<<coeff<<" is out of range."<<endl;
+        }
+    }
+    else{
+        cout<<"ElectronID::Get_EC_SamplingFraction: Sector "<<sector<<" is out of range."<<endl;
+    }
+    return ret;
+}
+
 // check the cut on electron EC inner energy
 bool ElectronID::Check_ElecECoverP(double mom, double ectot, int sector, int targMass)
 {
-/*    double a = 0.262;
-    double b = 0.0231;
-    double c = -0.00354;
-    double d = 0.00932;
-    double f = 0.029; */
-    
-    int iSector = sector -1;
-    double a, b, c, d, f; // coefficients for calculating the sampling fraction
-    
     bool ret = false; // initialize to false
     
-    if(sector>=1 && sector<=6){ //check that the sector is between 1 and 6
-        switch (targMass){
-            case 12:
-                a = EC_SamplingFrac_C[iSector][0];
-                b = EC_SamplingFrac_C[iSector][1];
-                c = EC_SamplingFrac_C[iSector][2];
-                d = EC_SamplingFrac_C[iSector][3];
-                f = EC_SamplingFrac_C[iSector][4];
-                break;
-            case 56:
-                a = EC_SamplingFrac_Fe[iSector][0];
-                b = EC_SamplingFrac_Fe[iSector][1];
-                c = EC_SamplingFrac_Fe[iSector][2];
-                d = EC_SamplingFrac_Fe[iSector][3];
-                f = EC_SamplingFrac_Fe[iSector][4];
-                break;
-            case 208:
-                a = EC_SamplingFrac_Pb[iSector][0];
-                b = EC_SamplingFrac_Pb[iSector][1];
-                c = EC_SamplingFrac_Pb[iSector][2];
-                d = EC_SamplingFrac_Pb[iSector][3];
-                f = EC_SamplingFrac_Pb[iSector][4];
-                break;
-            default:
-                a = 0.262;
-                b = 0.0231;
-                c = -0.00354;
-                d = 0.00932;
-                f = 0.029;
-                break;
-        }
+    double a = this->Get_EC_SamplingFraction(0,sector,targMass);
+    double b = this->Get_EC_SamplingFraction(1,sector,targMass);
+    double c = this->Get_EC_SamplingFraction(2,sector,targMass);
+    double d = this->Get_EC_SamplingFraction(3,sector,targMass);
+    double f = this->Get_EC_SamplingFraction(4,sector,targMass);
+
+    double centroid = a + b*mom + c*mom*mom;
+    double sigma = sqrt(d*d + f*f/sqrt(mom));
+    double Nsigma = 2.5;
     
-        double centroid = a + b*mom + c*mom*mom;
-        double sigma = sqrt(d*d + f*f/sqrt(mom));
-        double Nsigma = 2.5;
+    double diff = fabs(ectot/mom - centroid);
     
-        double diff = fabs(ectot/mom - centroid);
-    
-        ret = (diff < Nsigma*sigma) ? true : false;
-    }
-    else{
-        cout<<"ElectronID::Check_ElecECoverP: Sector "<<sector<<" is out of range."<<endl;
-    }
+    ret = (diff < Nsigma*sigma) ? true : false;
+
     return ret;
 }
 
