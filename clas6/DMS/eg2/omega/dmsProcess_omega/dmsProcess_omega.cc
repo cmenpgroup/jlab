@@ -2631,8 +2631,9 @@ int main (int argc, char **argv) {
         }
     }
   
-        cout <<"Test 0"<<endl;  
+ 
     BookHist(); // declare histograms
+    cout <<"Test 0"<<endl;
     
     for (i = optind; i < argc; ++i) {
         inFile = argv[i]; // process all arguments on command line.
