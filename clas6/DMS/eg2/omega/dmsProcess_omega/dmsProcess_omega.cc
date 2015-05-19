@@ -2582,6 +2582,12 @@ void WriteHist(string RootFile){
     EC_XvsY_local->GetYaxis()->SetTitle("EC Y_{local} (cm)");
     EC_XvsY_local->Write();
     
+    for(i=0; i<MAX_SECTORS; i++){
+        ECtotP_VS_P_Sector[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+        ECtotP_VS_P_Sector[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
+        ECtotP_VS_P_Sector[i]->Write();
+    }
+    
     out->Close();
 }
 
