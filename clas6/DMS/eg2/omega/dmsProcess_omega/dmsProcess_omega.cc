@@ -1234,14 +1234,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         TwoPhoton = photon1 + photon2; // Two photon Lorentz vector
 		Omega = TwoPion + TwoPhoton; // omega Lorentz vector
 
-/*        cout << "Event pi0 " << endl;
-        PrintTLorentzVector(photon1);
-        PrintTLorentzVector(photon2);
-        PrintTLorentzVector(pPion);
-        PrintTLorentzVector(nPion);
-        PrintTLorentzVector(TwoPhoton);
-        PrintTLorentzVector(myMixEvt.Get_Pi0(0));
-*/
         if(NUM_ENTRIES_OFFSET*ENTRIES_OFFSET < entries){
             for(k=0; k<NUM_ENTRIES_OFFSET; k++){
                 iMixedEvt = processed + (k+1)*ENTRIES_OFFSET;
@@ -1259,27 +1251,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 myMixEvt.Put_PiPlus(pPion_MixedEvt,1);
                 myMixEvt.Put_PiMinus(nPion_MixedEvt,1);
                 
-/*                cout << "Mixed test " << endl;
-                PrintTLorentzVector(photon1_MixedEvt);
-                PrintTLorentzVector(photon2_MixedEvt);
-                PrintTLorentzVector(pPion_MixedEvt);
-                PrintTLorentzVector(nPion_MixedEvt);
-                PrintTLorentzVector(photon1_MixedEvt+photon2_MixedEvt);
-                
-                cout << "test 1" <<endl;
-                PrintTLorentzVector((photon1_MixedEvt+photon2));
-                
-                cout << "test 2" <<endl;
-                PrintTLorentzVector((photon2_MixedEvt+photon1));
-*/
                 for(kk=0; kk<NUM_MIXING_METHODS; kk++){
                     myMixEvt.Mix_Omega(kk); // run mixing routine for each method
                     
                     TwoPhoton_MixedEvt = myMixEvt.Get_Pi0(1); // Two photon Lorentz vector from an out-of-time event
                     Mass_TwoPhoton_ME[kk][k] = TwoPhoton_MixedEvt.M();
-
-//                    cout << "Method " << myMixEvt.Get_Label(kk) << endl;
-//                    PrintTLorentzVector(TwoPhoton_MixedEvt);
 
                     Omega_MixedEvt = myMixEvt.Get_Omega(1); // Omega Lorentz vector from an out-of-time event
                     Mass_Omega_ME[kk][k] = Omega_MixedEvt.M();
@@ -2020,7 +1996,7 @@ void BookHist(){
     
     sprintf(hname,"EC_XvsY_local");
     sprintf(htitle,"EC local X vs local Y");
-    EC_XvsY_local = new TH2D(hname,htitle, 100, -100, 100, 100, -100,100);
+    EC_XvsY_local = new TH2D(hname,htitle, 500, -500, 500, 500, -500,500);
     
     for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
