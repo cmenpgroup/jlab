@@ -1079,8 +1079,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double dt_ECminusSC[5];
     
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
-    
-    cout <<"Test 1"<<endl;
 
     EG2Target myTgt;
     EG2Cuts myCuts;
@@ -1095,7 +1093,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     int NUM_ENTRIES_OFFSET = myMixEvt.Get_NumberOfEventsToMix(); // retreive number of mixed event iterations
     int ENTRIES_OFFSET = myMixEvt.Get_OffsetOfEventsToMix(); // retrieve offset of the entry number for mixed events
     
-    cout <<"Test 2"<<endl;
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
@@ -2133,18 +2130,15 @@ void BookHist(){
         IMOmega_AllCuts_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
     }
     
-    cout <<"Test -2"<<endl;
     for(i=0; i<MAX_SECTORS; i++){
 		sprintf(hname,"elecZVertSector%i",i+1);
 		sprintf(htitle,"Z Vertex of Electron in Sector %i",i+1);
         elecZVertSector[i] = new TH1D(hname, htitle, 300, -40, -10);
  
-            cout <<"Test -1.5"<<endl;
         sprintf(hname,"ECtotP_VS_P_Sector%i",i+1);
         sprintf(htitle,"ECtot/P vs P, Sector %i",i+1);
         ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
     }
-    cout <<"Test -1"<<endl;
     
     sprintf(hname,"RelativityOpAngPhotonsA");
     sprintf(htitle,"0/180 Degree Decay Photons");
