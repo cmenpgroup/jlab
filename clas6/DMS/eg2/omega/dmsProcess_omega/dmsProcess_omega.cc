@@ -1392,6 +1392,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         if(ElecID_ECfid){
             ECin_VS_ECout_ECfid->Fill(emECin,emECout);
             EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+        }else{
+            EC_XvsY_local_AntiFidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
         }
         
         if(ElecID_All){
@@ -2149,6 +2151,10 @@ void BookHist(){
         sprintf(hname,"EC_XvsY_local_FidCut%i",i+1);
         sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i",i+1);
         EC_XvsY_local_FidCut[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+
+        sprintf(hname,"EC_XvsY_local_AntiFidCut%i",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut (anti), Sector %i",i+1);
+        EC_XvsY_local_AntiFidCut[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
     }
     
     sprintf(hname,"RelativityOpAngPhotonsA");
@@ -2591,6 +2597,10 @@ void WriteHist(string RootFile){
         EC_XvsY_local_FidCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
         EC_XvsY_local_FidCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
         EC_XvsY_local_FidCut[i]->Write();
+        
+        EC_XvsY_local_AntiFidCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_AntiFidCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_AntiFidCut[i]->Write();
     }
     
     out->Close();

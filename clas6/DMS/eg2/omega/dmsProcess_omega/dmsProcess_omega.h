@@ -90,6 +90,7 @@ TH2D *ECtotP_VS_P_Sector[6];
 TH2D *EC_XvsY_local_Sector[6];
 TH2D *EC_XvsY_local_ECoutCut[6];
 TH2D *EC_XvsY_local_FidCut[6];
+TH2D *EC_XvsY_local_AntiFidCut[6];
 
 TH1D *hW[3];
 TH1D *hMx[3];
