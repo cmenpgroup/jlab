@@ -981,13 +981,6 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
     TLorentzVector tempPi0 = tempPhoton1 + tempPhoton2;
     TLorentzVector A;
 
-/*    cout <<"Before " << iMethod <<endl;
-    PrintTLorentzVector(tempPhoton1);
-    PrintTLorentzVector(tempPhoton2);
-    PrintTLorentzVector(tempPiPlus);
-    PrintTLorentzVector(tempPiMinus);
-    PrintTLorentzVector(tempPi0);
-*/
     switch (iMethod){
         case 0:
             tempPhoton1 = this->Get_Photon1(1);
@@ -1020,13 +1013,6 @@ void OmegaMixedEvent::Mix_Omega(int iMethod){
             exit(0);
             break;
     }
-/*    cout <<"After " << iMethod <<endl;
-    PrintTLorentzVector(tempPhoton1);
-    PrintTLorentzVector(tempPhoton2);
-    PrintTLorentzVector(tempPiPlus);
-    PrintTLorentzVector(tempPiMinus);
-    PrintTLorentzVector(tempPi0);
-*/
     this->Put_Pi0(tempPi0, 1);
     this->Put_Omega((tempPi0 + tempPiPlus + tempPiMinus), 1);
 }
@@ -1107,6 +1093,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     int NUM_ENTRIES_OFFSET = myMixEvt.Get_NumberOfEventsToMix(); // retreive number of mixed event iterations
     int ENTRIES_OFFSET = myMixEvt.Get_OffsetOfEventsToMix(); // retrieve offset of the entry number for mixed events
     
+    cout <<"Test 1"<<endl;
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
