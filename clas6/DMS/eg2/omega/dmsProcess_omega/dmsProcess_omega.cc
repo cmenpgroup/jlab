@@ -2630,7 +2630,8 @@ int main (int argc, char **argv) {
                 break;
         }
     }
-    
+  
+        cout <<"Test 0"<<endl;  
     BookHist(); // declare histograms
     
     for (i = optind; i < argc; ++i) {
