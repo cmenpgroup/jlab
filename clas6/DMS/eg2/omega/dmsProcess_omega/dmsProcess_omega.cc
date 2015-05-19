@@ -2138,7 +2138,8 @@ void BookHist(){
 		sprintf(hname,"elecZVertSector%i",i+1);
 		sprintf(htitle,"Z Vertex of Electron in Sector %i",i+1);
         elecZVertSector[i] = new TH1D(hname, htitle, 300, -40, -10);
-        
+ 
+            cout <<"Test -1.5"<<endl;
         sprintf(hname,"ECtotP_VS_P_Sector%s",i+1);
         sprintf(htitle,"ECtot/P vs P, Sector %s",i+1);
         ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
