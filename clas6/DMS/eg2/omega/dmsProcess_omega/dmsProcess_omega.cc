@@ -2133,6 +2133,7 @@ void BookHist(){
         IMOmega_AllCuts_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
     }
     
+    cout <<"Test -2"<<endl;
     for(i=0; i<MAX_SECTORS; i++){
 		sprintf(hname,"elecZVertSector%i",i+1);
 		sprintf(htitle,"Z Vertex of Electron in Sector %i",i+1);
@@ -2142,6 +2143,7 @@ void BookHist(){
         sprintf(htitle,"ECtot/P vs P, Sector %s",i+1);
         ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
     }
+    cout <<"Test -1"<<endl;
     
     sprintf(hname,"RelativityOpAngPhotonsA");
     sprintf(htitle,"0/180 Degree Decay Photons");
