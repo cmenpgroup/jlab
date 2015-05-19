@@ -1080,6 +1080,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
     
+    cout <<"Test 1"<<endl;
+
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
@@ -1093,7 +1095,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     int NUM_ENTRIES_OFFSET = myMixEvt.Get_NumberOfEventsToMix(); // retreive number of mixed event iterations
     int ENTRIES_OFFSET = myMixEvt.Get_OffsetOfEventsToMix(); // retrieve offset of the entry number for mixed events
     
-    cout <<"Test 1"<<endl;
+    cout <<"Test 2"<<endl;
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
