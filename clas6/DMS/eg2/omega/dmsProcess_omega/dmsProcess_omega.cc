@@ -1399,6 +1399,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
         ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
         
+        if(ElecID_ECvsP){
+            ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+        }
+        
         if(ElecID_ECfid){
             ECin_VS_ECout_ECfid->Fill(emECin,emECout);
         }
@@ -2144,6 +2148,10 @@ void BookHist(){
 		sprintf(hname,"elecZVertSector%i",i+1);
 		sprintf(htitle,"Z Vertex of Electron in Sector %i",i+1);
         elecZVertSector[i] = new TH1D(hname, htitle, 300, -40, -10);
+        
+        sprintf(hname,"ECtotP_VS_P_Sector%s",i+1);
+        sprintf(htitle,"ECtot/P vs P, Sector %s",i+1);
+        ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
     }
     
     sprintf(hname,"RelativityOpAngPhotonsA");

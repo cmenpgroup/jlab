@@ -87,6 +87,7 @@ TH2D *ECtot_VS_P_AntiECoutCut;
 
 TH2D *ECin_VS_ECout_ECfid;
 TH2D *ECin_VS_ECout_elecID_All;
+TH2D *ECtotP_VS_P_Sector[6];
 
 TH1D *hW[3];
 TH1D *hMx[3];
