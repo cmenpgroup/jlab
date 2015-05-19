@@ -75,7 +75,6 @@ TH2D *Beta_VS_Momentum_ECoutCut;
 TH2D *Theta_VS_Phi_ECoutCut;
 TH2D *ECtotP_VS_P_ECoutCut;
 TH2D *ECtot_VS_P_ECoutCut;
-TH2D *EC_XvsY_local;
 
 TH1D *q2_AntiECoutCut;
 TH1D *elecZVert_AntiECoutCut;
@@ -88,6 +87,9 @@ TH2D *ECtot_VS_P_AntiECoutCut;
 TH2D *ECin_VS_ECout_ECfid;
 TH2D *ECin_VS_ECout_elecID_All;
 TH2D *ECtotP_VS_P_Sector[6];
+TH2D *EC_XvsY_local_Sector[6];
+TH2D *EC_XvsY_local_ECoutCut[6];
+TH2D *EC_XvsY_local_FidCut[6];
 
 TH1D *hW[3];
 TH1D *hMx[3];

@@ -1375,9 +1375,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         emECw = reader.getProperty("ecw",BankIndex_part[0]);
         emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
         emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
-      
-        myECgeom.Put_UVW(emECu,emECv,emECw);
-        EC_XvsY_local->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
         
         ElecID_Mom = myElecID.Check_ElecMom(elec.P());
         ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
@@ -1385,12 +1382,16 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
         ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
         
+        myECgeom.Put_UVW(emECu,emECv,emECw);
+        EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+        
         if(ElecID_ECvsP){
             ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
         }
         
         if(ElecID_ECfid){
             ECin_VS_ECout_ECfid->Fill(emECin,emECout);
+            EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
         }
         
         if(ElecID_All){
@@ -1406,6 +1407,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
             ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
             ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
+            
+            EC_XvsY_local_ECoutCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
         }
         else {
             Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
@@ -1984,10 +1987,6 @@ void BookHist(){
     sprintf(htitle,"ECin vs ECout, EC fid. cut");
     ECin_VS_ECout_ECfid = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
     
-    sprintf(hname,"EC_XvsY_local");
-    sprintf(htitle,"EC local X vs local Y");
-    EC_XvsY_local = new TH2D(hname,htitle, 500, -500, 500, 500, -500,500);
-    
     for(i=0; i<myTgt.Get_nIndex(); i++){
         sprintf(hname,"Xvert_VS_Yvert_AllCuts_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"X Vertex vs Y Vertex, All Cuts, %s",myTgt.Get_Label(i).c_str());
@@ -2138,6 +2137,18 @@ void BookHist(){
         sprintf(hname,"ECtotP_VS_P_Sector%i",i+1);
         sprintf(htitle,"ECtot/P vs P, Sector %i",i+1);
         ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
+        
+        sprintf(hname,"EC_XvsY_local_Sector%i",i+1);
+        sprintf(htitle,"EC local X vs local Y, Sector %i",i+1);
+        EC_XvsY_local_Sector[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_ECoutCut%i",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC_{out} cut, Sector %i",i+1);
+        EC_XvsY_local_ECoutCut[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+
+        sprintf(hname,"EC_XvsY_local_FidCut%i",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i",i+1);
+        EC_XvsY_local_FidCut[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
     }
     
     sprintf(hname,"RelativityOpAngPhotonsA");
@@ -2564,14 +2575,22 @@ void WriteHist(string RootFile){
     ECin_VS_ECout_elecID_All->GetYaxis()->SetTitle("EC outer energy");
     ECin_VS_ECout_elecID_All->Write();
 
-    EC_XvsY_local->GetXaxis()->SetTitle("EC X_{local} (cm)");
-    EC_XvsY_local->GetYaxis()->SetTitle("EC Y_{local} (cm)");
-    EC_XvsY_local->Write();
-    
     for(i=0; i<MAX_SECTORS; i++){
         ECtotP_VS_P_Sector[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
         ECtotP_VS_P_Sector[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
         ECtotP_VS_P_Sector[i]->Write();
+        
+        EC_XvsY_local_Sector[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_Sector[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_Sector[i]->Write();
+
+        EC_XvsY_local_ECoutCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_ECoutCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_ECoutCut[i]->Write();
+        
+        EC_XvsY_local_FidCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_FidCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_FidCut[i]->Write();
     }
     
     out->Close();
