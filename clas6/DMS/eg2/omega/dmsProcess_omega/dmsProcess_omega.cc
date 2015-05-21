@@ -1384,9 +1384,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         myECgeom.Put_UVW(emECu,emECv,emECw);
         EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
-        
+
+        ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
         if(ElecID_ECvsP){
-            ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+            ECtotP_VS_P_ECPCut[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
         }
         
         if(ElecID_ECfid){
@@ -2285,11 +2286,15 @@ void WriteHist(string RootFile){
         ECtot_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
     	ECtot_VS_P[i]->GetYaxis()->SetTitle("EC total energy");
         ECtot_VS_P[i]->Write();
-
+    }
+    
+    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
         ECtotP_VS_P[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
         ECtotP_VS_P[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
         ECtotP_VS_P[i]->Write();
-        
+    }
+
+    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
         ECin_VS_ECout[i]->GetXaxis()->SetTitle("EC inner energy");
     	ECin_VS_ECout[i]->GetYaxis()->SetTitle("EC outer energy");
         ECin_VS_ECout[i]->Write();
@@ -2585,19 +2590,27 @@ void WriteHist(string RootFile){
         ECtotP_VS_P_Sector[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
         ECtotP_VS_P_Sector[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
         ECtotP_VS_P_Sector[i]->Write();
-        
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
         EC_XvsY_local_Sector[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
         EC_XvsY_local_Sector[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
         EC_XvsY_local_Sector[i]->Write();
-
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
         EC_XvsY_local_ECoutCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
         EC_XvsY_local_ECoutCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
         EC_XvsY_local_ECoutCut[i]->Write();
-        
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
         EC_XvsY_local_FidCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
         EC_XvsY_local_FidCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
         EC_XvsY_local_FidCut[i]->Write();
-        
+    }
+
+    for(i=0; i<MAX_SECTORS; i++){
         EC_XvsY_local_AntiFidCut[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
         EC_XvsY_local_AntiFidCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
         EC_XvsY_local_AntiFidCut[i]->Write();
