@@ -2140,6 +2140,10 @@ void BookHist(){
         sprintf(hname,"ECtotP_VS_P_Sector%i",i+1);
         sprintf(htitle,"ECtot/P vs P, Sector %i",i+1);
         ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
+
+        sprintf(hname,"ECtotP_VS_P_ECPCut%i",i+1);
+        sprintf(htitle,"ECtot/P vs P, Sector %i",i+1);
+        ECtotP_VS_P_ECPCut[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
         
         sprintf(hname,"EC_XvsY_local_Sector%i",i+1);
         sprintf(htitle,"EC local X vs local Y, Sector %i",i+1);
@@ -2590,6 +2594,12 @@ void WriteHist(string RootFile){
         ECtotP_VS_P_Sector[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
         ECtotP_VS_P_Sector[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
         ECtotP_VS_P_Sector[i]->Write();
+    }
+
+    for(i=0; i<MAX_SECTORS; i++){
+        ECtotP_VS_P_ECPCut[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
+        ECtotP_VS_P_ECPCut[i]->GetYaxis()->SetTitle("EC_{total}/Mom.");
+        ECtotP_VS_P_ECPCut[i]->Write();
     }
     
     for(i=0; i<MAX_SECTORS; i++){

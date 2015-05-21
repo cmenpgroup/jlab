@@ -87,6 +87,7 @@ TH2D *ECtot_VS_P_AntiECoutCut;
 TH2D *ECin_VS_ECout_ECfid;
 TH2D *ECin_VS_ECout_elecID_All;
 TH2D *ECtotP_VS_P_Sector[6];
+TH2D *ECtotP_VS_P_ECPCut[6];
 TH2D *EC_XvsY_local_Sector[6];
 TH2D *EC_XvsY_local_ECoutCut[6];
 TH2D *EC_XvsY_local_FidCut[6];
