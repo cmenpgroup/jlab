@@ -103,7 +103,7 @@ TH1D *MMsq[3];
 TH1D *PtSq_Omega_AllCuts[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaCut[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaSBCut[3];
-TH1D *elecZVertSector[6];
+TH2D *elecZVertSector;
 TH2D *OpAng_VS_IM2Photons[3];
 TH2D *OpAng_VS_E[3];
 TH2D *OpAng_VS_E_MassPi0Cut[3];

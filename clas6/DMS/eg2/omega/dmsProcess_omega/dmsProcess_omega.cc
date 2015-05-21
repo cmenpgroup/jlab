@@ -1268,7 +1268,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         // Find the electron sector
         Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
-            elecZVertSector[Sector_index-1]->Fill(elec_vert.Z());
+            elecZVertSector->Fill(elec_vert.Z(),Sector_index);
         }else{
             cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
         }
@@ -1790,6 +1790,10 @@ void BookHist(){
     sprintf(htitle,"Z Vertex of Electron");
 	elecZVert = new TH1D(hname,htitle, 300, -35, -20);
 
+    sprintf(hname,"elecZVertSector");
+    sprintf(htitle,"Z Vertex of Electron vs Sector");
+    elecZVertSector = new TH2D(hname, htitle, 300, -40, -10, 6, 0.5, 6.5);
+    
     sprintf(hname,"elecZVert_VS_Phi");
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
     elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
@@ -2133,10 +2137,6 @@ void BookHist(){
     }
     
     for(i=0; i<MAX_SECTORS; i++){
-		sprintf(hname,"elecZVertSector%i",i+1);
-		sprintf(htitle,"Z Vertex of Electron in Sector %i",i+1);
-        elecZVertSector[i] = new TH1D(hname, htitle, 300, -40, -10);
- 
         sprintf(hname,"ECtotP_VS_P_Sector%i",i+1);
         sprintf(htitle,"ECtot/P vs P, Sector %i",i+1);
         ECtotP_VS_P_Sector[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
@@ -2213,6 +2213,10 @@ void WriteHist(string RootFile){
     elecZVert->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert->GetYaxis()->SetTitle("Counts");
 	elecZVert->Write();
+
+    elecZVertSector->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVertSector->GetYaxis()->SetTitle("Sector");
+    elecZVertSector->Write();
 
     elecZVert_VS_Phi->GetXaxis()->SetTitle("#phi (deg.)");
     elecZVert_VS_Phi->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
@@ -2453,11 +2457,6 @@ void WriteHist(string RootFile){
     }
     
     out->cd();
-    for(i=0; i<MAX_SECTORS; i++){
-        elecZVertSector[i]->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
-        elecZVertSector[i]->GetYaxis()->SetTitle("Counts");
-        elecZVertSector[i]->Write();
-    }
 
     // create a directory for check on relativisitic kinematics
     TDirectory *cdRel = out->mkdir("Relativity");
