@@ -6,6 +6,15 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TFile.h"
+#include "DetectedParticles.h"
+#include "IntermediateParticles.h"
+#include "ReconstructedParticles.h"
+#include "ParticleList.h"
+#include "EG2Target.h"
+#include "EG2Cuts.h"
+#include "ElectronID.h"
+#include "EC_geometry.h"
+#include "OmegaMixedEvent.h"
 
 #define DEBUG 0
 
