@@ -19,13 +19,14 @@ Float_t yoff = 1.75;
 // ProjectHists_dmsOmega - plot histogram with labels
 //                  
 //                  fAna = output from eg2a DMS
+//                  fDir = directory name in ROOT file
 //                  hname = histogram name
 //                  title = histogram title
 //                  tgtOut = target name
 //                  chanLo = lower bin
 //                  chanHi = upper bin
 //
-void ProjectHists_dmsOmega(char *fAna, char *hname, char *title, char *tgtOut, Int_t chanLo=0, Int_t chanHi=0, char* projAxis="x")
+void ProjectHists_dmsOmega(char *fAna,  char *fDir, char *hname, char *title, char *tgtOut, Int_t chanLo=0, Int_t chanHi=0, char* projAxis="x")
 {
 	char OutCan[100];
     char strname[100];
@@ -40,13 +41,14 @@ void ProjectHists_dmsOmega(char *fAna, char *hname, char *title, char *tgtOut, I
 	// data files contain the trees
 	printf("Analyzing file %s\n",fAna);  
 	TFile *fm = new TFile(fAna,"READ");
+    TDirectory *tmp = fm->GetDirectory(fDir);
 	
 	c1->cd();
 	gPad->SetLeftMargin(Lmar);
 	gPad->SetRightMargin(Rmar);
 	gPad->SetFillColor(0);
     
-	TH2D *h2D = (TH2D*)fm->Get(hname);
+	TH2D *h2D = (TH2D*)tmp->Get(hname);
     TH1D *h1D;
     
     switch(projAxis){
