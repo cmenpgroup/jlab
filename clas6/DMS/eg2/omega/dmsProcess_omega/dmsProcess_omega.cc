@@ -243,7 +243,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         // Find the electron sector
         Sector_index = GetSectorByPhi(elec.Phi());
-        cout<<"Sector "<<Sector_index<<"  "<<GetSectorByPhi_test(elec.Phi())<<endl;
+        cout<<"Sector "<<Sector_index<<"  "<<GetSectorByPhi_test(elec.Phi())<<" "<<elec.Phi()*TMath::RadToDeg()<<endl;
         if(Sector_index){
             elecZVertSector->Fill(elec_vert.Z(),Sector_index);
         }else{
