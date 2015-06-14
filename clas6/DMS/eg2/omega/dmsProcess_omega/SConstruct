@@ -1,8 +1,8 @@
 import os
 env = Environment(ENV = os.environ)
 env.ParseConfig('root-config --cflags --glibs')
-env.Append(CPPPATH=['/home/beitera/evioRoot/src/root','/home/beitera/evioRoot/src/writer','/home/beitera/evioRoot/src/tools'])
-env.Append(LIBPATH=['/home/beitera/evioRoot/lib/'])
+env.Append(CPPPATH=['/home/wood5/evioRoot/src/root','/home/wood5/evioRoot/src/writer','/home/wood5/evioRoot/src/tools'])
+env.Append(LIBPATH=['/home/wood5/evioRoot/lib/'])
 env.Append(LIBS=["EvioRoot"])
-t = env.Program(target='dmsProcess_omega', source=['dmsProcess_omega.cc', 'DetectedParticles.cc', 'IntermediateParticles.cc', 'ReconstructedParticles.cc', 'ParticleList.cc', 'EG2Target.cc', 'EG2Cuts.cc', 'ElectronID.cc', 'EC_geometry.cc', 'OmegaMixedEvent.cc'])
+t = env.Program(target='dmsProcess_omega', source=['dmsProcess_omega.cc', 'DetectedParticles.cc', 'IntermediateParticles.cc', 'ReconstructedParticles.cc', 'ParticleList.cc', 'EG2Target.cc', 'EG2Cuts.cc', 'ElectronID.cc', 'EC_geometry.cc', 'OmegaMixedEvent.cc', 'Vertex_Corrections.cc'])
 Default(t)
