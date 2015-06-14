@@ -14,6 +14,7 @@
 #include "EG2Cuts.h"
 #include "ElectronID.h"
 #include "EC_geometry.h"
+#include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
 
 #define DEBUG 0
