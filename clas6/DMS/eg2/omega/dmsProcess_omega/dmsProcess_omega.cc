@@ -73,7 +73,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
     
-    TVector TargetV3(0.043,-0.33,0);
+    TVector3 TargetV3(0.043,-0.33,0);
     
     TLorentzVector BeamMinusElectron;
     TLorentzVector W_TLV;
