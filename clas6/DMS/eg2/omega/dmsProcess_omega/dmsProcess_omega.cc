@@ -686,7 +686,7 @@ int GetSectorByPhi_test(Double_t phi_rad){
     
     phi_deg += 30.;
     while(phi_deg<0)phi_deg+=360.;
-    ret =  (int)TMath::Floor(phi_deg/60.);
+    ret =  (int)TMath::Floor(phi_deg/60.) + 1;
     
     return ret;
 }
