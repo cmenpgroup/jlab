@@ -243,7 +243,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         // Find the electron sector
         Sector_index = GetSectorByPhi(elec.Phi());
-        cout<<"Sector "<<Sector_index<<"  "<<GetSectorByPhi_test(elec.Phi())<<" "<<elec.Phi()*TMath::RadToDeg()<<endl;
+//        cout<<"Sector "<<Sector_index<<"  "<<GetSectorByPhi_test(elec.Phi())<<" "<<elec.Phi()*TMath::RadToDeg()<<endl;
+        
         if(Sector_index){
             elecZVertSector->Fill(elec_vert.Z(),Sector_index);
         }else{
@@ -657,7 +658,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 //
 // Angle phi must be given in radians
 //
-int GetSectorByPhi(Double_t phi_rad){
+int GetSectorByPhi_test(Double_t phi_rad){
     
     Int_t ret = 0; // init the return variable
     Double_t phi_deg = phi_rad * TMath::RadToDeg(); // convert to degrees
@@ -679,7 +680,7 @@ int GetSectorByPhi(Double_t phi_rad){
     return ret;
 }
 
-int GetSectorByPhi_test(Double_t phi_rad){
+int GetSectorByPhi(Double_t phi_rad){
     
     Int_t ret = 0; // init the return variable
     Double_t phi_deg = phi_rad * TMath::RadToDeg(); // convert to degrees
