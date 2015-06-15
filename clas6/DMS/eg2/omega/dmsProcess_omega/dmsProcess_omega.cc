@@ -261,7 +261,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         // correct the electron vertex
         myVertCorr.Put_Particle_Vertex(elec_vert);
         myVertCorr.Put_Particle_Dir(elec.Vect());
-        myVertCorr.Put_Sector(Sector_index);
+        myVertCorr.Put_Sector(GetSectorByPhi(elec.Phi()));
         myVertCorr.Correct_Vertex();
         elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
 
@@ -709,7 +709,7 @@ int GetSectorByPhi(Double_t phi_rad){
     
     phi_deg += 30.;
     while(phi_deg<0)phi_deg+=360.;
-    ret =  (int)TMath::Floor(phi_deg/60.) + 1;
+    ret =  (int)TMath::Floor(phi_deg/60.);
     
     return ret;
 }
