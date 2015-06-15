@@ -250,8 +250,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         // Find the electron sector
         Sector_index = GetSectorByPhi_test(elec.Phi());
-//        cout<<"Sector "<<Sector_index<<"  "<<GetSectorByPhi_test(elec.Phi())<<" "<<elec.Phi()*TMath::RadToDeg()<<endl;
-        
         if(Sector_index){
             elecZVertSector->Fill(elec_vert.Z(),Sector_index);
         }else{
@@ -261,7 +259,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         // correct the electron vertex
         myVertCorr.Put_Particle_Vertex(elec_vert);
         myVertCorr.Put_Particle_Dir(elec.Vect());
-        myVertCorr.Put_Sector(GetSectorByPhi(elec.Phi()));
+        myVertCorr.Put_Particle_Phi(elec.Phi());
         myVertCorr.Correct_Vertex();
         elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
 
@@ -270,7 +268,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         elec.Vect().Print();
         elec.Print();
         elec_vert_corr.Print();
-*/        
+*/
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
@@ -680,7 +678,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 //
 // Angle phi must be given in radians
 //
-int GetSectorByPhi_test(Double_t phi_rad){
+int GetSectorByPhi(Double_t phi_rad){
     
     Int_t ret = 0; // init the return variable
     Double_t phi_deg = phi_rad * TMath::RadToDeg(); // convert to degrees
@@ -698,18 +696,6 @@ int GetSectorByPhi_test(Double_t phi_rad){
     } else if(CheckCut(phi_deg,30,90)) {
         ret = 6;
     }
-    
-    return ret;
-}
-
-int GetSectorByPhi(Double_t phi_rad){
-    
-    Int_t ret = 0; // init the return variable
-    Double_t phi_deg = phi_rad * TMath::RadToDeg(); // convert to degrees
-    
-    phi_deg += 30.;
-    while(phi_deg<0)phi_deg+=360.;
-    ret =  (int)TMath::Floor(phi_deg/60.);
     
     return ret;
 }

@@ -9,7 +9,7 @@
 Vertex_Corrections::Vertex_Corrections()
 {
     // Initialize sector
-    Sector = 0;
+    ParticlePhi = 0;
     
     // Initialize the target vertex
     TargetVert.SetX(0.0);
@@ -44,16 +44,21 @@ void Vertex_Corrections::Put_Particle_Dir(TVector3 V3){
     this->ParticleDir = V3;
 }
 
-void Vertex_Corrections::Put_Sector(int sector){
-    this->Sector = sector;
+void Vertex_Corrections::Put_Particle_Phi(double phi){
+    this->ParticlePhi = phi;
 }
 
 void Vertex_Corrections::Correct_Vertex(){
-    //Vertex correction (x,y,z)->(x_corr,y_corr,z_corr). Correction preserves (x,y) in coordinates of Sector1
+    //Vertex correction (x,y,z)->(x_corr,y_corr,z_corr). Correction preserves (x,y) in coordinates of Sector 1
+    
+    double phi_deg = this->Get_Particle_Phi() * TMath::RadToDeg(); // convert to degrees
+    phi_deg += 30.; // shift by 30 deg
+    while(phi_deg<0)phi_deg+=360.; // if negative, shift positive
+    int sect =  (int)TMath::Floor(phi_deg/60.);
+    
     TVector3 RotatedVertPos = this->Get_Particle_Vertex();
     TVector3 RotatedVertDir = this->Get_Particle_Dir();
     TVector3 TargetPos = this->Get_Target_Vertex();
-    int sect = this->Get_Sector();
     
     RotatedVertPos.RotateZ(-TMath::DegToRad()*60.*sect);
     RotatedVertDir.RotateZ(-TMath::DegToRad()*60.*sect);

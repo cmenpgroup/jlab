@@ -8,7 +8,7 @@ using namespace std;
 
 class Vertex_Corrections
 {
-    int Sector;
+    double ParticlePhi;
     TVector3 TargetVert;
     TVector3 ParticleVert;
     TVector3 ParticleDir;
@@ -16,11 +16,11 @@ class Vertex_Corrections
     
 public:
     Vertex_Corrections();
-    void Put_Sector(int sector);
+    void Put_Particle_Phi(double phi);
     void Put_Target_Vertex(TVector3 V3);
     void Put_Particle_Vertex(TVector3 V3);
     void Put_Particle_Dir(TVector3 V3);
-    int Get_Sector() {return Sector;};
+    double Get_Particle_Phi() {return ParticlePhi;};
     TVector3 Get_Target_Vertex() {return TargetVert;};
     TVector3 Get_Particle_Vertex() {return ParticleVert;};
     TVector3 Get_Particle_Dir() {return ParticleDir;};
