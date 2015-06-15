@@ -249,7 +249,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         // Find the electron sector
-        Sector_index = GetSectorByPhi(elec.Phi());
+        Sector_index = GetSectorByPhi_test(elec.Phi());
 //        cout<<"Sector "<<Sector_index<<"  "<<GetSectorByPhi_test(elec.Phi())<<" "<<elec.Phi()*TMath::RadToDeg()<<endl;
         
         if(Sector_index){
