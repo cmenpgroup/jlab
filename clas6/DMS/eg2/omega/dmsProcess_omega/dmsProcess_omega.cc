@@ -248,14 +248,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         W = W_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
-        // Find the electron sector
-        Sector_index = GetSectorByPhi(elec.Phi());
-        if(Sector_index){
-            elecZVertSector->Fill(elec_vert.Z(),Sector_index);
-        }else{
-            cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
-        }
-        
         // correct the electron vertex
         myVertCorr.Put_Particle_Vertex(elec_vert);
         myVertCorr.Put_Particle_Dir(elec.Vect());
@@ -263,12 +255,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         myVertCorr.Correct_Vertex();
         elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
 
-/*        cout<<"Sector:  "<<Sector_index<<endl;
-        elec_vert.Print();
-        elec.Vect().Print();
-        elec.Print();
-        elec_vert_corr.Print();
-*/
+        // Find the electron sector
+        Sector_index = GetSectorByPhi(elec.Phi());
+        if(Sector_index){
+            elecZVertSector->Fill(elec_vert.Z(),Sector_index);
+            elecZVertSector_Corr->Fill(elec_vert_corr.Z(),Sector_index);
+        }else{
+            cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
+        }
+        
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
@@ -791,6 +786,10 @@ void BookHist(){
     sprintf(hname,"elecZVertSector");
     sprintf(htitle,"Z Vertex of Electron vs Sector");
     elecZVertSector = new TH2D(hname, htitle, 300, -40, -10, 6, 0.5, 6.5);
+
+    sprintf(hname,"elecZVertSector_Corr");
+    sprintf(htitle,"Z Vertex of Electron vs Sector, Corrected");
+    elecZVertSector_Corr = new TH2D(hname, htitle, 300, -40, -10, 6, 0.5, 6.5);
     
     sprintf(hname,"elecZVert_VS_Phi");
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
@@ -1220,6 +1219,10 @@ void WriteHist(string RootFile){
     elecZVertSector->GetYaxis()->SetTitle("Sector");
     elecZVertSector->Write();
 
+    elecZVertSector_Corr->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVertSector_Corr->GetYaxis()->SetTitle("Sector");
+    elecZVertSector_Corr->Write();
+    
     elecZVert_VS_Phi->GetXaxis()->SetTitle("#phi (deg.)");
     elecZVert_VS_Phi->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert_VS_Phi->Write();
