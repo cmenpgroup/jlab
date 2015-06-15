@@ -1,5 +1,5 @@
-#ifndef ECGEOMETRY_H
-#define ECGEOMETRY_H
+#ifndef VERTEXCORRECTIONS_H
+#define VERTEXCORRECTIONS_H
 #include <vector>
 #include <string>
 
