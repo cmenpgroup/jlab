@@ -253,16 +253,16 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
         }
         
-/*        Vertex_Corrections myVertCorr;
+        Vertex_Corrections myVertCorr;
 
-        myVertCorr.Print_Vertex_Corrections();
+/*        myVertCorr.Print_Vertex_Corrections();
         myVertCorr.Put_Particle_Vertex(elec_vert);
         myVertCorr.Put_Particle_Dir(elec.Vect());
         myVertCorr.Put_Target_Vertex(TargetV3);
         myVertCorr.Put_Sector(Sector_index);
         myVertCorr.Correct_Vertex();
         myVertCorr.Print_Vertex_Corrections();
-*/        
+*/
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
