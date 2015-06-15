@@ -3,6 +3,8 @@
 #include "Vertex_Corrections.h"
 #include <iostream>
 #include <cmath>
+#include "TVector3.h"
+
 Vertex_Corrections::Vertex_Corrections()
 {
     // Initialize sector

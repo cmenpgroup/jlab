@@ -2,6 +2,7 @@
 #define VERTEXCORRECTIONS_H
 #include <vector>
 #include <string>
+#include "TVector3.h"
 
 using namespace std;
 
