@@ -265,12 +265,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         myVertCorr.Correct_Vertex();
         elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
 
-        cout<<"Sector:  "<<Sector_index<<endl;
+/*        cout<<"Sector:  "<<Sector_index<<endl;
         elec_vert.Print();
         elec.Vect().Print();
         elec.Print();
         elec_vert_corr.Print();
-        
+*/        
         //_________________________________
 		// Fill histograms
 		q2->Fill(Qsq);
