@@ -266,7 +266,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
 
         cout<<"Testing "<<endl;
-        elec_vert.Print()
+        elec_vert.Print();
         elec.Vect().Print();
         elec.Print();
         elec_vert_corr.Print();
