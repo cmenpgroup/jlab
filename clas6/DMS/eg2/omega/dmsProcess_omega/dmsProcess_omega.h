@@ -54,6 +54,7 @@ TH2D *Beta_VS_Momentum;
 TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
+TH2D *elecZVert_VS_Phi_Corr;
 
 TH2D *CCnphe;
 TH2D *ECu;

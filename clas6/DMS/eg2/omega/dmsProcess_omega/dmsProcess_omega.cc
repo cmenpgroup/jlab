@@ -91,6 +91,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     TLorentzVector nPion_MixedEvt;
     TLorentzVector TwoPhoton_MixedEvt;
     TLorentzVector Omega_MixedEvt;
+    
+    TVector3 elec_vert_corr;
 
     int iMixedEvt;
     double Mass_TwoPhoton_ME[NUM_MIXING_METHODS][NUM_ENTRIES_OFFSET];
@@ -256,12 +258,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
         }
         
-        myVertCorr.Print_Vertex_Corrections();
+        // correct the electron vertex
         myVertCorr.Put_Particle_Vertex(elec_vert);
         myVertCorr.Put_Particle_Dir(elec.Vect());
         myVertCorr.Put_Sector(Sector_index);
         myVertCorr.Correct_Vertex();
-        myVertCorr.Print_Vertex_Corrections();
+        elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
 
         //_________________________________
 		// Fill histograms
@@ -272,6 +274,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         nu_EnergyTransfer->Fill(nu);
 		elecZVert->Fill(elec_vert.Z()); // fill electron z vertex histogram
 		elecZVert_VS_Phi->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert.Z()); // fill electron z vertex vs phi histogram
+        elecZVert_VS_Phi_Corr->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert_corr.Z()); // fill electron z vertex vs phi histogram
+
         
         hMx[Vz_index]->Fill(Mx); // histogram for Mx
         hW[Vz_index]->Fill(W); // histogram for W
@@ -800,6 +804,10 @@ void BookHist(){
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
     elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
 
+    sprintf(hname,"elecZVert_VS_Phi_Corr");
+    sprintf(htitle,"Z Vertex (corrected) vs. #phi, Electrons");
+    elecZVert_VS_Phi_Corr = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
+
     sprintf(hname,"Xvert");
     sprintf(htitle,"X vertex");
     Xvert = new TH2D(hname,htitle, 300, -10, 10,5,-0.5,4.5);
@@ -1223,6 +1231,10 @@ void WriteHist(string RootFile){
     elecZVert_VS_Phi->GetXaxis()->SetTitle("#phi (deg.)");
     elecZVert_VS_Phi->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert_VS_Phi->Write();
+
+    elecZVert_VS_Phi_Corr->GetXaxis()->SetTitle("#phi (deg.)");
+    elecZVert_VS_Phi_Corr->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVert_VS_Phi_Corr->Write();
     
     Xvert->GetXaxis()->SetTitle("X vertex (cm)");
     Xvert->GetYaxis()->SetTitle("Particle");
