@@ -249,7 +249,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
         // Find the electron sector
-        Sector_index = GetSectorByPhi_test(elec.Phi());
+        Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
             elecZVertSector->Fill(elec_vert.Z(),Sector_index);
         }else{

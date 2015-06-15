@@ -148,7 +148,6 @@ TH1D *GammaPi0;
 TH1D *BetaPi0;
 
 int GetSectorByPhi(double phi_rad);
-int GetSectorByPhi_test(double phi_rad);
 int process (string inFile, int MaxEvents, int dEvents, int targMass);
 void PrintUsage(char *processName);
 void PrintAnalysisTime(float tStart, float tStop);
