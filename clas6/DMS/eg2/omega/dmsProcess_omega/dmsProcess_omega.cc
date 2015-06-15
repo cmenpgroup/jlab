@@ -75,6 +75,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     TVector3 TargetV3(0.043,-0.33,0);
     
+    Vertex_Corrections myVertCorr; // create the vertex correction object
+    myVertCorr.Put_Target_Vertex(TargetV3); // set the target vertex positions
+    
     TLorentzVector BeamMinusElectron;
     TLorentzVector W_TLV;
     TLorentzVector Mx_TLV;
@@ -253,12 +256,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
         }
         
-        Vertex_Corrections myVertCorr;
-
         myVertCorr.Print_Vertex_Corrections();
         myVertCorr.Put_Particle_Vertex(elec_vert);
         myVertCorr.Put_Particle_Dir(elec.Vect());
-        myVertCorr.Put_Target_Vertex(TargetV3);
         myVertCorr.Put_Sector(Sector_index);
         myVertCorr.Correct_Vertex();
         myVertCorr.Print_Vertex_Corrections();
