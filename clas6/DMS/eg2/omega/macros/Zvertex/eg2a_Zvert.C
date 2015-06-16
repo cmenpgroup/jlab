@@ -16,8 +16,8 @@ const Int_t NSECTORS= 6;
 Int_t lcol[10] = {1,2,4,6,7,8,9,10,14,15};
 Int_t mkr[10] = {20,21,22,24,23,25,26,27,28,29};
 char *fSame[10] = {"","same","same","same","same","same","same","same","same","same"};
+char *hname[2] = {"elecZVertSector","elecZVertSector_Corr"};
 
-char hname[50];
 char htitle[500];
 char title[500];
 char cname[50];
@@ -35,12 +35,18 @@ Float_t yoff = 1.5;
 // PlotZvert - plot histogram with labels
 //                  
 //                  fAna = output from eg2a DMS
+//                  inum = histogram number
 //                  target = target name
 //                  sector = sector number
 //
-void PlotZvert(char *fAna="Ana.root", char *target, int sector)
+void PlotZvert(char *fAna="Ana.root", int inum, char *target, int sector)
 {
     char strname[50];
+    
+    if(inum<0 || inum>1){
+        cout<<"Incorrect histogram number "<<inum<<endl;
+        exit(0);
+    }
     
     if(sector>0 && sector<=6){
         // Canvas to plot histogram
@@ -60,10 +66,9 @@ void PlotZvert(char *fAna="Ana.root", char *target, int sector)
         gPad->SetRightMargin(Rmar);
         gPad->SetFillColor(0);
     
-        sprintf(hname,"elecZVertSector");
-        TH2F *hZvert = (TH2F*)tmp->Get(hname);
+        TH2F *hZvert = (TH2F*)tmp->Get(hname[inum]);
 
-        sprintf(strname,"%s_px_%i",hname,sector);
+        sprintf(strname,"%s_px_%i",hname[inum],sector);
         hZvert_proj = (TH1D*)hZvert->ProjectionX(strname,sector,sector,"");
     
         sprintf(title,"%s, Sector %i",target,sector);
@@ -76,9 +81,9 @@ void PlotZvert(char *fAna="Ana.root", char *target, int sector)
         hZvert_proj->SetLineWidth(2);
         hZvert_proj->Draw();
 
-        sprintf(OutCan,"PlotZvert_%s_S%i.gif",target,sector);
+        sprintf(OutCan,"Plot_%s_%s_S%i.gif",hname[inum],target,sector);
         c1->Print(OutCan);
-        sprintf(OutCan,"PlotZvert_%s_S%i.eps",target,sector);
+        sprintf(OutCan,"Plot_%s_%s_S%i.eps",hname[inum],target,sector);
         c1->Print(OutCan);
     }else{
         cout<<"Wrong sector number "<<sector<<endl;
@@ -89,13 +94,19 @@ void PlotZvert(char *fAna="Ana.root", char *target, int sector)
 // OverlayZvertBySector - overlay histogram of e- Z vertex by sector
 //
 //                  fAna = output from eg2a DMS
+//                  inum = histogram number
 //                  target = target name
 //
-void OverlayZvertBySector(char *fAna="Ana.root", char *target)
+void OverlayZvertBySector(char *fAna="Ana.root", int inum, char *target)
 {
 	Int_t i;
 	char legLabel[50];
     char strname[50];
+    
+    if(inum<0 || inum>1){
+        cout<<"Incorrect histogram number "<<inum<<endl;
+        exit(0);
+    }
     
 	// Canvas to plot histogram
 	TCanvas *c1 = new TCanvas("c1","c1",0,0,600,600);
@@ -114,15 +125,14 @@ void OverlayZvertBySector(char *fAna="Ana.root", char *target)
 	gPad->SetRightMargin(Rmar);
 	gPad->SetFillColor(0);
  
-    sprintf(hname,"elecZVertSector");
-    TH2F *hZvert = (TH2F*)tmp->Get(hname);
+    TH2F *hZvert = (TH2F*)tmp->Get(hname[inum]);
     
 	TH1D *hZSec[NSECTORS];
     
 	TLegend *leg = new TLegend(0.60,0.50,1.0,0.85); //declare Legend and give its location
     
     	for(i=0; i<NSECTORS ; i++){
-            sprintf(strname,"%s_px_%i",hname,i+1);
+            sprintf(strname,"%s_px_%i",hname[inum],i+1);
             hZSec[i] = (TH1D*)hZvert->ProjectionX(strname,i+1,i+1,"");
         	hZSec[i]->SetTitle(0);
         	hZSec[i]->SetXTitle("e^{-} Z Vertex (cm)");
@@ -142,20 +152,21 @@ void OverlayZvertBySector(char *fAna="Ana.root", char *target)
     	leg->SetHeader(target);
     	leg->Draw();
     
-	sprintf(OutCan,"OverlayZvertBySector_%s.gif",target);
+	sprintf(OutCan,"Overlay_%s_%s.gif",hname[inum],target);
 	c1->Print(OutCan);
-	sprintf(OutCan,"OverlayZvertBySector_%s.eps",target);
+	sprintf(OutCan,"Overlay_%s_%s.eps",hname[inum],target);
 	c1->Print(OutCan);
 }
 
 //
-// PlotZvert - plot histogram with labels
+// FitZvert - plot histogram with labels
 //
 //                  fAna = output from eg2a DMS
+//                  inum = histogram number
 //                  target = target name
 //                  sector = sector number
 //
-void FitZvert(char *fAna="Ana.root", char *target, int sector)
+void FitZvert(char *fAna="Ana.root", int inum, char *target, int sector)
 {
     Float_t fPeak, fWidth, SumLo, SumHi;
     Float_t xLo = -26.5;  // lower value of x-axis for drawing histogram
@@ -165,12 +176,17 @@ void FitZvert(char *fAna="Ana.root", char *target, int sector)
     
     char strname[50];
     
+    if(inum<0 || inum>1){
+        cout<<"Incorrect histogram number "<<inum<<endl;
+        exit(0);
+    }
+    
     if(sector>0 && sector<=6){
         // Canvas to plot histogram
         TCanvas *c1 = new TCanvas("c1","c1",0,0,600,600);
         c1->SetBorderMode(1);  //Bordermode (-1=down, 0 = no border, 1=up)
         c1->SetBorderSize(5);
-        gStyle->SetOptStat(0);
+        gStyle->SetOptFit(1);
         c1->SetFillStyle(4000);
         
         // data files contain the trees
@@ -183,10 +199,9 @@ void FitZvert(char *fAna="Ana.root", char *target, int sector)
         gPad->SetRightMargin(Rmar);
         gPad->SetFillColor(0);
         
-        sprintf(hname,"elecZVertSector");
-        TH2F *hZvert = (TH2F*)tmp->Get(hname);
+        TH2F *hZvert = (TH2F*)tmp->Get(hname[inum]);
         
-        sprintf(strname,"%s_px_%i",hname,sector);
+        sprintf(strname,"%s_px_%i",hname[inum],sector);
         hZvert_proj = (TH1D*)hZvert->ProjectionX(strname,sector,sector,"");
         
         sprintf(title,"%s, Sector %i",target,sector);
@@ -217,12 +232,13 @@ void FitZvert(char *fAna="Ana.root", char *target, int sector)
         hZvert_proj->Fit("pol","R+");         // fit the background
         pol->GetParameters(&par[3]); // get parameters fromt background fit
         
+        t1->SetParNames("Amplitude","Centroid","Sigma","p0","p1","p2","p3");
         t1->SetParameters(par);       // set the parameters from initial fits for total fit
         t1->SetLineWidth(2);          // make fit line thicker
         t1->SetLineColor(2);          // set the fit line color
         hZvert_proj->Fit("t1","R");          // fit spectrum with total fit function
         t1->GetParameters(&par[0]);   //get final parameters
-
+        
         fPeak = t1->GetParameter(1);  // get peak centroid
         fWidth = t1->GetParameter(2); // get peak width
         
@@ -230,9 +246,9 @@ void FitZvert(char *fAna="Ana.root", char *target, int sector)
         cout<<"Fit parameters: Centroid = "<<fPeak<<" cm, Sigma = "<<fWidth<<" cm"<<endl;
         cout<<"***********************************************************"<<endl;
         
-        sprintf(OutCan,"FitZvert_%s_S%i.gif",target,sector);
+        sprintf(OutCan,"Fit_%s_%s_S%i.gif",hname[inum],target,sector);
         c1->Print(OutCan);
-        sprintf(OutCan,"FitZvert_%s_S%i.eps",target,sector);
+        sprintf(OutCan,"Fit_%s_%s_S%i.eps",hname[inum],target,sector);
         c1->Print(OutCan);
     }else{
         cout<<"Wrong sector number "<<sector<<endl;
