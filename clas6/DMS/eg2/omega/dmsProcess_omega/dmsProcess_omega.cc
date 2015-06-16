@@ -73,6 +73,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
     
+    TVector3 TargetV3(0.043,-0.33,0);
+    
+    Vertex_Corrections myVertCorr; // create the vertex correction object
+    myVertCorr.Put_Target_Vertex(TargetV3); // set the target vertex positions
+    
     TLorentzVector BeamMinusElectron;
     TLorentzVector W_TLV;
     TLorentzVector Mx_TLV;
@@ -86,6 +91,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     TLorentzVector nPion_MixedEvt;
     TLorentzVector TwoPhoton_MixedEvt;
     TLorentzVector Omega_MixedEvt;
+    
+    TVector3 elec_vert_corr;
 
     int iMixedEvt;
     double Mass_TwoPhoton_ME[NUM_MIXING_METHODS][NUM_ENTRIES_OFFSET];
@@ -241,10 +248,18 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         W = W_TLV.M(); // reaction W
         z_fracEnergy = Omega.E()/nu; // fractional energy taken by hadron
         
+        // correct the electron vertex
+        myVertCorr.Put_Particle_Vertex(elec_vert);
+        myVertCorr.Put_Particle_Dir(elec.Vect());
+        myVertCorr.Put_Particle_Phi(elec.Phi());
+        myVertCorr.Correct_Vertex();
+        elec_vert_corr = myVertCorr.Get_Particle_Vertex_Corrected();
+
         // Find the electron sector
         Sector_index = GetSectorByPhi(elec.Phi());
         if(Sector_index){
             elecZVertSector->Fill(elec_vert.Z(),Sector_index);
+            elecZVertSector_Corr->Fill(elec_vert_corr.Z(),Sector_index);
         }else{
             cout << "Error in finding sector. Phi = " << elec.Phi() * TMath::RadToDeg() << endl;
         }
@@ -258,6 +273,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         nu_EnergyTransfer->Fill(nu);
 		elecZVert->Fill(elec_vert.Z()); // fill electron z vertex histogram
 		elecZVert_VS_Phi->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert.Z()); // fill electron z vertex vs phi histogram
+        elecZVert_VS_Phi_Corr->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert_corr.Z()); // fill electron z vertex vs phi histogram
+
         
         hMx[Vz_index]->Fill(Mx); // histogram for Mx
         hW[Vz_index]->Fill(W); // histogram for W
@@ -785,10 +802,18 @@ void BookHist(){
     sprintf(hname,"elecZVertSector");
     sprintf(htitle,"Z Vertex of Electron vs Sector");
     elecZVertSector = new TH2D(hname, htitle, 300, -40, -10, 6, 0.5, 6.5);
+
+    sprintf(hname,"elecZVertSector_Corr");
+    sprintf(htitle,"Z Vertex of Electron vs Sector, Corrected");
+    elecZVertSector_Corr = new TH2D(hname, htitle, 300, -40, -10, 6, 0.5, 6.5);
     
     sprintf(hname,"elecZVert_VS_Phi");
     sprintf(htitle,"Z Vertex  vs. #phi, Electrons");
     elecZVert_VS_Phi = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
+
+    sprintf(hname,"elecZVert_VS_Phi_Corr");
+    sprintf(htitle,"Z Vertex (corrected) vs. #phi, Electrons");
+    elecZVert_VS_Phi_Corr = new TH2D(hname,htitle, 360, -180., 180., 300, -35., -20.);
 
     sprintf(hname,"Xvert");
     sprintf(htitle,"X vertex");
@@ -1220,9 +1245,17 @@ void WriteHist(string RootFile){
     elecZVertSector->GetYaxis()->SetTitle("Sector");
     elecZVertSector->Write();
 
+    elecZVertSector_Corr->GetXaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVertSector_Corr->GetYaxis()->SetTitle("Sector");
+    elecZVertSector_Corr->Write();
+    
     elecZVert_VS_Phi->GetXaxis()->SetTitle("#phi (deg.)");
     elecZVert_VS_Phi->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
     elecZVert_VS_Phi->Write();
+
+    elecZVert_VS_Phi_Corr->GetXaxis()->SetTitle("#phi (deg.)");
+    elecZVert_VS_Phi_Corr->GetYaxis()->SetTitle("e^{-} Z vertex (cm)");
+    elecZVert_VS_Phi_Corr->Write();
     
     Xvert->GetXaxis()->SetTitle("X vertex (cm)");
     Xvert->GetYaxis()->SetTitle("Particle");

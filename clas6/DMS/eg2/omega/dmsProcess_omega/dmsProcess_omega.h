@@ -14,6 +14,7 @@
 #include "EG2Cuts.h"
 #include "ElectronID.h"
 #include "EC_geometry.h"
+#include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
 
 #define DEBUG 0
@@ -53,6 +54,7 @@ TH2D *Beta_VS_Momentum;
 TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
+TH2D *elecZVert_VS_Phi_Corr;
 
 TH2D *CCnphe;
 TH2D *ECu;
@@ -116,6 +118,7 @@ TH1D *PtSq_Omega_AllCuts[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaCut[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaSBCut[3];
 TH2D *elecZVertSector;
+TH2D *elecZVertSector_Corr;
 TH2D *OpAng_VS_IM2Photons[3];
 TH2D *OpAng_VS_E[3];
 TH2D *OpAng_VS_E_MassPi0Cut[3];
