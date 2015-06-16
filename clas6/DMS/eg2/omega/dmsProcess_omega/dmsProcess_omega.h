@@ -96,6 +96,7 @@ TH2D *ECtotP_VS_P_AntiECoutCut;
 TH2D *ECtot_VS_P_AntiECoutCut;
 
 TH2D *ECinP_VS_ECoutP[6]; //Andy
+TH2D *ECinP_VS_ECoutP_cut[6];
 TH2D *ECinP_VS_ECoutP_Range[5];
 
 TH2D *ECin_VS_ECout_ECfid;

@@ -382,6 +382,62 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
 
         ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+        /*
+        1	0.192702	-0.586568	0.0420221	-0.104084
+        2	0.2118	    -0.631934	0.0478416	-0.120601
+        3	0.179616	-0.515158	0.052625	-0.149614
+        4	0.198436	-0.621269	0.0387745	-0.0961029
+        5	0.231849	-0.734145	0.0349574	-0.0709758
+        6	0.177784	-0.451267	0.0620507	-0.17344
+        */
+        double aMean = 0.0, bMean = 0.0, aSigma = 0.0, bSigma = 0.0;
+        double aAbove = 0.0, bAbove = 0.0, aBelow = 0.0, bBelow = 0.0;
+        switch(Sector_index) {
+            case 1:
+                aMean = 0.192702;
+                bMean = -0.586568;
+                aSigma = 0.0420221;
+                bSigma = -0.104084;
+                break;
+            case 2:
+                aMean = 0.2118;
+                bMean = -0.631934;
+                aSigma = 0.0478416;
+                bSigma = -0.120601;
+                break;
+            case 3:
+                aMean = 0.179616;
+                bMean = -0.515158;
+                aSigma = 0.052625;
+                bSigma = -0.149614;
+                break;
+            case 4:
+                aMean = 0.198436;
+                bMean = -0.621269;
+                aSigma = 0.0387745;
+                bSigma = -0.0961029;
+                break;
+            case 5:
+                aMean = 0.231849;
+                bMean = -0.734145;
+                aSigma = 0.0349574;
+                bSigma = -0.0709758;
+                break;
+            case 6:
+                aMean = 0.177784;
+                bMean = -0.451267;
+                aSigma = 0.0620507;
+                bSigma = -0.17344;
+                break;
+        }
+        aAbove = aMean + 2 * aSigma;
+        bAbove = bMean + 2 * bSigma;
+        aBelow = aMean - 2 * aSigma;
+        bBelow = bMean - 2 * bSigma;
+
+        if((emECout / elec.P() - (bBelow * emECin / elec.P() + aBelow) > 0) && (emECout / elec.P() - (bAbove * emECin / elec.P() + aAbove) < 0)) {
+            ECinP_VS_ECoutP_cut[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+        }
 
         if(elec.P() > 0.5 && elec.P() <= 1.0) {
             ECinP_VS_ECoutP_Range[0]->Fill(emECin/elec.P(), emECout/elec.P());
@@ -1168,6 +1224,10 @@ void BookHist(){
         sprintf(htitle,"ECin/P vs ECout/P, Sector %i",i+1);
         ECinP_VS_ECoutP[i] = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.5);
 
+        sprintf(hname,"ECinP_VS_ECoutP_cut_Sector%i",i+1);
+        sprintf(htitle,"ECin/P vs ECout/P cut, Sector %i",i+1);
+        ECinP_VS_ECoutP_cut[i] = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.5);
+
         sprintf(hname,"ECtotP_VS_P_ECPCut%i",i+1);
         sprintf(htitle,"ECtot/P vs P, Sector %i",i+1);
         ECtotP_VS_P_ECPCut[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
@@ -1634,6 +1694,9 @@ void WriteHist(string RootFile){
         ECinP_VS_ECoutP[i]->GetXaxis()->SetTitle("EC_{in}/Mom.");
         ECinP_VS_ECoutP[i]->GetYaxis()->SetTitle("EC_{out}/Mom.");
         ECinP_VS_ECoutP[i]->Write();
+        ECinP_VS_ECoutP_cut[i]->GetXaxis()->SetTitle("EC_{in}/Mom.");
+        ECinP_VS_ECoutP_cut[i]->GetYaxis()->SetTitle("EC_{out}/Mom.");
+        ECinP_VS_ECoutP_cut[i]->Write();
     }
 
     for(i=0; i<5; i++) {
