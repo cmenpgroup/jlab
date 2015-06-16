@@ -93,9 +93,7 @@ TH2D *Theta_VS_Phi_AntiECoutCut;
 TH2D *ECtotP_VS_P_AntiECoutCut;
 TH2D *ECtot_VS_P_AntiECoutCut;
 
-TH2D *ECinP_VS_ECoutP[6]; //Andy
-TH2D *ECinP_VS_ECoutP_Range[5];
-
+TH2D *ECinP_VS_ECoutP[6];
 TH2D *ECin_VS_ECout_ECfid;
 TH2D *ECin_VS_ECout_elecID_All;
 TH2D *ECtotP_VS_P_Sector[6];

@@ -364,8 +364,37 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
         ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
 
-        ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+        double a0 = 0.0, b0 = 0.0;
+        switch(Sector_index) {
+            case 1:
+                a0 = 0.1285994;
+                b0 = -0.44076;
+                break;
+            case 2:
+                a0 = 0.1421369;
+                b0 = -0.476397;
+                break;
+            case 3:
+                a0 = 0.116122;
+                b0 = -0.39485;
+                break;
+            case 4:
+                a0 = 0.1363739;
+                b0 = -0.474982;
+                break;
+            case 5:
+                a0 = 0.1621665;
+                b0 = -0.564337;
+                break;
+            case 6:
+                a0 = 0.10724345;
+                b0 = -0.324932;
+                break;
+        }
 
+        if((emECout/elec.P() - (b0*emECin/elec.P() + a0)) > 0) {
+            ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+        }
         if(elec.P() > 0.5 && elec.P() <= 1.0) {
             ECinP_VS_ECoutP_Range[0]->Fill(emECin/elec.P(), emECout/elec.P());
         } else if(elec.P() > 1.0 && elec.P() <= 1.5) {
