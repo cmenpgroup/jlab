@@ -534,7 +534,95 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         //
         // End of  Electron ID
         //
-        
+
+        //
+        // Start of Photon ID
+        //
+
+        Mom_photID1->Fill(photon1.P());
+        Mom_photID2->Fill(photon2.P());
+        if(photon1.P() > 0.3) {
+            Mom_photID1_cut->Fill(photon1.P());
+        }
+        if(photon2.P() > 0.3) {
+            Mom_photID2_cut->Fill(photon2.P());
+        }
+
+        Beta_photID1->Fill(photon1.Beta());
+        Beta_photID2->Fill(photon2.Beta());
+        if(0.95 < photon1.Beta() && photon1.Beta() < 1.95) {
+            Beta_photID1_cut->Fill(photon1.Beta());
+        }
+        if(0.95 < photon2.Beta() && photon2.Beta() < 1.95) {
+            Beta_photID2_cut->Fill(photon2.Beta());
+        }
+        Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
+        Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
+        Double_t ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
+        Double_t ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
+        Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
+        Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
+
+        ECu_photID1->Fill(ecu_phot1);
+        ECu_photID2->Fill(ecu_phot2);
+        ECv_photID1->Fill(ecv_phot1);
+        ECv_photID2->Fill(ecv_phot2);
+        ECw_photID1->Fill(ecw_phot1);
+        ECw_photID2->Fill(ecw_phot2);
+        if(40 < ecu_phot1 && ecu_phot1 < 410) {
+            ECu_photID1_cut->Fill(ecu_phot1);
+        }
+        if(40 < ecu_phot2 && ecu_phot2 < 410) {
+            ECu_photID2_cut->Fill(ecu_phot2);
+        }
+        if(ecv_phot1 < 370) {
+            ECv_photID1_cut->Fill(ecv_phot1);
+        }
+        if(ecv_phot2 < 370) {
+            ECv_photID2_cut->Fill(ecv_phot2);
+        }
+        if(ecw_phot1 < 410) {
+            ECw_photID1_cut->Fill(ecw_phot1);
+        }
+        if(ecw_phot2 < 410) {
+            ECw_photID2_cut->Fill(ecw_phot2);
+        }
+
+        Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
+        Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
+        Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
+        Double_t ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
+
+        ECtime1->Fill(ectime_phot1);
+        ECtime2->Fill(ectime_phot2);
+        ECpath1->Fill(ecpath_phot1);
+        ECpath2->Fill(ecpath_phot2);
+
+        ECtime_ECl_photID1->Fill(ectime_phot1 - ecpath_phot1/30.0);
+        ECtime_ECl_photID2->Fill(ectime_phot2 - ecpath_phot2/30.0);
+
+        if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
+            ECtime_ECl_photID1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
+        }
+        if((ectime_phot2 - ecpath_phot2/30.0 > -0.166546 - 3.0 * 0.710022) && (ectime_phot2 - ecpath_phot2/30.0 < -0.166546 + 3.0 * 0.710022)) {
+            ECtime_ECl_photID2_cut->Fill(ectime_phot2 - ecpath_phot2/30.0);
+        }
+
+        Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
+        Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
+        Double_t ecout_phot1 = reader.getProperty("ecout",BankIndex_part[3]);
+        Double_t ecout_phot2 = reader.getProperty("ecout",BankIndex_part[4]);
+        Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
+        Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
+
+        ECtotP_vs_P_phot1->Fill(photon1.P(),ectot_phot1/photon1.P());
+        ECtotP_vs_P_phot2->Fill(photon2.P(),ectot_phot2/photon2.P());
+        ECin_vs_ECout_phot1->Fill(ecin_phot1,ecout_phot1);
+        ECin_vs_ECout_phot2->Fill(ecin_phot2,ecout_phot2);
+        //
+        // End of Photon ID
+        //
+
         // plot of two photon opening angle
 		TwoPhotonAngle = TMath::RadToDeg()*photon1.Angle(photon2.Vect());
 		OpAng_2Photons->Fill(TwoPhotonAngle);
@@ -1264,6 +1352,134 @@ void BookHist(){
     sprintf(hname,"BetaPi0");
     sprintf(htitle,"Beta of Pi0");
 	BetaPi0 = new TH1D(hname,htitle, 100, 0, 1);
+
+    sprintf(hname,"MomentumPhoton1");
+    sprintf(htitle,"Total Momentum of Photon 1");
+	Mom_photID1 = new TH1D(hname,htitle, 500, 0, 5);
+
+    sprintf(hname,"MomentumPhoton2");
+    sprintf(htitle,"Total Momentum of Photon 2");
+	Mom_photID2 = new TH1D(hname,htitle, 500, 0, 5);
+
+    sprintf(hname,"MomentumPhoton1Cut");
+    sprintf(htitle,"Total Momentum of Photon 1 Cut");
+	Mom_photID1_cut = new TH1D(hname,htitle, 500, 0, 5);
+
+    sprintf(hname,"MomentumPhoton2Cut");
+    sprintf(htitle,"Total Momentum of Photon 2 Cut");
+	Mom_photID2_cut = new TH1D(hname,htitle, 500, 0, 5);
+
+    sprintf(hname,"BetaPhoton1");
+    sprintf(htitle,"Beta of Photon 1");
+	Beta_photID1 = new TH1D(hname,htitle, 100, 0.8, 2.1);
+
+    sprintf(hname,"BetaPhoton2");
+    sprintf(htitle,"Beta of Photon 2");
+	Beta_photID2 = new TH1D(hname,htitle, 100, 0.8, 2.1);
+
+    sprintf(hname,"BetaPhoton1Cut");
+    sprintf(htitle,"Beta of Photon 1 Cut");
+	Beta_photID1_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
+
+    sprintf(hname,"BetaPhoton2Cut");
+    sprintf(htitle,"Beta of Photon 2 Cut");
+	Beta_photID2_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
+
+    sprintf(hname,"ECuPhoton1");
+    sprintf(htitle,"ECu of Photon 1");
+	ECu_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECuPhoton2");
+    sprintf(htitle,"ECu of Photon 2");
+	ECu_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECvPhoton1");
+    sprintf(htitle,"ECv of Photon 1");
+	ECv_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECvPhoton2");
+    sprintf(htitle,"ECv of Photon 2");
+	ECv_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECwPhoton1");
+    sprintf(htitle,"ECw of Photon 1");
+	ECw_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECwPhoton2");
+    sprintf(htitle,"ECw of Photon 2");
+	ECw_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECuPhoton1Cut");
+    sprintf(htitle,"ECu of Photon 1 Cut");
+	ECu_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECuPhoton2Cut");
+    sprintf(htitle,"ECu of Photon 2 Cut");
+	ECu_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECvPhoton1Cut");
+    sprintf(htitle,"ECv of Photon 1 Cut");
+	ECv_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECvPhoton2Cut");
+    sprintf(htitle,"ECv of Photon 2 Cut");
+	ECv_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECwPhoton1Cut");
+    sprintf(htitle,"ECw of Photon 1 Cut");
+	ECw_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECwPhoton2Cut");
+    sprintf(htitle,"ECw of Photon 2 Cut");
+	ECw_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+
+    sprintf(hname,"ECtimeEClPhoton1");
+    sprintf(htitle,"ECtime - EClength/c of Photon 1");
+    ECtime_ECl_photID1 = new TH1D(hname,htitle, 100, -10, 5);
+
+    sprintf(hname,"ECtimeEClPhoton2");
+    sprintf(htitle,"ECtime - EClength/c of Photon 2");
+    ECtime_ECl_photID2 = new TH1D(hname,htitle, 100, -10, 5);
+
+    sprintf(hname,"ECtimeEClPhoton1Cut");
+    sprintf(htitle,"ECtime - EClength/c of Photon 1 Cut");
+    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 100, -3, 2);//TODO
+
+    sprintf(hname,"ECtimeEClPhoton2Cut");
+    sprintf(htitle,"ECtime - EClength/c of Photon 2 Cut");
+    ECtime_ECl_photID2_cut = new TH1D(hname,htitle, 100, -3, 2);
+
+    sprintf(hname,"ECtimePhoton1");
+    sprintf(htitle,"ECtime of Photon 1");
+    ECtime1 = new TH1D(hname,htitle, 400, -25, 25);
+
+    sprintf(hname,"ECtimePhoton2");
+    sprintf(htitle,"ECtime of Photon 2");
+    ECtime2 = new TH1D(hname,htitle, 400, -25, 25);
+
+    sprintf(hname,"ECpathPhoton1");
+    sprintf(htitle,"ECpath of Photon 1");
+    ECpath1 = new TH1D(hname,htitle, 650, 0, 650);
+
+    sprintf(hname,"ECpathPhoton2");
+    sprintf(htitle,"ECpath of Photon 2");
+    ECpath2 = new TH1D(hname,htitle, 650, 0, 650);
+
+    sprintf(hname,"ECtotP_vs_P_phot1");
+    sprintf(htitle,"ECtot / P vs P of Photon 1");
+    ECtotP_vs_P_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+
+    sprintf(hname,"ECtotP_vs_P_phot2");
+    sprintf(htitle,"ECtot / P vs P of Photon 2");
+    ECtotP_vs_P_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+
+    sprintf(hname,"ECin_vs_ECout_phot1");
+    sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
+    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+
+    sprintf(hname,"ECin_vs_ECout_phot2");
+    sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
+    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
 }
 
 //
@@ -1734,6 +1950,138 @@ void WriteHist(string RootFile){
         EC_XvsY_local_AntiFidCut[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
         EC_XvsY_local_AntiFidCut[i]->Write();
     }
+
+    // create a directory for photon id
+    TDirectory *cdPhotID = out->mkdir("PhotonID");
+    cdPhotID->cd();
+    
+    Mom_photID1->GetXaxis()->SetTitle("P (GeV/c)");
+    Mom_photID1->GetYaxis()->SetTitle("Counts");
+	Mom_photID1->Write();
+
+    Mom_photID2->GetXaxis()->SetTitle("P (GeV/c)");
+    Mom_photID2->GetYaxis()->SetTitle("Counts");
+	Mom_photID2->Write();
+
+    Mom_photID1_cut->GetXaxis()->SetTitle("P (GeV/c)");
+    Mom_photID1_cut->GetYaxis()->SetTitle("Counts");
+	Mom_photID1_cut->Write();
+
+    Mom_photID2_cut->GetXaxis()->SetTitle("P (GeV/c)");
+    Mom_photID2_cut->GetYaxis()->SetTitle("Counts");
+	Mom_photID2_cut->Write();
+
+    Beta_photID1->GetXaxis()->SetTitle("#beta");
+    Beta_photID1->GetYaxis()->SetTitle("Counts");
+	Beta_photID1->Write();
+
+    Beta_photID2->GetXaxis()->SetTitle("#beta");
+    Beta_photID2->GetYaxis()->SetTitle("Counts");
+	Beta_photID2->Write();
+
+    Beta_photID1_cut->GetXaxis()->SetTitle("#beta");
+    Beta_photID1_cut->GetYaxis()->SetTitle("Counts");
+	Beta_photID1_cut->Write();
+
+    Beta_photID2_cut->GetXaxis()->SetTitle("#beta");
+    Beta_photID2_cut->GetYaxis()->SetTitle("Counts");
+	Beta_photID2_cut->Write();
+
+    ECu_photID1->GetXaxis()->SetTitle("EC U (cm)");
+    ECu_photID1->GetYaxis()->SetTitle("Counts");
+	ECu_photID1->Write();
+
+    ECu_photID2->GetXaxis()->SetTitle("EC U (cm)");
+    ECu_photID2->GetYaxis()->SetTitle("Counts");
+	ECu_photID2->Write();
+
+    ECv_photID1->GetXaxis()->SetTitle("EC V (cm)");
+    ECv_photID1->GetYaxis()->SetTitle("Counts");
+	ECv_photID1->Write();
+
+    ECv_photID2->GetXaxis()->SetTitle("EC V (cm)");
+    ECv_photID2->GetYaxis()->SetTitle("Counts");
+	ECv_photID2->Write();
+
+    ECw_photID1->GetXaxis()->SetTitle("EC W (cm)");
+    ECw_photID1->GetYaxis()->SetTitle("Counts");
+	ECw_photID1->Write();
+
+    ECw_photID2->GetXaxis()->SetTitle("EC W (cm)");
+    ECw_photID2->GetYaxis()->SetTitle("Counts");
+	ECw_photID2->Write();
+
+    ECu_photID1_cut->GetXaxis()->SetTitle("EC U (cm)");
+    ECu_photID1_cut->GetYaxis()->SetTitle("Counts");
+	ECu_photID1_cut->Write();
+
+    ECu_photID2_cut->GetXaxis()->SetTitle("EC U (cm)");
+    ECu_photID2_cut->GetYaxis()->SetTitle("Counts");
+	ECu_photID2_cut->Write();
+
+    ECv_photID1_cut->GetXaxis()->SetTitle("EC V (cm)");
+    ECv_photID1_cut->GetYaxis()->SetTitle("Counts");
+	ECv_photID1_cut->Write();
+
+    ECv_photID2_cut->GetXaxis()->SetTitle("EC V (cm)");
+    ECv_photID2_cut->GetYaxis()->SetTitle("Counts");
+	ECv_photID2_cut->Write();
+
+    ECw_photID1_cut->GetXaxis()->SetTitle("EC W (cm)");
+    ECw_photID1_cut->GetYaxis()->SetTitle("Counts");
+	ECw_photID1_cut->Write();
+
+    ECw_photID2_cut->GetXaxis()->SetTitle("EC W (cm)");
+    ECw_photID2_cut->GetYaxis()->SetTitle("Counts");
+	ECw_photID2_cut->Write();
+
+    ECtime_ECl_photID1->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID1->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_photID1->Write();
+
+    ECtime_ECl_photID2->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID2->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_photID2->Write();
+
+    ECtime_ECl_photID1_cut->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID1_cut->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_photID1_cut->Write();
+
+    ECtime_ECl_photID2_cut->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID2_cut->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_photID2_cut->Write();
+
+    ECtime1->GetXaxis()->SetTitle("EC_{time} (ns)");
+    ECtime1->GetYaxis()->SetTitle("Counts");
+    ECtime1->Write();
+
+    ECtime2->GetXaxis()->SetTitle("EC_{time} (ns)");
+    ECtime2->GetYaxis()->SetTitle("Counts");
+    ECtime2->Write();
+
+    ECpath1->GetXaxis()->SetTitle("EC_{path} (cm)");
+    ECpath1->GetYaxis()->SetTitle("Counts");
+    ECpath1->Write();
+
+    ECpath2->GetXaxis()->SetTitle("EC_{path} (cm)");
+    ECpath2->GetYaxis()->SetTitle("Counts");
+    ECpath2->Write();
+
+    ECtotP_vs_P_phot1->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_phot1->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_phot1->Write();
+
+    ECtotP_vs_P_phot2->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_phot2->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_phot2->Write();
+
+    ECin_vs_ECout_phot1->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_phot1->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_phot1->Write();
+
+    ECin_vs_ECout_phot2->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_phot2->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_phot2->Write();
     
     out->Close();
 }

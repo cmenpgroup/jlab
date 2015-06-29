@@ -14,6 +14,7 @@
 #include "EG2Cuts.h"
 #include "ElectronID.h"
 #include "EC_geometry.h"
+#include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
 
 #define DEBUG 0
@@ -53,6 +54,7 @@ TH2D *Beta_VS_Momentum;
 TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
+TH2D *elecZVert_VS_Phi_Corr;
 
 TH2D *CCnphe;
 TH2D *ECu;
@@ -93,7 +95,10 @@ TH2D *Theta_VS_Phi_AntiECoutCut;
 TH2D *ECtotP_VS_P_AntiECoutCut;
 TH2D *ECtot_VS_P_AntiECoutCut;
 
-TH2D *ECinP_VS_ECoutP[6];
+TH2D *ECinP_VS_ECoutP[6]; //Andy
+TH2D *ECinP_VS_ECoutP_cut[6];
+TH2D *ECinP_VS_ECoutP_Range[5];
+
 TH2D *ECin_VS_ECout_ECfid;
 TH2D *ECin_VS_ECout_elecID_All;
 TH2D *ECtotP_VS_P_Sector[6];
@@ -114,6 +119,7 @@ TH1D *PtSq_Omega_AllCuts[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaCut[3];
 TH1D *PtSq_Omega_AllCuts_IMOmegaSBCut[3];
 TH2D *elecZVertSector;
+TH2D *elecZVertSector_Corr;
 TH2D *OpAng_VS_IM2Photons[3];
 TH2D *OpAng_VS_E[3];
 TH2D *OpAng_VS_E_MassPi0Cut[3];
@@ -145,6 +151,36 @@ TH2D *RelativityOpAngPhotonsA;
 TH2D *RelativityOpAngPhotonsB;
 TH1D *GammaPi0;
 TH1D *BetaPi0;
+
+// photon id
+TH1D *Mom_photID1;
+TH1D *Mom_photID2;
+TH1D *Mom_photID1_cut;
+TH1D *Mom_photID2_cut;
+TH1D *Beta_photID1;
+TH1D *Beta_photID2;
+TH1D *Beta_photID1_cut;
+TH1D *Beta_photID2_cut;
+TH1D *ECu_photID1;
+TH1D *ECu_photID2;
+TH1D *ECv_photID1;
+TH1D *ECv_photID2;
+TH1D *ECw_photID1;
+TH1D *ECw_photID2;
+TH1D *ECu_photID1_cut;
+TH1D *ECu_photID2_cut;
+TH1D *ECv_photID1_cut;
+TH1D *ECv_photID2_cut;
+TH1D *ECw_photID1_cut;
+TH1D *ECw_photID2_cut;
+TH1D *ECtime_ECl_photID1;
+TH1D *ECtime_ECl_photID2;
+TH1D *ECtime_ECl_photID1_cut;
+TH1D *ECtime_ECl_photID2_cut;
+TH1D *ECtime1;
+TH1D *ECtime2;
+TH1D *ECpath1;
+TH1D *ECpath2;
 
 int GetSectorByPhi(double phi_rad);
 int process (string inFile, int MaxEvents, int dEvents, int targMass);
