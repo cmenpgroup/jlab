@@ -940,7 +940,7 @@ void BookHist(){
 
     sprintf(hname,"StartTime");
     sprintf(htitle,"Event Start Time");
-    StartTime = new TH1D(hname,htitle, 500, -100., 100.);
+    StartTime = new TH1D(hname,htitle, 420, -40., 100.);
     
     sprintf(hname,"q2");
     sprintf(htitle,"Q^{2}");
@@ -1450,27 +1450,27 @@ void BookHist(){
 
     sprintf(hname,"ECtime_ECl_Start_Photon1");
     sprintf(htitle,"ECtime - EClength/c of Photon 1");
-    ECtime_ECl_Start_photID1 = new TH1D(hname,htitle, 500, -100., 100.);
+    ECtime_ECl_Start_photID1 = new TH1D(hname,htitle, 420, -40., 100.);
     
     sprintf(hname,"ECtime_ECl_Start_Photon2");
     sprintf(htitle,"ECtime - EClength/c of Photon 2");
-    ECtime_ECl_Start_photID2 = new TH1D(hname,htitle, 500, -100., 100.);
+    ECtime_ECl_Start_photID2 = new TH1D(hname,htitle, 420, -40., 100.);
     
-    sprintf(hname,"ECtimeEClPhoton1");
+    sprintf(hname,"ECtime_ECl_Photon1");
     sprintf(htitle,"ECtime - EClength/c of Photon 1");
-    ECtime_ECl_photID1 = new TH1D(hname,htitle, 100, -10, 5);
+    ECtime_ECl_photID1 = new TH1D(hname,htitle, 200, -10, 5);
 
-    sprintf(hname,"ECtimeEClPhoton2");
+    sprintf(hname,"ECtime_ECl_Photon2");
     sprintf(htitle,"ECtime - EClength/c of Photon 2");
-    ECtime_ECl_photID2 = new TH1D(hname,htitle, 100, -10, 5);
+    ECtime_ECl_photID2 = new TH1D(hname,htitle, 200, -10, 5);
 
-    sprintf(hname,"ECtimeEClPhoton1Cut");
+    sprintf(hname,"ECtime_ECl_Photon1_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 1 Cut");
-    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 100, -3, 2);//TODO
+    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 200, -3, 2);//TODO
 
-    sprintf(hname,"ECtimeEClPhoton2Cut");
+    sprintf(hname,"ECtime_ECl_Photon2_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 2 Cut");
-    ECtime_ECl_photID2_cut = new TH1D(hname,htitle, 100, -3, 2);
+    ECtime_ECl_photID2_cut = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtimePhoton1");
     sprintf(htitle,"ECtime of Photon 1");
