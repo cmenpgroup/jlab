@@ -1490,19 +1490,19 @@ void BookHist(){
 
     sprintf(hname,"ECtotP_vs_P_phot1");
     sprintf(htitle,"ECtot / P vs P of Photon 1");
-    ECtotP_vs_P_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+    ECtotP_vs_P_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
 
     sprintf(hname,"ECtotP_vs_P_phot2");
     sprintf(htitle,"ECtot / P vs P of Photon 2");
-    ECtotP_vs_P_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+    ECtotP_vs_P_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
 
     sprintf(hname,"ECin_vs_ECout_phot1");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
-    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
 
     sprintf(hname,"ECin_vs_ECout_phot2");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
-    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 5);
+    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
 }
 
 //
