@@ -55,7 +55,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double dt_ECminusSC[5];
     
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
-
+    double eventStartTime; // event start time from HEAD bank
+    
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
@@ -155,6 +156,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         reader.readEntry(processed);
         
+        // HEAD bank info
+        eventStartTime = reader.getStartTime(); // evetn start time
+        StartTime->Fill(eventStartTime);
+        
         // get the first electron lorentz vector and vertex
 		TLorentzVector elec = reader.getLorentzVector(ID_ELECTRON, 0, MASS_ELECTRON);
 		TVector3 elec_vert = reader.getVertex(ID_ELECTRON, 0);
@@ -163,18 +168,22 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		//TLorentzVector prot = reader.getLorentzVector(ID_PROTON, 0, MASS_PROTON);
 		//TVector3 prot_vert = reader.getVertex(ID_PROTON, 0);
         
-		TLorentzVector nPion = reader.getLorentzVector(ID_PION_NEG, 0,MASS_PION_CHARGED);
+        // get the pi- lorentz vector and vertex
+        TLorentzVector nPion = reader.getLorentzVector(ID_PION_NEG, 0,MASS_PION_CHARGED);
 		TVector3 nPion_vert = reader.getVertex(ID_PION_NEG, 0);
         BankIndex_part[1] = reader.getIndexByPid(ID_PION_NEG, 0);
         
+        // get the pi+ lorentz vector and vertex
 		TLorentzVector pPion = reader.getLorentzVector(ID_PION_POS, 0, MASS_PION_CHARGED);
 		TVector3 pPion_vert = reader.getVertex(ID_PION_POS, 0);
         BankIndex_part[2] = reader.getIndexByPid(ID_PION_POS, 0);
 
+        // get the first photon lorentz vector and vertex
 		TLorentzVector photon1 = reader.getLorentzVector(ID_PHOTON, 0, MASS_PHOTON);
 		TVector3 photon1_vert = reader.getVertex(ID_PHOTON, 0);
         BankIndex_part[3] = reader.getIndexByPid(ID_PHOTON, 0);
 
+        // get the second photon lorentz vector and vertex
 		TLorentzVector photon2 = reader.getLorentzVector(ID_PHOTON, 1, MASS_PHOTON);
 		TVector3 photon2_vert = reader.getVertex(ID_PHOTON, 1);
         BankIndex_part[4] = reader.getIndexByPid(ID_PHOTON, 1);
@@ -538,7 +547,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         //
         // Start of Photon ID
         //
-
         Mom_photID1->Fill(photon1.P());
         Mom_photID2->Fill(photon2.P());
         if(photon1.P() > 0.3) {
@@ -600,6 +608,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
         ECtime_ECl_photID1->Fill(ectime_phot1 - ecpath_phot1/30.0);
         ECtime_ECl_photID2->Fill(ectime_phot2 - ecpath_phot2/30.0);
+        
+        ECtime_ECl_Start_photID1->Fill(eventStartTime - ectime_phot1 + ecpath_phot1/30.0);
+        ECtime_ECl_Start_photID2->Fill(eventStartTime - ectime_phot2 + ecpath_phot2/30.0);
 
         if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
             ECtime_ECl_photID1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
@@ -926,6 +937,10 @@ void BookHist(){
     
     int nME_Methods = myMixEvt.Get_nLabel();
     int nElecID = myElecID.Get_nElecID();
+
+    sprintf(hname,"StartTime");
+    sprintf(htitle,"Event Start Time");
+    StartTime = new TH1D(hname,htitle, 500, -100., 100.);
     
     sprintf(hname,"q2");
     sprintf(htitle,"Q^{2}");
@@ -1433,6 +1448,14 @@ void BookHist(){
     sprintf(htitle,"ECw of Photon 2 Cut");
 	ECw_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
+    sprintf(hname,"ECtime_ECl_Start_Photon1");
+    sprintf(htitle,"ECtime - EClength/c of Photon 1");
+    ECtime_ECl_Start_photID1 = new TH1D(hname,htitle, 500, -100., 100.);
+    
+    sprintf(hname,"ECtime_ECl_Start_Photon2");
+    sprintf(htitle,"ECtime - EClength/c of Photon 2");
+    ECtime_ECl_Start_photID2 = new TH1D(hname,htitle, 500, -100., 100.);
+    
     sprintf(hname,"ECtimeEClPhoton1");
     sprintf(htitle,"ECtime - EClength/c of Photon 1");
     ECtime_ECl_photID1 = new TH1D(hname,htitle, 100, -10, 5);
@@ -1500,6 +1523,10 @@ void WriteHist(string RootFile){
     // create a directory for check on kinematics
     TDirectory *cdKine = out->mkdir("Kinematics");
     cdKine->cd();
+
+    StartTime->GetXaxis()->SetTitle("Event Start Time (ns)");
+    StartTime->GetYaxis()->SetTitle("Counts");
+    StartTime->Write();
     
     q2->GetXaxis()->SetTitle("Q^{2} (GeV/c)^{2}");
     q2->GetYaxis()->SetTitle("Counts");
@@ -2035,19 +2062,27 @@ void WriteHist(string RootFile){
     ECw_photID2_cut->GetYaxis()->SetTitle("Counts");
 	ECw_photID2_cut->Write();
 
-    ECtime_ECl_photID1->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_Start_photID1->GetXaxis()->SetTitle("t_{start} - t_{EC} + l_{EC}/c (cm)");
+    ECtime_ECl_Start_photID1->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Start_photID1->Write();
+    
+    ECtime_ECl_Start_photID2->GetXaxis()->SetTitle("t_{start} - t_{EC} + l_{EC}/c (cm)");
+    ECtime_ECl_Start_photID2->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Start_photID2->Write();
+    
+    ECtime_ECl_photID1->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
     ECtime_ECl_photID1->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_photID1->Write();
 
-    ECtime_ECl_photID2->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID2->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
     ECtime_ECl_photID2->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_photID2->Write();
 
-    ECtime_ECl_photID1_cut->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID1_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c (ns)");
     ECtime_ECl_photID1_cut->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_photID1_cut->Write();
 
-    ECtime_ECl_photID2_cut->GetXaxis()->SetTitle("t_{start} (cm)");
+    ECtime_ECl_photID2_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
     ECtime_ECl_photID2_cut->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_photID2_cut->Write();
 

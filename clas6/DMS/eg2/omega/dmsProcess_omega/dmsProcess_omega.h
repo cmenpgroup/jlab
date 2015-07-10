@@ -41,6 +41,7 @@ double BEAM_ENERGY = 5.01; // electron beam energy in GeV
 
 TH1D *q2;
 TH2D *q2_VS_theta;
+Th1D *StartTime;
 TH1D *nu_EnergyTransfer;
 TH1D *elecZVert;
 TH1D *OpAng_2Photons;
@@ -173,6 +174,8 @@ TH1D *ECv_photID1_cut;
 TH1D *ECv_photID2_cut;
 TH1D *ECw_photID1_cut;
 TH1D *ECw_photID2_cut;
+TH1D *ECtime_ECl_Start_photID1;
+TH1D *ECtime_ECl_Start_photID2;
 TH1D *ECtime_ECl_photID1;
 TH1D *ECtime_ECl_photID2;
 TH1D *ECtime_ECl_photID1_cut;
