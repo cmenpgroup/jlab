@@ -605,7 +605,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECtime2->Fill(ectime_phot2);
         ECpath1->Fill(ecpath_phot1);
         ECpath2->Fill(ecpath_phot2);
-
+        ECpathtime1->Fill(ecpath_phot1/30.0);
+        ECpathtime2->Fill(ecpath_phot2/30.0);
+        
         ECtime_ECl_photID1->Fill(ectime_phot1 - ecpath_phot1/30.0);
         ECtime_ECl_photID2->Fill(ectime_phot2 - ecpath_phot2/30.0);
         
@@ -1474,20 +1476,28 @@ void BookHist(){
 
     sprintf(hname,"ECtimePhoton1");
     sprintf(htitle,"ECtime of Photon 1");
-    ECtime1 = new TH1D(hname,htitle, 400, -25, 25);
+    ECtime1 = new TH1D(hname,htitle, 100, 5, 25);
 
     sprintf(hname,"ECtimePhoton2");
     sprintf(htitle,"ECtime of Photon 2");
-    ECtime2 = new TH1D(hname,htitle, 400, -25, 25);
+    ECtime2 = new TH1D(hname,htitle, 100, 5, 25);
 
     sprintf(hname,"ECpathPhoton1");
     sprintf(htitle,"ECpath of Photon 1");
-    ECpath1 = new TH1D(hname,htitle, 650, 0, 650);
+    ECpath1 = new TH1D(hname,htitle, 200, 450, 650);
 
     sprintf(hname,"ECpathPhoton2");
     sprintf(htitle,"ECpath of Photon 2");
-    ECpath2 = new TH1D(hname,htitle, 650, 0, 650);
+    ECpath2 = new TH1D(hname,htitle, 200, 450, 650);
 
+    sprintf(hname,"ECpathtimePhoton1");
+    sprintf(htitle,"ECpath/c of Photon 1");
+    ECpathtime1 = new TH1D(hname,htitle, 100, 15, 25);
+    
+    sprintf(hname,"ECpathtimePhoton2");
+    sprintf(htitle,"ECpath/c of Photon 2");
+    ECpathtime2 = new TH1D(hname,htitle, 100, 15, 25);
+    
     sprintf(hname,"ECtotP_vs_P_phot1");
     sprintf(htitle,"ECtot / P vs P of Photon 1");
     ECtotP_vs_P_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
@@ -1498,11 +1508,11 @@ void BookHist(){
 
     sprintf(hname,"ECin_vs_ECout_phot1");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
-    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
+    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
 
     sprintf(hname,"ECin_vs_ECout_phot2");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
-    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.25);
+    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
 }
 
 //
@@ -2102,6 +2112,14 @@ void WriteHist(string RootFile){
     ECpath2->GetYaxis()->SetTitle("Counts");
     ECpath2->Write();
 
+    ECpathtime1->GetXaxis()->SetTitle("EC_{path}/c (ns)");
+    ECpathtime1->GetYaxis()->SetTitle("Counts");
+    ECpathtime1->Write();
+    
+    ECpathtime2->GetXaxis()->SetTitle("EC_{path}/c (ns)");
+    ECpathtime2->GetYaxis()->SetTitle("Counts");
+    ECpathtime2->Write();
+    
     ECtotP_vs_P_phot1->GetXaxis()->SetTitle("P (GeV/c)");
     ECtotP_vs_P_phot1->GetYaxis()->SetTitle("EC_{tot} / P");
     ECtotP_vs_P_phot1->Write();

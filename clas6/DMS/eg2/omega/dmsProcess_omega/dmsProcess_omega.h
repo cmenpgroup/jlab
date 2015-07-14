@@ -184,6 +184,8 @@ TH1D *ECtime1;
 TH1D *ECtime2;
 TH1D *ECpath1;
 TH1D *ECpath2;
+TH1D *ECpathtime1;
+TH1D *ECpathtime2;
 TH2D *ECtotP_vs_P_phot1;
 TH2D *ECtotP_vs_P_phot2;
 TH2D *ECin_vs_ECout_phot1;
