@@ -349,8 +349,9 @@ void Plot_Photon_Timing(char *fAna="Ana.root", char *target)
 {
     Int_t i, j, jj;
 
-    char *TimingHists[3] = {"ECtimePhoton","ECpathPhoton","ECtime_ECl_Start_Photon"};
+    char *TimingHists[3] = {"ECtimePhoton","ECpathtimePhoton","ECtime_ECl_Start_Photon"};
     TH1D *h1D[NPHOTONS][4];
+    TH1D *hWOstart[NPHOTONS];
     
     // data files contain the trees
     printf("Analyzing file %s\n",fAna);
@@ -361,6 +362,13 @@ void Plot_Photon_Timing(char *fAna="Ana.root", char *target)
     // Canvas to plot histogram
     TCanvas *can[NPHOTONS];
 
+    TCanvas *canWOstart = new TCanvas("canWOstart","Without the Start Time",400,0,800,400);;
+    canWOstart->SetBorderMode(1);  //Bordermode (-1=down, 0 = no border, 1=up)
+    canWOstart->SetBorderSize(5);
+    gStyle->SetOptStat(1111);
+    canWOstart->SetFillStyle(4000);
+    canWOstart->Divide(2,1);
+    
     for(j=0; j<NPHOTONS; j++){
         sprintf(cname,"can%i",j);
         sprintf(cname,"Photon Timing Canvas %i",j+1);
@@ -404,6 +412,23 @@ void Plot_Photon_Timing(char *fAna="Ana.root", char *target)
         can[j]->Print(OutCan);
         sprintf(OutCan,"Plot_Photon%i_Timing_%s.eps",j+1,target);
         can[j]->Print(OutCan);
+        
+        canWOstart->cd(j+1);
+        gPad->SetLeftMargin(Lmar);
+        gPad->SetRightMargin(Rmar);
+        gPad->SetFillColor(0);
+        
+        sprintf(hname,"ECtime_ECl_Photon%i",j+1);
+        hWOstart[j] = (TH1D*)dirPhoton->Get(hname);
+        hWOstart[j]->GetXaxis()->CenterTitle();
+        hWOstart[j]->GetYaxis()->CenterTitle();
+        hWOstart[j]->GetYaxis()->SetTitleOffset(yoff);
+        hWOstart[j]->Draw();
+        
     }
+    sprintf(OutCan,"Plot_ECtime-ECl_%s.gif",target);
+    canWOstart->Print(OutCan);
+    sprintf(OutCan,"Plot_ECtime-ECl_%s.eps",target);
+    canWOstart->Print(OutCan);
 }
 
