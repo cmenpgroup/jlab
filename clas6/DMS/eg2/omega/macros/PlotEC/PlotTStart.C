@@ -339,3 +339,71 @@ void Plot(char *fAna="Ana.root", char *fitParams="ECvsP_Fit.dat", char *target)
     fin.close();
 }
 
+//
+// Plot_Photon_Timing - plot the timing histograms for the two photons from pi0 decay
+//
+//                  fAna = output from eg2a DMS
+//                  target = target name
+//
+void Plot_Photon_Timing(char *fAna="Ana.root", char *target)
+{
+    Int_t i, j, jj;
+
+    char *TimingHists[3] = {"ECtimePhoton","ECpathPhoton","ECtime_ECl_Start_Photon"};
+    TH1D *h1D[NPHOTONS][4];
+    
+    // data files contain the trees
+    printf("Analyzing file %s\n",fAna);
+    TFile *fm = new TFile(fAna,"READ");
+    TDirectory *dirKine = fm->GetDirectory("Kinematics");
+    TDirectory *dirPhoton = fm->GetDirectory("PhotonID");
+    
+    // Canvas to plot histogram
+    TCanvas *can[NPHOTONS];
+
+    for(j=0; j<NPHOTONS; j++){
+        sprintf(cname,"can%i",j);
+        sprintf(cname,"Photon Timing Canvas %i",j+1);
+        can[j] = new TCanvas(cname,ctitle,j*50,0,800,800);
+        can[j]->SetBorderMode(1);  //Bordermode (-1=down, 0 = no border, 1=up)
+        can[j]->SetBorderSize(5);
+        gStyle->SetOptStat(1111);
+        can[j]->SetFillStyle(4000);
+        can[j]->Divide(2,2);
+
+ 
+        sprintf(hname,"StartTime");
+        h1D[j][0] = (TH1D*)dirKine->Get(hname);
+        
+        can[j]->cd(1);
+        gPad->SetLeftMargin(Lmar);
+        gPad->SetRightMargin(Rmar);
+        gPad->SetFillColor(0);
+        
+        h1D[j][0]->GetXaxis()->CenterTitle();
+        h1D[j][0]->GetYaxis()->CenterTitle();
+        h1D[j][0]->GetYaxis()->SetTitleOffset(yoff);
+        h1D[j][0]->Draw();
+        
+        for(jj=1; jj<=3; jj++){
+            sprintf(hname,"%s%i",TimingHists[jj-1],j+1);
+            h1D[j][jj] = (TH1D*)dirPhoton->Get(hname);
+            
+            can[j]->cd(jj+1);
+            gPad->SetLeftMargin(Lmar);
+            gPad->SetRightMargin(Rmar);
+            gPad->SetFillColor(0);
+        
+            h1D[j][jj]->GetXaxis()->CenterTitle();
+            h1D[j][jj]->GetYaxis()->CenterTitle();
+            h1D[j][jj]->GetYaxis()->SetTitleOffset(yoff);
+            h1D[j][jj]->Draw();
+        
+        }
+        sprintf(OutCan,"Plot_Photon%i_Timing_%s.gif",j+1,target);
+        can[j]->Print(OutCan);
+        sprintf(OutCan,"Plot_Photon%i_Timing_%s.eps",j+1,target);
+        can[j]->Print(OutCan);
+    }
+}
+
