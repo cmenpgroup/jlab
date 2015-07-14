@@ -191,6 +191,10 @@ TH2D *ECtotP_vs_P_phot2;
 TH2D *ECin_vs_ECout_phot1;
 TH2D *ECin_vs_ECout_phot2;
 
+//recon
+TH1D *Pi0Mass_PhotIDcuts;
+TH1D *OmegaMass_AllCuts;
+
 int GetSectorByPhi(double phi_rad);
 int process (string inFile, int MaxEvents, int dEvents, int targMass);
 void PrintUsage(char *processName);

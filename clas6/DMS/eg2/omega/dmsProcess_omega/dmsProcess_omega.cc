@@ -47,6 +47,26 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool ElecID_ECfid;
     bool ElecID_dtECSC;
     
+    //pi0 id cuts
+    bool cuts_photID1_mom;
+    bool cuts_photID2_mom;
+    bool cuts_photID_mom;
+    bool cuts_photID1_beta;
+    bool cuts_photID2_beta;
+    bool cuts_photID_beta;
+    bool cuts_photID1_fidu;
+    bool cuts_photID2_fidu;
+    bool cuts_photID1_fidv;
+    bool cuts_photID2_fidv;
+    bool cuts_photID1_fidw;
+    bool cuts_photID2_fidw;
+    bool cuts_photID_fid;
+    bool cuts_photID1_time;
+    bool cuts_photID2_time;
+    bool cuts_photID_time;
+    bool cuts_photID;
+    bool cuts_pi0fit_mass;
+    
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, Mx, z_fracEnergy, W;
     double sinHalfTheta;
@@ -150,6 +170,26 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ElecID_ECvsP = false;
         ElecID_ECfid = false;
         ElecID_dtECSC = false;
+
+        //initialize photon id cuts
+        cuts_photID1_mom = false;
+        cuts_photID2_mom = false;
+        cuts_photID_mom = false;
+        cuts_photID1_beta = false;
+        cuts_photID2_beta = false;
+        cuts_photID_beta = false;
+        cuts_photID1_fidu = false;
+        cuts_photID2_fidu = false;
+        cuts_photID1_fidv = false;
+        cuts_photID2_fidv = false;
+        cuts_photID1_fidw = false;
+        cuts_photID2_fidw = false;
+        cuts_photID_fid = false;
+        cuts_photID1_time = false;
+        cuts_photID2_time = false;
+        cuts_photID_time = false;
+        cuts_photID = false;
+        cuts_pi0fit_mass = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
         if (DEBUG) reader.printEvent();
@@ -551,19 +591,26 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Mom_photID2->Fill(photon2.P());
         if(photon1.P() > 0.3) {
             Mom_photID1_cut->Fill(photon1.P());
+            cuts_photID1_mom = true;
         }
         if(photon2.P() > 0.3) {
             Mom_photID2_cut->Fill(photon2.P());
+            cuts_photID2_mom = true;
         }
+        cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
 
         Beta_photID1->Fill(photon1.Beta());
         Beta_photID2->Fill(photon2.Beta());
         if(0.95 < photon1.Beta() && photon1.Beta() < 1.95) {
             Beta_photID1_cut->Fill(photon1.Beta());
+            cuts_photID1_beta = true;
         }
         if(0.95 < photon2.Beta() && photon2.Beta() < 1.95) {
             Beta_photID2_cut->Fill(photon2.Beta());
+            cuts_photID2_beta = true;
         }
+        cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
+
         Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
         Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
         Double_t ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
@@ -579,22 +626,30 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECw_photID2->Fill(ecw_phot2);
         if(40 < ecu_phot1 && ecu_phot1 < 410) {
             ECu_photID1_cut->Fill(ecu_phot1);
+            cuts_photID1_fidu = true;
         }
         if(40 < ecu_phot2 && ecu_phot2 < 410) {
             ECu_photID2_cut->Fill(ecu_phot2);
+            cuts_photID2_fidu = true;
         }
         if(ecv_phot1 < 370) {
             ECv_photID1_cut->Fill(ecv_phot1);
+            cuts_photID1_fidv = true;
         }
         if(ecv_phot2 < 370) {
             ECv_photID2_cut->Fill(ecv_phot2);
+            cuts_photID2_fidv = true;
         }
         if(ecw_phot1 < 410) {
             ECw_photID1_cut->Fill(ecw_phot1);
+            cuts_photID1_fidw = true;
         }
         if(ecw_phot2 < 410) {
             ECw_photID2_cut->Fill(ecw_phot2);
+            cuts_photID2_fidw = true;
         }
+
+        cuts_photID_fid = cuts_photID1_fidu && cuts_photID2_fidu && cuts_photID1_fidv && cuts_photID2_fidv && cuts_photID1_fidw && cuts_photID2_fidw;
 
         Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
         Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
@@ -616,10 +671,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
         if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
             ECtime_ECl_photID1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
+            cuts_photID1_time = true;
         }
         if((ectime_phot2 - ecpath_phot2/30.0 > -0.166546 - 3.0 * 0.710022) && (ectime_phot2 - ecpath_phot2/30.0 < -0.166546 + 3.0 * 0.710022)) {
             ECtime_ECl_photID2_cut->Fill(ectime_phot2 - ecpath_phot2/30.0);
+            cuts_photID2_time = true;
         }
+        cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
 
         Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
         Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
@@ -632,6 +690,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECtotP_vs_P_phot2->Fill(photon2.P(),ectot_phot2/photon2.P());
         ECin_vs_ECout_phot1->Fill(ecin_phot1,ecout_phot1);
         ECin_vs_ECout_phot2->Fill(ecin_phot2,ecout_phot2);
+
+        cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time;
+
+        // SumLo = 0.0866593 and SumHi = 0.193608
+        if(0.0866593 < TwoPhoton.M() && TwoPhoton.M() < 0.193608) {
+            cuts_pi0fit_mass = true;
+        }
         //
         // End of Photon ID
         //
@@ -691,6 +756,14 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		IMOmega[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
 		IMOmega_woCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
         IMOmega_antiCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
+
+        if(cuts_photID && ElecID_All) {
+            Pi0Mass_PhotIDcuts->Fill(TwoPhoton.M());
+        }
+
+        if(cuts_photID && ElecID_All && cuts_pi0fit_mass) {
+            OmegaMass_AllCuts->Fill(Omega.M());
+        }
         
         if(cutPi0Mass) { // applying the pi0 mass cut
             OpAng_VS_E_MassPi0Cut[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle);
@@ -1468,7 +1541,7 @@ void BookHist(){
 
     sprintf(hname,"ECtime_ECl_Photon1_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 1 Cut");
-    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 200, -3, 2);//TODO
+    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon2_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 2 Cut");
@@ -1513,6 +1586,14 @@ void BookHist(){
     sprintf(hname,"ECin_vs_ECout_phot2");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
     ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+
+    sprintf(hname,"Recon_Pi0_Mass_PhotID_Cuts");
+    sprintf(htitle,"Reconstructed #pi^{0} Mass - Photon ID Cuts");
+    Pi0Mass_PhotIDcuts = new TH1D(hname,htitle, 100, 0, 1);
+
+    sprintf(hname,"Recon_Omega_Mass_All_Cuts");
+    sprintf(htitle,"Reconstructed #omega Mass - All Cuts");
+    OmegaMass_AllCuts = new TH1D(hname,htitle,100,0,3);
 }
 
 //
@@ -2135,6 +2216,18 @@ void WriteHist(string RootFile){
     ECin_vs_ECout_phot2->GetXaxis()->SetTitle("EC_{in}");
     ECin_vs_ECout_phot2->GetYaxis()->SetTitle("EC_{out}");
     ECin_vs_ECout_phot2->Write();
+
+    // create a directory for reconstructed particle cuts
+    TDirectory *cdReconC = out->mkdir("ReconCuts");
+    cdReconC->cd();
+
+    Pi0Mass_PhotIDcuts->GetXaxis()->SetTitle("Reconstructed #pi^{0} mass (GeV/c^{2})");
+    Pi0Mass_PhotIDcuts->GetYaxis()->SetTitle("Counts");
+    Pi0Mass_PhotIDcuts->Write();
+
+    OmegaMass_AllCuts->GetXaxis()->SetTitle("Reconstructed #omega mass (GeV/c^{2})");
+    OmegaMass_AllCuts->GetYaxis()->SetTitle("Counts");
+    OmegaMass_AllCuts->Write();
     
     out->Close();
 }
