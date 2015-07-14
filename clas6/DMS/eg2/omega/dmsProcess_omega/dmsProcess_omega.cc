@@ -1565,11 +1565,11 @@ void BookHist(){
 
     sprintf(hname,"ECpathtimePhoton1");
     sprintf(htitle,"ECpath/c of Photon 1");
-    ECpathtime1 = new TH1D(hname,htitle, 100, 15, 25);
+    ECpathtime1 = new TH1D(hname,htitle, 200, 15, 25);
     
     sprintf(hname,"ECpathtimePhoton2");
     sprintf(htitle,"ECpath/c of Photon 2");
-    ECpathtime2 = new TH1D(hname,htitle, 100, 15, 25);
+    ECpathtime2 = new TH1D(hname,htitle, 200, 15, 25);
     
     sprintf(hname,"ECtotP_vs_P_phot1");
     sprintf(htitle,"ECtot / P vs P of Photon 1");
