@@ -666,8 +666,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECtime_ECl_photID1->Fill(ectime_phot1 - ecpath_phot1/30.0);
         ECtime_ECl_photID2->Fill(ectime_phot2 - ecpath_phot2/30.0);
         
-        ECtime_ECl_Start_photID1->Fill(eventStartTime - ectime_phot1 + ecpath_phot1/30.0);
-        ECtime_ECl_Start_photID2->Fill(eventStartTime - ectime_phot2 + ecpath_phot2/30.0);
+        ECtime_ECl_Start_photID1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/30.0);
+        ECtime_ECl_Start_photID2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/30.0);
 
         if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
             ECtime_ECl_photID1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
@@ -1524,11 +1524,11 @@ void BookHist(){
 	ECw_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECtime_ECl_Start_Photon1");
-    sprintf(htitle,"ECtime - EClength/c of Photon 1");
+    sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 1");
     ECtime_ECl_Start_photID1 = new TH1D(hname,htitle, 420, -40., 100.);
     
     sprintf(hname,"ECtime_ECl_Start_Photon2");
-    sprintf(htitle,"ECtime - EClength/c of Photon 2");
+    sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 2");
     ECtime_ECl_Start_photID2 = new TH1D(hname,htitle, 420, -40., 100.);
     
     sprintf(hname,"ECtime_ECl_Photon1");
@@ -2153,11 +2153,11 @@ void WriteHist(string RootFile){
     ECw_photID2_cut->GetYaxis()->SetTitle("Counts");
 	ECw_photID2_cut->Write();
 
-    ECtime_ECl_Start_photID1->GetXaxis()->SetTitle("t_{start} - t_{EC} + l_{EC}/c (cm)");
+    ECtime_ECl_Start_photID1->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
     ECtime_ECl_Start_photID1->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_Start_photID1->Write();
     
-    ECtime_ECl_Start_photID2->GetXaxis()->SetTitle("t_{start} - t_{EC} + l_{EC}/c (cm)");
+    ECtime_ECl_Start_photID2->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
     ECtime_ECl_Start_photID2->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_Start_photID2->Write();
     
