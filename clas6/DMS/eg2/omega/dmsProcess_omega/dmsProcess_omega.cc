@@ -691,6 +691,16 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECin_vs_ECout_phot1->Fill(ecin_phot1,ecout_phot1);
         ECin_vs_ECout_phot2->Fill(ecin_phot2,ecout_phot2);
 
+        if(ecin_phot1*ecout_phot1 > 0){
+            ECtotP_vs_P_InOutZeroCut_phot1->Fill(photon1.P(),ectot_phot1/photon1.P());
+            ECin_vs_ECout_InOutZeroCut_phot1->Fill(ecin_phot1,ecout_phot1);
+        }
+
+        if(ecin_phot2*ecout_phot2 > 0){
+            ECtotP_vs_P_InOutZeroCut_phot2->Fill(photon2.P(),ectot_phot2/photon2.P());
+            ECin_vs_ECout_InOutZeroCut_phot2->Fill(ecin_phot2,ecout_phot2);
+        }
+        
         cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time;
 
         // SumLo = 0.0866593 and SumHi = 0.193608
@@ -1587,6 +1597,22 @@ void BookHist(){
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
     ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
 
+    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_phot1");
+    sprintf(htitle,"ECtot / P vs P of Photon 1");
+    ECtotP_vs_P_InOutZeroCut_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    
+    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_phot2");
+    sprintf(htitle,"ECtot / P vs P of Photon 2");
+    ECtotP_vs_P_InOutZeroCut_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    
+    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_phot1");
+    sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
+    ECin_vs_ECout_InOutZeroCut_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    
+    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_phot2");
+    sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
+    ECin_vs_ECout_InOutZeroCut_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    
     sprintf(hname,"Recon_Pi0_Mass_PhotID_Cuts");
     sprintf(htitle,"Reconstructed #pi^{0} Mass - Photon ID Cuts");
     Pi0Mass_PhotIDcuts = new TH1D(hname,htitle, 100, 0, 1);
@@ -2217,6 +2243,22 @@ void WriteHist(string RootFile){
     ECin_vs_ECout_phot2->GetYaxis()->SetTitle("EC_{out}");
     ECin_vs_ECout_phot2->Write();
 
+    ECtotP_vs_P_InOutZeroCut_phot1->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_InOutZeroCut_phot1->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_InOutZeroCut_phot1->Write();
+    
+    ECtotP_vs_P_InOutZeroCut_phot2->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_InOutZeroCut_phot2->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_InOutZeroCut_phot2->Write();
+    
+    ECin_vs_ECout_InOutZeroCut_phot1->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_InOutZeroCut_phot1->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_InOutZeroCut_phot1->Write();
+    
+    ECin_vs_ECout_InOutZeroCut_phot2->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_InOutZeroCut_phot2->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_InOutZeroCut_phot2->Write();
+    
     // create a directory for reconstructed particle cuts
     TDirectory *cdReconC = out->mkdir("ReconCuts");
     cdReconC->cd();

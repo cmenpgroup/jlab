@@ -190,6 +190,10 @@ TH2D *ECtotP_vs_P_phot1;
 TH2D *ECtotP_vs_P_phot2;
 TH2D *ECin_vs_ECout_phot1;
 TH2D *ECin_vs_ECout_phot2;
+TH2D *ECtotP_vs_P_InOutZeroCut_phot1;
+TH2D *ECtotP_vs_P_InOutZeroCut_phot2;
+TH2D *ECin_vs_ECout_InOutZeroCut_phot1;
+TH2D *ECin_vs_ECout_InOutZeroCut_phot2;
 
 //recon
 TH1D *Pi0Mass_PhotIDcuts;
