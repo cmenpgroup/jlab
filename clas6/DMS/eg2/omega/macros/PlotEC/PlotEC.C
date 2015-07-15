@@ -11,7 +11,8 @@
 
 gROOT->Reset();   // start from scratch
 
-const Int_t NSECTORS= 6;
+const Int_t NSECTORS = 6;
+const Int_t NPHOTONS = 2;
 
 Int_t lcol[10] = {1,2,4,6,7,8,9,10,14,15};
 Int_t mkr[10] = {20,21,22,24,23,25,26,27,28,29};
@@ -33,7 +34,7 @@ Float_t Rmar = 0.125;
 Float_t yoff = 1.5;
 
 // 
-// PlotEC_xy_local - plot histogram with labels
+// PlotEC_Sector - plot histogram with labels for electrons
 //                  
 //                  fAna = output from eg2a DMS
 //                  fDir = ROOT directory

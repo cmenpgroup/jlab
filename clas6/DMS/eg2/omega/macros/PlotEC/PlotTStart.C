@@ -362,7 +362,7 @@ void Plot_Photon_Timing(char *fAna="Ana.root", char *target)
     // Canvas to plot histogram
     TCanvas *can[NPHOTONS];
 
-    TCanvas *canWOstart = new TCanvas("canWOstart","Without the Start Time",400,0,800,400);;
+    TCanvas *canWOstart = new TCanvas("canWOstart","Without the Start Time",800,0,800,400);;
     canWOstart->SetBorderMode(1);  //Bordermode (-1=down, 0 = no border, 1=up)
     canWOstart->SetBorderSize(5);
     gStyle->SetOptStat(1111);
