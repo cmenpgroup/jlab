@@ -196,7 +196,7 @@ TH2D *ECin_vs_ECout_InOutZeroCut_Photon1;
 TH2D *ECin_vs_ECout_InOutZeroCut_Photon2;
 
 //recon
-TH1D *Pi0MassPhotoncuts;
+TH1D *Pi0Mass_PhotIDcuts;
 TH1D *OmegaMass_AllCuts;
 
 int GetSectorByPhi(double phi_rad);
