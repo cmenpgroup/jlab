@@ -587,26 +587,26 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         //
         // Start of Photon ID
         //
-        Mom_photID1->Fill(photon1.P());
-        Mom_photID2->Fill(photon2.P());
+        MomentumPhoton1->Fill(photon1.P());
+        MomentumPhoton2->Fill(photon2.P());
         if(photon1.P() > 0.3) {
-            Mom_photID1_cut->Fill(photon1.P());
+            MomentumPhoton1_cut->Fill(photon1.P());
             cuts_photID1_mom = true;
         }
         if(photon2.P() > 0.3) {
-            Mom_photID2_cut->Fill(photon2.P());
+            MomentumPhoton2_cut->Fill(photon2.P());
             cuts_photID2_mom = true;
         }
         cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
 
-        Beta_photID1->Fill(photon1.Beta());
-        Beta_photID2->Fill(photon2.Beta());
+        BetaPhoton1->Fill(photon1.Beta());
+        BetaPhoton2->Fill(photon2.Beta());
         if(0.95 < photon1.Beta() && photon1.Beta() < 1.95) {
-            Beta_photID1_cut->Fill(photon1.Beta());
+            BetaPhoton1_cut->Fill(photon1.Beta());
             cuts_photID1_beta = true;
         }
         if(0.95 < photon2.Beta() && photon2.Beta() < 1.95) {
-            Beta_photID2_cut->Fill(photon2.Beta());
+            BetaPhoton2_cut->Fill(photon2.Beta());
             cuts_photID2_beta = true;
         }
         cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
@@ -618,34 +618,34 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
         Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
 
-        ECu_photID1->Fill(ecu_phot1);
-        ECu_photID2->Fill(ecu_phot2);
-        ECv_photID1->Fill(ecv_phot1);
-        ECv_photID2->Fill(ecv_phot2);
-        ECw_photID1->Fill(ecw_phot1);
-        ECw_photID2->Fill(ecw_phot2);
+        ECuPhoton1->Fill(ecu_phot1);
+        ECuPhoton2->Fill(ecu_phot2);
+        ECvPhoton1->Fill(ecv_phot1);
+        ECvPhoton2->Fill(ecv_phot2);
+        ECwPhoton1->Fill(ecw_phot1);
+        ECwPhoton2->Fill(ecw_phot2);
         if(40 < ecu_phot1 && ecu_phot1 < 410) {
-            ECu_photID1_cut->Fill(ecu_phot1);
+            ECuPhoton1_cut->Fill(ecu_phot1);
             cuts_photID1_fidu = true;
         }
         if(40 < ecu_phot2 && ecu_phot2 < 410) {
-            ECu_photID2_cut->Fill(ecu_phot2);
+            ECuPhoton2_cut->Fill(ecu_phot2);
             cuts_photID2_fidu = true;
         }
         if(ecv_phot1 < 370) {
-            ECv_photID1_cut->Fill(ecv_phot1);
+            ECvPhoton1_cut->Fill(ecv_phot1);
             cuts_photID1_fidv = true;
         }
         if(ecv_phot2 < 370) {
-            ECv_photID2_cut->Fill(ecv_phot2);
+            ECvPhoton2_cut->Fill(ecv_phot2);
             cuts_photID2_fidv = true;
         }
         if(ecw_phot1 < 410) {
-            ECw_photID1_cut->Fill(ecw_phot1);
+            ECwPhoton1_cut->Fill(ecw_phot1);
             cuts_photID1_fidw = true;
         }
         if(ecw_phot2 < 410) {
-            ECw_photID2_cut->Fill(ecw_phot2);
+            ECwPhoton2_cut->Fill(ecw_phot2);
             cuts_photID2_fidw = true;
         }
 
@@ -656,25 +656,25 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
         Double_t ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
 
-        ECtime1->Fill(ectime_phot1);
-        ECtime2->Fill(ectime_phot2);
-        ECpath1->Fill(ecpath_phot1);
-        ECpath2->Fill(ecpath_phot2);
-        ECpathtime1->Fill(ecpath_phot1/30.0);
-        ECpathtime2->Fill(ecpath_phot2/30.0);
+        ECtimePhoton1->Fill(ectime_phot1);
+        ECtimePhoton2->Fill(ectime_phot2);
+        ECpathPhoton1->Fill(ecpath_phot1);
+        ECpathPhoton2->Fill(ecpath_phot2);
+        ECpathtimePhoton1->Fill(ecpath_phot1/30.0);
+        ECpathtimePhoton2->Fill(ecpath_phot2/30.0);
         
-        ECtime_ECl_photID1->Fill(ectime_phot1 - ecpath_phot1/30.0);
-        ECtime_ECl_photID2->Fill(ectime_phot2 - ecpath_phot2/30.0);
+        ECtime_ECl_Photon1->Fill(ectime_phot1 - ecpath_phot1/30.0);
+        ECtime_ECl_Photon2->Fill(ectime_phot2 - ecpath_phot2/30.0);
         
-        ECtime_ECl_Start_photID1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/30.0);
-        ECtime_ECl_Start_photID2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/30.0);
+        ECtime_ECl_Start_Photon1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/30.0);
+        ECtime_ECl_Start_Photon2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/30.0);
 
         if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
-            ECtime_ECl_photID1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
+            ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
             cuts_photID1_time = true;
         }
         if((ectime_phot2 - ecpath_phot2/30.0 > -0.166546 - 3.0 * 0.710022) && (ectime_phot2 - ecpath_phot2/30.0 < -0.166546 + 3.0 * 0.710022)) {
-            ECtime_ECl_photID2_cut->Fill(ectime_phot2 - ecpath_phot2/30.0);
+            ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/30.0);
             cuts_photID2_time = true;
         }
         cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
@@ -686,19 +686,19 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
         Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
 
-        ECtotP_vs_P_phot1->Fill(photon1.P(),ectot_phot1/photon1.P());
-        ECtotP_vs_P_phot2->Fill(photon2.P(),ectot_phot2/photon2.P());
-        ECin_vs_ECout_phot1->Fill(ecin_phot1,ecout_phot1);
-        ECin_vs_ECout_phot2->Fill(ecin_phot2,ecout_phot2);
+        ECtotP_vs_P_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
+        ECtotP_vs_P_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
+        ECin_vs_ECout_Photon1->Fill(ecin_phot1,ecout_phot1);
+        ECin_vs_ECout_Photon2->Fill(ecin_phot2,ecout_phot2);
 
         if(ecin_phot1*ecout_phot1 > 0){
-            ECtotP_vs_P_InOutZeroCut_phot1->Fill(photon1.P(),ectot_phot1/photon1.P());
-            ECin_vs_ECout_InOutZeroCut_phot1->Fill(ecin_phot1,ecout_phot1);
+            ECtotP_vs_P_InOutZeroCut_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
+            ECin_vs_ECout_InOutZeroCut_Photon1->Fill(ecin_phot1,ecout_phot1);
         }
 
         if(ecin_phot2*ecout_phot2 > 0){
-            ECtotP_vs_P_InOutZeroCut_phot2->Fill(photon2.P(),ectot_phot2/photon2.P());
-            ECin_vs_ECout_InOutZeroCut_phot2->Fill(ecin_phot2,ecout_phot2);
+            ECtotP_vs_P_InOutZeroCut_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
+            ECin_vs_ECout_InOutZeroCut_Photon2->Fill(ecin_phot2,ecout_phot2);
         }
         
         cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time;
@@ -1455,163 +1455,163 @@ void BookHist(){
 
     sprintf(hname,"MomentumPhoton1");
     sprintf(htitle,"Total Momentum of Photon 1");
-	Mom_photID1 = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton1 = new TH1D(hname,htitle, 500, 0, 5);
 
     sprintf(hname,"MomentumPhoton2");
     sprintf(htitle,"Total Momentum of Photon 2");
-	Mom_photID2 = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton2 = new TH1D(hname,htitle, 500, 0, 5);
 
-    sprintf(hname,"MomentumPhoton1Cut");
+    sprintf(hname,"MomentumPhoton1_cut");
     sprintf(htitle,"Total Momentum of Photon 1 Cut");
-	Mom_photID1_cut = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton1_cut = new TH1D(hname,htitle, 500, 0, 5);
 
-    sprintf(hname,"MomentumPhoton2Cut");
+    sprintf(hname,"MomentumPhoton2_cut");
     sprintf(htitle,"Total Momentum of Photon 2 Cut");
-	Mom_photID2_cut = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton2_cut = new TH1D(hname,htitle, 500, 0, 5);
 
     sprintf(hname,"BetaPhoton1");
     sprintf(htitle,"Beta of Photon 1");
-	Beta_photID1 = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton1 = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
     sprintf(hname,"BetaPhoton2");
     sprintf(htitle,"Beta of Photon 2");
-	Beta_photID2 = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton2 = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
-    sprintf(hname,"BetaPhoton1Cut");
+    sprintf(hname,"BetaPhoton1_cut");
     sprintf(htitle,"Beta of Photon 1 Cut");
-	Beta_photID1_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton1_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
-    sprintf(hname,"BetaPhoton2Cut");
+    sprintf(hname,"BetaPhoton2_cut");
     sprintf(htitle,"Beta of Photon 2 Cut");
-	Beta_photID2_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton2_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
     sprintf(hname,"ECuPhoton1");
     sprintf(htitle,"ECu of Photon 1");
-	ECu_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton1 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECuPhoton2");
     sprintf(htitle,"ECu of Photon 2");
-	ECu_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton2 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECvPhoton1");
     sprintf(htitle,"ECv of Photon 1");
-	ECv_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton1 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECvPhoton2");
     sprintf(htitle,"ECv of Photon 2");
-	ECv_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton2 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECwPhoton1");
     sprintf(htitle,"ECw of Photon 1");
-	ECw_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton1 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECwPhoton2");
     sprintf(htitle,"ECw of Photon 2");
-	ECw_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton2 = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECuPhoton1Cut");
+    sprintf(hname,"ECuPhoton1_cut");
     sprintf(htitle,"ECu of Photon 1 Cut");
-	ECu_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton1_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECuPhoton2Cut");
+    sprintf(hname,"ECuPhoton2_cut");
     sprintf(htitle,"ECu of Photon 2 Cut");
-	ECu_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECvPhoton1Cut");
+    sprintf(hname,"ECvPhoton1_cut");
     sprintf(htitle,"ECv of Photon 1 Cut");
-	ECv_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton1_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECvPhoton2Cut");
+    sprintf(hname,"ECvPhoton2_cut");
     sprintf(htitle,"ECv of Photon 2 Cut");
-	ECv_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECwPhoton1Cut");
+    sprintf(hname,"ECwPhoton1_cut");
     sprintf(htitle,"ECw of Photon 1 Cut");
-	ECw_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton1_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECwPhoton2Cut");
+    sprintf(hname,"ECwPhoton2_cut");
     sprintf(htitle,"ECw of Photon 2 Cut");
-	ECw_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECtime_ECl_Start_Photon1");
     sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 1");
-    ECtime_ECl_Start_photID1 = new TH1D(hname,htitle, 400, -80., 20.);
+    ECtime_ECl_Start_Photon1 = new TH1D(hname,htitle, 400, -80., 20.);
     
     sprintf(hname,"ECtime_ECl_Start_Photon2");
     sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 2");
-    ECtime_ECl_Start_photID2 = new TH1D(hname,htitle, 400, -80., 20.);
+    ECtime_ECl_Start_Photon2 = new TH1D(hname,htitle, 400, -80., 20.);
     
     sprintf(hname,"ECtime_ECl_Photon1");
     sprintf(htitle,"ECtime - EClength/c of Photon 1");
-    ECtime_ECl_photID1 = new TH1D(hname,htitle, 200, -10, 5);
+    ECtime_ECl_Photon1 = new TH1D(hname,htitle, 200, -10, 5);
 
     sprintf(hname,"ECtime_ECl_Photon2");
     sprintf(htitle,"ECtime - EClength/c of Photon 2");
-    ECtime_ECl_photID2 = new TH1D(hname,htitle, 200, -10, 5);
+    ECtime_ECl_Photon2 = new TH1D(hname,htitle, 200, -10, 5);
 
     sprintf(hname,"ECtime_ECl_Photon1_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 1 Cut");
-    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 200, -3, 2);
+    ECtime_ECl_Photon1_cut = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon2_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 2 Cut");
-    ECtime_ECl_photID2_cut = new TH1D(hname,htitle, 200, -3, 2);
+    ECtime_ECl_Photon2_cut = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtimePhoton1");
     sprintf(htitle,"ECtime of Photon 1");
-    ECtime1 = new TH1D(hname,htitle, 300, 10, 25);
+    ECtimePhoton1 = new TH1D(hname,htitle, 300, 10, 25);
 
     sprintf(hname,"ECtimePhoton2");
     sprintf(htitle,"ECtime of Photon 2");
-    ECtime2 = new TH1D(hname,htitle, 300, 10, 25);
+    ECtimePhoton2 = new TH1D(hname,htitle, 300, 10, 25);
 
     sprintf(hname,"ECpathPhoton1");
     sprintf(htitle,"ECpath of Photon 1");
-    ECpath1 = new TH1D(hname,htitle, 200, 450, 650);
+    ECpathPhoton1 = new TH1D(hname,htitle, 200, 450, 650);
 
     sprintf(hname,"ECpathPhoton2");
     sprintf(htitle,"ECpath of Photon 2");
-    ECpath2 = new TH1D(hname,htitle, 200, 450, 650);
+    ECpathPhoton2 = new TH1D(hname,htitle, 200, 450, 650);
 
     sprintf(hname,"ECpathtimePhoton1");
     sprintf(htitle,"ECpath/c of Photon 1");
-    ECpathtime1 = new TH1D(hname,htitle, 300, 17, 20);
+    ECpathtimePhoton1 = new TH1D(hname,htitle, 300, 17, 20);
     
     sprintf(hname,"ECpathtimePhoton2");
     sprintf(htitle,"ECpath/c of Photon 2");
-    ECpathtime2 = new TH1D(hname,htitle, 300, 17, 20);
+    ECpathtimePhoton2 = new TH1D(hname,htitle, 300, 17, 20);
     
-    sprintf(hname,"ECtotP_vs_P_phot1");
+    sprintf(hname,"ECtotP_vs_P_Photon1");
     sprintf(htitle,"ECtot / P vs P of Photon 1");
-    ECtotP_vs_P_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    ECtotP_vs_P_Photon1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
 
-    sprintf(hname,"ECtotP_vs_P_phot2");
+    sprintf(hname,"ECtotP_vs_P_Photon2");
     sprintf(htitle,"ECtot / P vs P of Photon 2");
-    ECtotP_vs_P_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    ECtotP_vs_P_Photon2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
 
-    sprintf(hname,"ECin_vs_ECout_phot1");
+    sprintf(hname,"ECin_vs_ECout_Photon1");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
-    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    ECin_vs_ECout_Photon1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
 
-    sprintf(hname,"ECin_vs_ECout_phot2");
+    sprintf(hname,"ECin_vs_ECout_Photon2");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
-    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    ECin_vs_ECout_Photon2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
 
-    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_phot1");
+    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_Photon1");
     sprintf(htitle,"ECtot / P vs P of Photon 1");
-    ECtotP_vs_P_InOutZeroCut_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    ECtotP_vs_P_InOutZeroCut_Photon1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
     
-    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_phot2");
+    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_Photon2");
     sprintf(htitle,"ECtot / P vs P of Photon 2");
-    ECtotP_vs_P_InOutZeroCut_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    ECtotP_vs_P_InOutZeroCut_Photon2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
     
-    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_phot1");
+    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_Photon1");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
-    ECin_vs_ECout_InOutZeroCut_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    ECin_vs_ECout_InOutZeroCut_Photon1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
     
-    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_phot2");
+    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_Photon2");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
-    ECin_vs_ECout_InOutZeroCut_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    ECin_vs_ECout_InOutZeroCut_Photon2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
     
     sprintf(hname,"Recon_Pi0_Mass_PhotID_Cuts");
     sprintf(htitle,"Reconstructed #pi^{0} Mass - Photon ID Cuts");
@@ -2099,165 +2099,165 @@ void WriteHist(string RootFile){
     TDirectory *cdPhotID = out->mkdir("PhotonID");
     cdPhotID->cd();
     
-    Mom_photID1->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID1->GetYaxis()->SetTitle("Counts");
-	Mom_photID1->Write();
+    MomentumPhoton1->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton1->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton1->Write();
 
-    Mom_photID2->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID2->GetYaxis()->SetTitle("Counts");
-	Mom_photID2->Write();
+    MomentumPhoton2->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton2->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton2->Write();
 
-    Mom_photID1_cut->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID1_cut->GetYaxis()->SetTitle("Counts");
-	Mom_photID1_cut->Write();
+    MomentumPhoton1_cut->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton1_cut->Write();
 
-    Mom_photID2_cut->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID2_cut->GetYaxis()->SetTitle("Counts");
-	Mom_photID2_cut->Write();
+    MomentumPhoton2_cut->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton2_cut->Write();
 
-    Beta_photID1->GetXaxis()->SetTitle("#beta");
-    Beta_photID1->GetYaxis()->SetTitle("Counts");
-	Beta_photID1->Write();
+    BetaPhoton1->GetXaxis()->SetTitle("#beta");
+    BetaPhoton1->GetYaxis()->SetTitle("Counts");
+	BetaPhoton1->Write();
 
-    Beta_photID2->GetXaxis()->SetTitle("#beta");
-    Beta_photID2->GetYaxis()->SetTitle("Counts");
-	Beta_photID2->Write();
+    BetaPhoton2->GetXaxis()->SetTitle("#beta");
+    BetaPhoton2->GetYaxis()->SetTitle("Counts");
+	BetaPhoton2->Write();
 
-    Beta_photID1_cut->GetXaxis()->SetTitle("#beta");
-    Beta_photID1_cut->GetYaxis()->SetTitle("Counts");
-	Beta_photID1_cut->Write();
+    BetaPhoton1_cut->GetXaxis()->SetTitle("#beta");
+    BetaPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	BetaPhoton1_cut->Write();
 
-    Beta_photID2_cut->GetXaxis()->SetTitle("#beta");
-    Beta_photID2_cut->GetYaxis()->SetTitle("Counts");
-	Beta_photID2_cut->Write();
+    BetaPhoton2_cut->GetXaxis()->SetTitle("#beta");
+    BetaPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	BetaPhoton2_cut->Write();
 
-    ECu_photID1->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID1->GetYaxis()->SetTitle("Counts");
-	ECu_photID1->Write();
+    ECuPhoton1->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton1->GetYaxis()->SetTitle("Counts");
+	ECuPhoton1->Write();
 
-    ECu_photID2->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID2->GetYaxis()->SetTitle("Counts");
-	ECu_photID2->Write();
+    ECuPhoton2->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton2->GetYaxis()->SetTitle("Counts");
+	ECuPhoton2->Write();
 
-    ECv_photID1->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID1->GetYaxis()->SetTitle("Counts");
-	ECv_photID1->Write();
+    ECvPhoton1->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton1->GetYaxis()->SetTitle("Counts");
+	ECvPhoton1->Write();
 
-    ECv_photID2->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID2->GetYaxis()->SetTitle("Counts");
-	ECv_photID2->Write();
+    ECvPhoton2->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton2->GetYaxis()->SetTitle("Counts");
+	ECvPhoton2->Write();
 
-    ECw_photID1->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID1->GetYaxis()->SetTitle("Counts");
-	ECw_photID1->Write();
+    ECwPhoton1->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton1->GetYaxis()->SetTitle("Counts");
+	ECwPhoton1->Write();
 
-    ECw_photID2->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID2->GetYaxis()->SetTitle("Counts");
-	ECw_photID2->Write();
+    ECwPhoton2->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton2->GetYaxis()->SetTitle("Counts");
+	ECwPhoton2->Write();
 
-    ECu_photID1_cut->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID1_cut->GetYaxis()->SetTitle("Counts");
-	ECu_photID1_cut->Write();
+    ECuPhoton1_cut->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	ECuPhoton1_cut->Write();
 
-    ECu_photID2_cut->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID2_cut->GetYaxis()->SetTitle("Counts");
-	ECu_photID2_cut->Write();
+    ECuPhoton2_cut->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	ECuPhoton2_cut->Write();
 
-    ECv_photID1_cut->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID1_cut->GetYaxis()->SetTitle("Counts");
-	ECv_photID1_cut->Write();
+    ECvPhoton1_cut->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	ECvPhoton1_cut->Write();
 
-    ECv_photID2_cut->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID2_cut->GetYaxis()->SetTitle("Counts");
-	ECv_photID2_cut->Write();
+    ECvPhoton2_cut->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	ECvPhoton2_cut->Write();
 
-    ECw_photID1_cut->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID1_cut->GetYaxis()->SetTitle("Counts");
-	ECw_photID1_cut->Write();
+    ECwPhoton1_cut->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	ECwPhoton1_cut->Write();
 
-    ECw_photID2_cut->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID2_cut->GetYaxis()->SetTitle("Counts");
-	ECw_photID2_cut->Write();
+    ECwPhoton2_cut->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	ECwPhoton2_cut->Write();
 
-    ECtime_ECl_Start_photID1->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
-    ECtime_ECl_Start_photID1->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_Start_photID1->Write();
+    ECtime_ECl_Start_Photon1->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
+    ECtime_ECl_Start_Photon1->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Start_Photon1->Write();
     
-    ECtime_ECl_Start_photID2->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
-    ECtime_ECl_Start_photID2->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_Start_photID2->Write();
+    ECtime_ECl_Start_Photon2->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
+    ECtime_ECl_Start_Photon2->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Start_Photon2->Write();
     
-    ECtime_ECl_photID1->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
-    ECtime_ECl_photID1->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID1->Write();
+    ECtime_ECl_Photon1->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
+    ECtime_ECl_Photon1->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon1->Write();
 
-    ECtime_ECl_photID2->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
-    ECtime_ECl_photID2->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID2->Write();
+    ECtime_ECl_Photon2->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
+    ECtime_ECl_Photon2->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon2->Write();
 
-    ECtime_ECl_photID1_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c (ns)");
-    ECtime_ECl_photID1_cut->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID1_cut->Write();
+    ECtime_ECl_Photon1_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c (ns)");
+    ECtime_ECl_Photon1_cut->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon1_cut->Write();
 
-    ECtime_ECl_photID2_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
-    ECtime_ECl_photID2_cut->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID2_cut->Write();
+    ECtime_ECl_Photon2_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
+    ECtime_ECl_Photon2_cut->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon2_cut->Write();
 
-    ECtime1->GetXaxis()->SetTitle("EC_{time} (ns)");
-    ECtime1->GetYaxis()->SetTitle("Counts");
-    ECtime1->Write();
+    ECtimePhoton1->GetXaxis()->SetTitle("EC_{time} (ns)");
+    ECtimePhoton1->GetYaxis()->SetTitle("Counts");
+    ECtimePhoton1->Write();
 
-    ECtime2->GetXaxis()->SetTitle("EC_{time} (ns)");
-    ECtime2->GetYaxis()->SetTitle("Counts");
-    ECtime2->Write();
+    ECtimePhoton2->GetXaxis()->SetTitle("EC_{time} (ns)");
+    ECtimePhoton2->GetYaxis()->SetTitle("Counts");
+    ECtimePhoton2->Write();
 
-    ECpath1->GetXaxis()->SetTitle("EC_{path} (cm)");
-    ECpath1->GetYaxis()->SetTitle("Counts");
-    ECpath1->Write();
+    ECpathPhoton1->GetXaxis()->SetTitle("EC_{path} (cm)");
+    ECpathPhoton1->GetYaxis()->SetTitle("Counts");
+    ECpathPhoton1->Write();
 
-    ECpath2->GetXaxis()->SetTitle("EC_{path} (cm)");
-    ECpath2->GetYaxis()->SetTitle("Counts");
-    ECpath2->Write();
+    ECpathPhoton2->GetXaxis()->SetTitle("EC_{path} (cm)");
+    ECpathPhoton2->GetYaxis()->SetTitle("Counts");
+    ECpathPhoton2->Write();
 
-    ECpathtime1->GetXaxis()->SetTitle("EC_{path}/c (ns)");
-    ECpathtime1->GetYaxis()->SetTitle("Counts");
-    ECpathtime1->Write();
+    ECpathtimePhoton1->GetXaxis()->SetTitle("EC_{path}/c (ns)");
+    ECpathtimePhoton1->GetYaxis()->SetTitle("Counts");
+    ECpathtimePhoton1->Write();
     
-    ECpathtime2->GetXaxis()->SetTitle("EC_{path}/c (ns)");
-    ECpathtime2->GetYaxis()->SetTitle("Counts");
-    ECpathtime2->Write();
+    ECpathtimePhoton2->GetXaxis()->SetTitle("EC_{path}/c (ns)");
+    ECpathtimePhoton2->GetYaxis()->SetTitle("Counts");
+    ECpathtimePhoton2->Write();
     
-    ECtotP_vs_P_phot1->GetXaxis()->SetTitle("P (GeV/c)");
-    ECtotP_vs_P_phot1->GetYaxis()->SetTitle("EC_{tot} / P");
-    ECtotP_vs_P_phot1->Write();
+    ECtotP_vs_P_Photon1->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_Photon1->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_Photon1->Write();
 
-    ECtotP_vs_P_phot2->GetXaxis()->SetTitle("P (GeV/c)");
-    ECtotP_vs_P_phot2->GetYaxis()->SetTitle("EC_{tot} / P");
-    ECtotP_vs_P_phot2->Write();
+    ECtotP_vs_P_Photon2->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_Photon2->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_Photon2->Write();
 
-    ECin_vs_ECout_phot1->GetXaxis()->SetTitle("EC_{in}");
-    ECin_vs_ECout_phot1->GetYaxis()->SetTitle("EC_{out}");
-    ECin_vs_ECout_phot1->Write();
+    ECin_vs_ECout_Photon1->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_Photon1->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_Photon1->Write();
 
-    ECin_vs_ECout_phot2->GetXaxis()->SetTitle("EC_{in}");
-    ECin_vs_ECout_phot2->GetYaxis()->SetTitle("EC_{out}");
-    ECin_vs_ECout_phot2->Write();
+    ECin_vs_ECout_Photon2->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_Photon2->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_Photon2->Write();
 
-    ECtotP_vs_P_InOutZeroCut_phot1->GetXaxis()->SetTitle("P (GeV/c)");
-    ECtotP_vs_P_InOutZeroCut_phot1->GetYaxis()->SetTitle("EC_{tot} / P");
-    ECtotP_vs_P_InOutZeroCut_phot1->Write();
+    ECtotP_vs_P_InOutZeroCut_Photon1->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_InOutZeroCut_Photon1->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_InOutZeroCut_Photon1->Write();
     
-    ECtotP_vs_P_InOutZeroCut_phot2->GetXaxis()->SetTitle("P (GeV/c)");
-    ECtotP_vs_P_InOutZeroCut_phot2->GetYaxis()->SetTitle("EC_{tot} / P");
-    ECtotP_vs_P_InOutZeroCut_phot2->Write();
+    ECtotP_vs_P_InOutZeroCut_Photon2->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_InOutZeroCut_Photon2->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_InOutZeroCut_Photon2->Write();
     
-    ECin_vs_ECout_InOutZeroCut_phot1->GetXaxis()->SetTitle("EC_{in}");
-    ECin_vs_ECout_InOutZeroCut_phot1->GetYaxis()->SetTitle("EC_{out}");
-    ECin_vs_ECout_InOutZeroCut_phot1->Write();
+    ECin_vs_ECout_InOutZeroCut_Photon1->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_InOutZeroCut_Photon1->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_InOutZeroCut_Photon1->Write();
     
-    ECin_vs_ECout_InOutZeroCut_phot2->GetXaxis()->SetTitle("EC_{in}");
-    ECin_vs_ECout_InOutZeroCut_phot2->GetYaxis()->SetTitle("EC_{out}");
-    ECin_vs_ECout_InOutZeroCut_phot2->Write();
+    ECin_vs_ECout_InOutZeroCut_Photon2->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_InOutZeroCut_Photon2->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_InOutZeroCut_Photon2->Write();
     
     // create a directory for reconstructed particle cuts
     TDirectory *cdReconC = out->mkdir("ReconCuts");
