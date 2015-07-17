@@ -36,6 +36,8 @@ double MASS_PION_NEUTRAL = 0.135; // mass of neutral pion in GeV/c^2
 double MASS_PROTON = 0.938; // mass of proton in GeV/c^2
 double MASS_DEUTERIUM = 2*MASS_PROTON; // mass of deuterium in GeV/c^2
 
+double LIGHTSPEED = 30.0; // speed of light in cm/ns
+
 //double BEAM_ENERGY = 4.5; // electron beam energy in GeV
 double BEAM_ENERGY = 5.01; // electron beam energy in GeV
 

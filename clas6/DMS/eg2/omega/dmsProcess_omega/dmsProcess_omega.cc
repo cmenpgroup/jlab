@@ -660,21 +660,21 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECtimePhoton2->Fill(ectime_phot2);
         ECpathPhoton1->Fill(ecpath_phot1);
         ECpathPhoton2->Fill(ecpath_phot2);
-        ECpathtimePhoton1->Fill(ecpath_phot1/30.0);
-        ECpathtimePhoton2->Fill(ecpath_phot2/30.0);
+        ECpathtimePhoton1->Fill(ecpath_phot1/LIGHTSPEED);
+        ECpathtimePhoton2->Fill(ecpath_phot2/LIGHTSPEED);
         
-        ECtime_ECl_Photon1->Fill(ectime_phot1 - ecpath_phot1/30.0);
-        ECtime_ECl_Photon2->Fill(ectime_phot2 - ecpath_phot2/30.0);
+        ECtime_ECl_Photon1->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
+        ECtime_ECl_Photon2->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
         
-        ECtime_ECl_Start_Photon1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/30.0);
-        ECtime_ECl_Start_Photon2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/30.0);
+        ECtime_ECl_Start_Photon1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/LIGHTSPEED);
+        ECtime_ECl_Start_Photon2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/LIGHTSPEED);
 
-        if(((ectime_phot1 - ecpath_phot1/30.0) > (-0.0882054 - 3.0 * 0.640051)) && ((ectime_phot1 - ecpath_phot1/30.0) < (-0.0882054 + 3.0 * 0.640051))) {
-            ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
+        if(((ectime_phot1 - ecpath_phot1/LIGHTSPEED) > (-0.0882054 - 3.0 * 0.640051)) && ((ectime_phot1 - ecpath_phot1/LIGHTSPEED) < (-0.0882054 + 3.0 * 0.640051))) {
+            ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
             cuts_photID1_time = true;
         }
-        if((ectime_phot2 - ecpath_phot2/30.0 > -0.166546 - 3.0 * 0.710022) && (ectime_phot2 - ecpath_phot2/30.0 < -0.166546 + 3.0 * 0.710022)) {
-            ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/30.0);
+        if(((ectime_phot2 - ecpath_phot2/LIGHTSPEED) > (-0.166546 - 3.0 * 0.710022)) && ((ectime_phot2 - ecpath_phot2/LIGHTSPEED) < (-0.166546 + 3.0 * 0.710022))) {
+            ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
             cuts_photID2_time = true;
         }
         cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
