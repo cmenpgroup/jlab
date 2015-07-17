@@ -669,7 +669,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECtime_ECl_Start_Photon1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/30.0);
         ECtime_ECl_Start_Photon2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/30.0);
 
-        if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
+        if(((ectime_phot1 - ecpath_phot1/30.0) > (-0.0882054 - 3.0 * 0.640051)) && ((ectime_phot1 - ecpath_phot1/30.0) < (-0.0882054 + 3.0 * 0.640051))) {
             ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
             cuts_photID1_time = true;
         }
