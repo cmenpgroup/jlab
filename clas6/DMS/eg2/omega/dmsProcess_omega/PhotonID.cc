@@ -147,6 +147,7 @@ void PhotonID::Print_PhotonID()
         }else if (this->Get_PhotonIDLabel(ii).compare("EC W-view")==0) {
             cout << "[" << this->Get_PhotonECw_lo() << "," << this->Get_PhotonECw_hi() << "] (cm)" << endl;
         }else if (this->Get_PhotonIDLabel(ii).compare("Timing")==0) {
+            cout<<endl;
             cout<<"Photon 1: ["<<this->Get_PhotonTiming1_lo()<<","<<this->Get_PhotonTiming1_hi()<<"] (ns)"<<endl;
             cout<<"Photon 2: ["<<this->Get_PhotonTiming2_lo()<<","<<this->Get_PhotonTiming2_hi()<<"] (ns)"<<endl;
         }else if (this->Get_PhotonIDLabel(ii).compare("ECinTimesECout")==0) {
