@@ -1539,11 +1539,11 @@ void BookHist(){
     
     sprintf(hname,"ECtime_ECl_Photon1");
     sprintf(htitle,"ECtime - EClength/c of Photon 1");
-    ECtime_ECl_Photon1 = new TH1D(hname,htitle, 200, -10, 5);
+    ECtime_ECl_Photon1 = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon2");
     sprintf(htitle,"ECtime - EClength/c of Photon 2");
-    ECtime_ECl_Photon2 = new TH1D(hname,htitle, 200, -10, 5);
+    ECtime_ECl_Photon2 = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon1_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 1 Cut");
