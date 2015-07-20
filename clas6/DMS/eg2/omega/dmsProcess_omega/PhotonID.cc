@@ -122,7 +122,7 @@ bool PhotonID::Check_PhotonTiming(double dt, int num)
 // check the cut on product of ECin and ECout
 bool PhotonID::Check_PhotonECinTimesECout(double ECin, double ECout)
 {
-    bool ret = ((ECin*ECout > this->Get_PhotonECinTimeECOut_lo()) && (ECin*ECout < this->Get_PhotonECinTimeECOut_hi())) ? true : false;
+    bool ret = ((ECin*ECout > this->Get_PhotonECinTimesECOut_lo()) && (ECin*ECout < this->Get_PhotonECinTimesECOut_hi())) ? true : false;
     
     return ret;
 }
