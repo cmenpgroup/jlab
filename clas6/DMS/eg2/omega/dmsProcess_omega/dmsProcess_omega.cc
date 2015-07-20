@@ -64,6 +64,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cuts_photID1_time;
     bool cuts_photID2_time;
     bool cuts_photID_time;
+    bool cuts_photID1_ECinTimesECout;
+    bool cuts_photID2_ECinTimesECout;
+    bool cuts_photID_ECinTimesECout;
     bool cuts_photID;
     bool cuts_pi0fit_mass;
     
@@ -77,10 +80,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
     double eventStartTime; // event start time from HEAD bank
     
+    double timing_phot1, timing_phot2; // time difference between photon ECtime and ECpath/c
+    
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
     ElectronID myElecID;
+    PhotonID myPhotID;
     EC_geometry myECgeom;
     
     myMixEvt.Put_NumberOfEventsToMix(1); // add number of mixed event iterations
@@ -93,6 +99,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
+    myPhotID.Print_PhotonID();
     
     TVector3 TargetV3(0.043,-0.33,0);
     
@@ -188,6 +195,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cuts_photID1_time = false;
         cuts_photID2_time = false;
         cuts_photID_time = false;
+        cuts_photID1_ECinTimesECout = false;
+        cuts_photID2_ECinTimesECout = false;
+        cuts_photID_ECinTimesECout = false;
         cuts_photID = false;
         cuts_pi0fit_mass = false;
         
@@ -587,29 +597,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         //
         // Start of Photon ID
         //
+        cuts_photID1_mom = myPhotID.Check_PhotonMom(photon1.P());
+        cuts_photID2_mom = myPhotID.Check_PhotonMom(photon2.P());
+        cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
+        
         MomentumPhoton1->Fill(photon1.P());
         MomentumPhoton2->Fill(photon2.P());
-        if(photon1.P() > 0.3) {
-            MomentumPhoton1_cut->Fill(photon1.P());
-            cuts_photID1_mom = true;
-        }
-        if(photon2.P() > 0.3) {
-            MomentumPhoton2_cut->Fill(photon2.P());
-            cuts_photID2_mom = true;
-        }
-        cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
-
+        if(cuts_photID1_mom) MomentumPhoton1_cut->Fill(photon1.P());
+        if(cuts_photID2_mom) MomentumPhoton2_cut->Fill(photon2.P());
+        
+        cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
+        cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
+        cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
+        
         BetaPhoton1->Fill(photon1.Beta());
         BetaPhoton2->Fill(photon2.Beta());
-        if(0.95 < photon1.Beta() && photon1.Beta() < 1.95) {
-            BetaPhoton1_cut->Fill(photon1.Beta());
-            cuts_photID1_beta = true;
-        }
-        if(0.95 < photon2.Beta() && photon2.Beta() < 1.95) {
-            BetaPhoton2_cut->Fill(photon2.Beta());
-            cuts_photID2_beta = true;
-        }
-        cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
+        if(cuts_photID1_beta) BetaPhoton1_cut->Fill(photon1.Beta());
+        if(cuts_photID2_beta) BetaPhoton2_cut->Fill(photon2.Beta());
 
         Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
         Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
@@ -618,38 +622,26 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
         Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
 
+        cuts_photID1_fidu = myPhotID.Check_PhotonECu(ecu_phot1);
+        cuts_photID2_fidu = myPhotID.Check_PhotonECu(ecu_phot2);
+        cuts_photID1_fidv = myPhotID.Check_PhotonECv(ecv_phot1);
+        cuts_photID2_fidv = myPhotID.Check_PhotonECv(ecv_phot2);
+        cuts_photID1_fidw = myPhotID.Check_PhotonECw(ecw_phot1);
+        cuts_photID2_fidw = myPhotID.Check_PhotonECw(ecw_phot2);
+        cuts_photID_fid = cuts_photID1_fidu && cuts_photID2_fidu && cuts_photID1_fidv && cuts_photID2_fidv && cuts_photID1_fidw && cuts_photID2_fidw;
+        
         ECuPhoton1->Fill(ecu_phot1);
         ECuPhoton2->Fill(ecu_phot2);
         ECvPhoton1->Fill(ecv_phot1);
         ECvPhoton2->Fill(ecv_phot2);
         ECwPhoton1->Fill(ecw_phot1);
         ECwPhoton2->Fill(ecw_phot2);
-        if(40 < ecu_phot1 && ecu_phot1 < 410) {
-            ECuPhoton1_cut->Fill(ecu_phot1);
-            cuts_photID1_fidu = true;
-        }
-        if(40 < ecu_phot2 && ecu_phot2 < 410) {
-            ECuPhoton2_cut->Fill(ecu_phot2);
-            cuts_photID2_fidu = true;
-        }
-        if(ecv_phot1 < 370) {
-            ECvPhoton1_cut->Fill(ecv_phot1);
-            cuts_photID1_fidv = true;
-        }
-        if(ecv_phot2 < 370) {
-            ECvPhoton2_cut->Fill(ecv_phot2);
-            cuts_photID2_fidv = true;
-        }
-        if(ecw_phot1 < 410) {
-            ECwPhoton1_cut->Fill(ecw_phot1);
-            cuts_photID1_fidw = true;
-        }
-        if(ecw_phot2 < 410) {
-            ECwPhoton2_cut->Fill(ecw_phot2);
-            cuts_photID2_fidw = true;
-        }
-
-        cuts_photID_fid = cuts_photID1_fidu && cuts_photID2_fidu && cuts_photID1_fidv && cuts_photID2_fidv && cuts_photID1_fidw && cuts_photID2_fidw;
+        if(cuts_photID1_fidu) ECuPhoton1_cut->Fill(ecu_phot1);
+        if(cuts_photID2_fidu) ECuPhoton2_cut->Fill(ecu_phot2);
+        if(cuts_photID1_fidv) ECvPhoton1_cut->Fill(ecv_phot1);
+        if(cuts_photID2_fidv) ECvPhoton2_cut->Fill(ecv_phot2);
+        if(cuts_photID1_fidw) ECwPhoton1_cut->Fill(ecw_phot1);
+        if(cuts_photID2_fidw) ECwPhoton2_cut->Fill(ecw_phot2);
 
         Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
         Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
@@ -663,21 +655,21 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ECpathtimePhoton1->Fill(ecpath_phot1/LIGHTSPEED);
         ECpathtimePhoton2->Fill(ecpath_phot2/LIGHTSPEED);
         
-        ECtime_ECl_Photon1->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
-        ECtime_ECl_Photon2->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
+        timing_phot1 = ectime_phot1 - ecpath_phot1/LIGHTSPEED;
+        timing_phot2 = ectime_phot2 - ecpath_phot2/LIGHTSPEED;
         
-        ECtime_ECl_Start_Photon1->Fill(ectime_phot1 - eventStartTime - ecpath_phot1/LIGHTSPEED);
-        ECtime_ECl_Start_Photon2->Fill(ectime_phot2 - eventStartTime - ecpath_phot2/LIGHTSPEED);
-
-        if(((ectime_phot1 - ecpath_phot1/LIGHTSPEED) > (-0.0882054 - 3.0 * 0.640051)) && ((ectime_phot1 - ecpath_phot1/LIGHTSPEED) < (-0.0882054 + 3.0 * 0.640051))) {
-            ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
-            cuts_photID1_time = true;
-        }
-        if(((ectime_phot2 - ecpath_phot2/LIGHTSPEED) > (-0.166546 - 3.0 * 0.710022)) && ((ectime_phot2 - ecpath_phot2/LIGHTSPEED) < (-0.166546 + 3.0 * 0.710022))) {
-            ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
-            cuts_photID2_time = true;
-        }
+        cuts_photID1_time = myPhotID.Check_PhotonTiming(timing_phot1,1);
+        cuts_photID2_time = myPhotID.Check_PhotonTiming(timing_phot2,2);
         cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
+        
+        ECtime_ECl_Photon1->Fill(timing_phot1);
+        ECtime_ECl_Photon2->Fill(timing_phot2);
+        
+        ECtime_ECl_Start_Photon1->Fill(timing_phot1 - eventStartTime);
+        ECtime_ECl_Start_Photon2->Fill(timing_phot2 - eventStartTime);
+        
+        if(cuts_photID1_time) ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
+        if(cuts_photID2_time) ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
 
         Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
         Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
@@ -686,22 +678,26 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
         Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
 
+        cuts_photID1_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot1,ecout_phot1);
+        cuts_photID2_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot2,ecout_phot2);
+        cuts_photID_ECinTimesECout = cuts_photID1_ECinTimesECout && cuts_photID2_ECinTimesECout;
+        
         ECtotP_vs_P_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
         ECtotP_vs_P_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
         ECin_vs_ECout_Photon1->Fill(ecin_phot1,ecout_phot1);
         ECin_vs_ECout_Photon2->Fill(ecin_phot2,ecout_phot2);
 
-        if(ecin_phot1*ecout_phot1 > 0){
+        if(cuts_photID1_ECinTimesECout){
             ECtotP_vs_P_InOutZeroCut_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
             ECin_vs_ECout_InOutZeroCut_Photon1->Fill(ecin_phot1,ecout_phot1);
         }
 
-        if(ecin_phot2*ecout_phot2 > 0){
+        if(cuts_photID2_ECinTimesECout){
             ECtotP_vs_P_InOutZeroCut_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
             ECin_vs_ECout_InOutZeroCut_Photon2->Fill(ecin_phot2,ecout_phot2);
         }
         
-        cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time;
+        cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time && cuts_photID_ECinTimesECout;
 
         // SumLo = 0.0866593 and SumHi = 0.193608
         if(0.0866593 < TwoPhoton.M() && TwoPhoton.M() < 0.193608) {

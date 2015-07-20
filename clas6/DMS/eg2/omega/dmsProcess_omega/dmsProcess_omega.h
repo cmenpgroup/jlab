@@ -13,6 +13,7 @@
 #include "EG2Target.h"
 #include "EG2Cuts.h"
 #include "ElectronID.h"
+#include "PhotonID.h"
 #include "EC_geometry.h"
 #include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
