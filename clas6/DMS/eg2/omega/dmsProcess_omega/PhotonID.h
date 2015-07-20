@@ -7,7 +7,7 @@ using namespace std;
 
 class PhotonID
 {
-    vector<string> photIDLabel;
+    vector<string> PhotonIDLabel;
     vector<double> RangePhotonMom;
     vector<double> RangePhotonBeta;
     vector<double> RangeECu;
