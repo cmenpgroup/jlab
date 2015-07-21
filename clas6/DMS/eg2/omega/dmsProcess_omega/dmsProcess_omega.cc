@@ -391,6 +391,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
      
+        if (reader.getBankRows("EXPB")) {
+        
         //
         // Start of  Electron ID
         //
@@ -701,13 +703,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time && cuts_photID_ECinTimesECout;
 
+            //
+            // End of Photon ID
+            //
+        }
+        
         // SumLo = 0.0866593 and SumHi = 0.193608
         if(0.0866593 < TwoPhoton.M() && TwoPhoton.M() < 0.193608) {
             cuts_pi0fit_mass = true;
         }
-        //
-        // End of Photon ID
-        //
 
         // plot of two photon opening angle
 		TwoPhotonAngle = TMath::RadToDeg()*photon1.Angle(photon2.Vect());
