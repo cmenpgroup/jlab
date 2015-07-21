@@ -391,71 +391,74 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
      
-        if (reader.getBankRows("EXPB")) {
-        
-        //
-        // Start of  Electron ID
-        //
-        for(ii=0; ii<5; ii++){
-            switch (ii) {
-                case 0: partMom = elec.P(); break;
-                case 1: partMom = nPion.P(); break;
-                case 2: partMom = pPion.P(); break;
-                case 3: partMom = photon1.P(); break;
-                case 4: partMom = photon2.P(); break;
-                default: partMom = -1.0; break;
-            }
-        
-            CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
-            ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
-            ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
-            ECw->Fill(reader.getProperty("ecw",BankIndex_part[ii]),ii);
-            ECtot_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii]));
-            ECtotP_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii])/partMom);
-            ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
-            
-            timeEC = reader.getProperty("ectime",BankIndex_part[ii]);
-            timeSC = reader.getProperty("sctime",BankIndex_part[ii]);
-            pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
-            pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
-            dt_ECminusSC[ii] = timeEC - timeSC - 0.7;
-            dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
+        if(reader.getBankRows("EVNT")){
+            cuts_photID = true;
+            ElecID_All = true;
         }
-
-        // Electron ID cuts
-        emECtot = reader.getProperty("ectot",BankIndex_part[0]);
-        emECin = reader.getProperty("ecin",BankIndex_part[0]);
-        emECout = reader.getProperty("ecout",BankIndex_part[0]);
-        emECu = reader.getProperty("ecu",BankIndex_part[0]);
-        emECv = reader.getProperty("ecv",BankIndex_part[0]);
-        emECw = reader.getProperty("ecw",BankIndex_part[0]);
-        emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
-        emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
         
+        if (reader.getBankRows("EXPB")) {
+            //
+            // Start of  Electron ID
+            //
+            for(ii=0; ii<5; ii++){
+                switch (ii) {
+                    case 0: partMom = elec.P(); break;
+                    case 1: partMom = nPion.P(); break;
+                    case 2: partMom = pPion.P(); break;
+                    case 3: partMom = photon1.P(); break;
+                    case 4: partMom = photon2.P(); break;
+                    default: partMom = -1.0; break;
+                }
         
-        ElecID_Mom = myElecID.Check_ElecMom(elec.P());
-        ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
-        ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
-        ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
-        ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
+                CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
+                ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
+                ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
+                ECw->Fill(reader.getProperty("ecw",BankIndex_part[ii]),ii);
+                ECtot_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii]));
+                ECtotP_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii])/partMom);
+                ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
+            
+                timeEC = reader.getProperty("ectime",BankIndex_part[ii]);
+                timeSC = reader.getProperty("sctime",BankIndex_part[ii]);
+                pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
+                pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
+                dt_ECminusSC[ii] = timeEC - timeSC - 0.7;
+                dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
+            }
+
+            // Electron ID cuts
+            emECtot = reader.getProperty("ectot",BankIndex_part[0]);
+            emECin = reader.getProperty("ecin",BankIndex_part[0]);
+            emECout = reader.getProperty("ecout",BankIndex_part[0]);
+            emECu = reader.getProperty("ecu",BankIndex_part[0]);
+            emECv = reader.getProperty("ecv",BankIndex_part[0]);
+            emECw = reader.getProperty("ecw",BankIndex_part[0]);
+            emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
+            emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
         
-        myECgeom.Put_UVW(emECu,emECv,emECw);
-        EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            ElecID_Mom = myElecID.Check_ElecMom(elec.P());
+            ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
+            ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
+            ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
+            ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
+        
+            myECgeom.Put_UVW(emECu,emECv,emECw);
+            EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
 
-        ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+            ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
 
-        ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
-        /*
-        1	0.192702	-0.586568	0.0420221	-0.104084
-        2	0.2118	    -0.631934	0.0478416	-0.120601
-        3	0.179616	-0.515158	0.052625	-0.149614
-        4	0.198436	-0.621269	0.0387745	-0.0961029
-        5	0.231849	-0.734145	0.0349574	-0.0709758
-        6	0.177784	-0.451267	0.0620507	-0.17344
-        */
-        double aMean = 0.0, bMean = 0.0, aSigma = 0.0, bSigma = 0.0;
-        double aAbove = 0.0, bAbove = 0.0, aBelow = 0.0, bBelow = 0.0;
-        switch(Sector_index) {
+            ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+            /*
+             1	0.192702	-0.586568	0.0420221	-0.104084
+             2	0.2118	    -0.631934	0.0478416	-0.120601
+             3	0.179616	-0.515158	0.052625	-0.149614
+             4	0.198436	-0.621269	0.0387745	-0.0961029
+             5	0.231849	-0.734145	0.0349574	-0.0709758
+             6	0.177784	-0.451267	0.0620507	-0.17344
+             */
+            double aMean = 0.0, bMean = 0.0, aSigma = 0.0, bSigma = 0.0;
+            double aAbove = 0.0, bAbove = 0.0, aBelow = 0.0, bBelow = 0.0;
+            switch(Sector_index) {
             case 1:
                 aMean = 0.192702;
                 bMean = -0.586568;
@@ -492,216 +495,216 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 aSigma = 0.0620507;
                 bSigma = -0.17344;
                 break;
-        }
-        aAbove = aMean + 2 * aSigma;
-        bAbove = bMean + 2 * bSigma;
-        aBelow = aMean - 2 * aSigma;
-        bBelow = bMean - 2 * bSigma;
+            }
+            aAbove = aMean + 2 * aSigma;
+            bAbove = bMean + 2 * bSigma;
+            aBelow = aMean - 2 * aSigma;
+            bBelow = bMean - 2 * bSigma;
 
-        if((emECout / elec.P() - (bBelow * emECin / elec.P() + aBelow) > 0) && (emECout / elec.P() - (bAbove * emECin / elec.P() + aAbove) < 0)) {
-            ECinP_VS_ECoutP_cut[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
-        }
+            if((emECout / elec.P() - (bBelow * emECin / elec.P() + aBelow) > 0) && (emECout / elec.P() - (bAbove * emECin / elec.P() + aAbove) < 0)) {
+                ECinP_VS_ECoutP_cut[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+            }
 
-        if(elec.P() > 0.5 && elec.P() <= 1.0) {
-            ECinP_VS_ECoutP_Range[0]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 1.0 && elec.P() <= 1.5) {
-            ECinP_VS_ECoutP_Range[1]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 1.5 && elec.P() <= 2.0) {
-            ECinP_VS_ECoutP_Range[2]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 2.0 && elec.P() <= 2.5) {
-            ECinP_VS_ECoutP_Range[3]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 2.5 && elec.P() <= 3.0) {
-            ECinP_VS_ECoutP_Range[4]->Fill(emECin/elec.P(), emECout/elec.P());
-        }
+            if(elec.P() > 0.5 && elec.P() <= 1.0) {
+                ECinP_VS_ECoutP_Range[0]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 1.0 && elec.P() <= 1.5) {
+                ECinP_VS_ECoutP_Range[1]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 1.5 && elec.P() <= 2.0) {
+                ECinP_VS_ECoutP_Range[2]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 2.0 && elec.P() <= 2.5) {
+                ECinP_VS_ECoutP_Range[3]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 2.5 && elec.P() <= 3.0) {
+                ECinP_VS_ECoutP_Range[4]->Fill(emECin/elec.P(), emECout/elec.P());
+            }
 
-        if(ElecID_ECvsP){
-            ECtotP_VS_P_ECPCut[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
-        }
+            if(ElecID_ECvsP){
+                ECtotP_VS_P_ECPCut[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+            }
         
-        if(ElecID_ECfid){
-            ECin_VS_ECout_ECfid->Fill(emECin,emECout);
-            EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
-        }else{
-            EC_XvsY_local_AntiFidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
-        }
-        
-        if(ElecID_All){
-            ECin_VS_ECout_elecID_All->Fill(emECin,emECout);
-        }
-
-        if (emECout < 0.01){
-            Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
-            Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
-            elecZVert_ECoutCut->Fill(elec_vert.Z());
-            q2_ECoutCut->Fill(Qsq);
-            
-            ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
-            ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
-            ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
-            
-            EC_XvsY_local_ECoutCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
-        }
-        else {
-            Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
-            Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
-            elecZVert_AntiECoutCut->Fill(elec_vert.Z());
-            q2_AntiECoutCut->Fill(Qsq);
-            
-            ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
-            ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
-            ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
-        }
-        
-        // Testing the electron ID
-        for(ii=0; ii<myElecID.Get_nElecID(); ii++){
-            cuts_ElecID = false; // intialize the cuts
-            
-            if (myElecID.Get_elecIDLabel(ii).compare("No cuts")==0) {
-                cuts_ElecID = true;
-            }else if (myElecID.Get_elecIDLabel(ii).compare("Momentum")==0) {
-                cuts_ElecID = myElecID.Check_ElecMom(elec.P());
-            }else if (myElecID.Get_elecIDLabel(ii).compare("EC U-view")==0) {
-                cuts_ElecID = myElecID.Check_ElecECu(emECu);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("EC V-view")==0) {
-                cuts_ElecID = myElecID.Check_ElecECv(emECv);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("EC W-view")==0) {
-                cuts_ElecID = myElecID.Check_ElecECw(emECw);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("ECin")==0) {
-                cuts_ElecID = myElecID.Check_ElecECin(emECin);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("CC Nphe")==0) {
-                cuts_ElecID = myElecID.Check_ElecCCnphe(emCCnphe);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
-                cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
-                cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
+            if(ElecID_ECfid){
+                ECin_VS_ECout_ECfid->Fill(emECin,emECout);
+                EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             }else{
-                cuts_ElecID = false;
+                EC_XvsY_local_AntiFidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+        
+            if(ElecID_All){
+                ECin_VS_ECout_elecID_All->Fill(emECin,emECout);
+            }
+
+            if (emECout < 0.01){
+                Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
+                Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+                elecZVert_ECoutCut->Fill(elec_vert.Z());
+                q2_ECoutCut->Fill(Qsq);
+            
+                ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
+                ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
+            
+                EC_XvsY_local_ECoutCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+            else {
+                Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
+                Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+                elecZVert_AntiECoutCut->Fill(elec_vert.Z());
+                q2_AntiECoutCut->Fill(Qsq);
+            
+                ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
+                ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
+            }
+        
+            // Testing the electron ID
+            for(ii=0; ii<myElecID.Get_nElecID(); ii++){
+                cuts_ElecID = false; // intialize the cuts
+            
+                if (myElecID.Get_elecIDLabel(ii).compare("No cuts")==0) {
+                    cuts_ElecID = true;
+                }else if (myElecID.Get_elecIDLabel(ii).compare("Momentum")==0) {
+                    cuts_ElecID = myElecID.Check_ElecMom(elec.P());
+                }else if (myElecID.Get_elecIDLabel(ii).compare("EC U-view")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECu(emECu);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("EC V-view")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECv(emECv);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("EC W-view")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECw(emECw);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("ECin")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECin(emECin);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("CC Nphe")==0) {
+                    cuts_ElecID = myElecID.Check_ElecCCnphe(emCCnphe);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
+                    cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
+                }else{
+                    cuts_ElecID = false;
+                }
+            
+                if(cuts_ElecID){
+                    CCnphe_elecID->Fill(emCCnphe,ii);
+                    Mom_elecID->Fill(elec.P(),ii);
+                    ECu_elecID->Fill(emECu,ii);
+                    ECv_elecID->Fill(emECv,ii);
+                    ECw_elecID->Fill(emECw,ii);
+                    dtime_ECSC_elecID->Fill(emdt,ii);
+                    ECtot_VS_P_elecID[ii]->Fill(elec.P(),emECtot);
+                    ECtotP_VS_P_elecID[ii]->Fill(elec.P(),emECtot/elec.P());
+                    ECin_VS_ECout_elecID[ii]->Fill(emECin,emECout);
+                    Mom_VS_ECout_elecID[ii]->Fill(elec.P(),emECout);
+                    ECu_VS_ECout_elecID[ii]->Fill(emECu,emECout);
+                    ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
+                    ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
+                }
+            }
+            //
+            // End of  Electron ID
+            //
+
+            //
+            // Start of Photon ID
+            //
+            cuts_photID1_mom = myPhotID.Check_PhotonMom(photon1.P());
+            cuts_photID2_mom = myPhotID.Check_PhotonMom(photon2.P());
+            cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
+            
+            MomentumPhoton1->Fill(photon1.P());
+            MomentumPhoton2->Fill(photon2.P());
+            if(cuts_photID1_mom) MomentumPhoton1_cut->Fill(photon1.P());
+            if(cuts_photID2_mom) MomentumPhoton2_cut->Fill(photon2.P());
+            
+            cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
+            cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
+            cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
+            
+            BetaPhoton1->Fill(photon1.Beta());
+            BetaPhoton2->Fill(photon2.Beta());
+            if(cuts_photID1_beta) BetaPhoton1_cut->Fill(photon1.Beta());
+            if(cuts_photID2_beta) BetaPhoton2_cut->Fill(photon2.Beta());
+
+            Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
+            Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
+            Double_t ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
+            Double_t ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
+            Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
+            Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
+
+            cuts_photID1_fidu = myPhotID.Check_PhotonECu(ecu_phot1);
+            cuts_photID2_fidu = myPhotID.Check_PhotonECu(ecu_phot2);
+            cuts_photID1_fidv = myPhotID.Check_PhotonECv(ecv_phot1);
+            cuts_photID2_fidv = myPhotID.Check_PhotonECv(ecv_phot2);
+            cuts_photID1_fidw = myPhotID.Check_PhotonECw(ecw_phot1);
+            cuts_photID2_fidw = myPhotID.Check_PhotonECw(ecw_phot2);
+            cuts_photID_fid = cuts_photID1_fidu && cuts_photID2_fidu && cuts_photID1_fidv && cuts_photID2_fidv && cuts_photID1_fidw && cuts_photID2_fidw;
+            
+            ECuPhoton1->Fill(ecu_phot1);
+            ECuPhoton2->Fill(ecu_phot2);
+            ECvPhoton1->Fill(ecv_phot1);
+            ECvPhoton2->Fill(ecv_phot2);
+            ECwPhoton1->Fill(ecw_phot1);
+            ECwPhoton2->Fill(ecw_phot2);
+            if(cuts_photID1_fidu) ECuPhoton1_cut->Fill(ecu_phot1);
+            if(cuts_photID2_fidu) ECuPhoton2_cut->Fill(ecu_phot2);
+            if(cuts_photID1_fidv) ECvPhoton1_cut->Fill(ecv_phot1);
+            if(cuts_photID2_fidv) ECvPhoton2_cut->Fill(ecv_phot2);
+            if(cuts_photID1_fidw) ECwPhoton1_cut->Fill(ecw_phot1);
+            if(cuts_photID2_fidw) ECwPhoton2_cut->Fill(ecw_phot2);
+
+            Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
+            Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
+            Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
+            Double_t ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
+
+            ECtimePhoton1->Fill(ectime_phot1);
+            ECtimePhoton2->Fill(ectime_phot2);
+            ECpathPhoton1->Fill(ecpath_phot1);
+            ECpathPhoton2->Fill(ecpath_phot2);
+            ECpathtimePhoton1->Fill(ecpath_phot1/LIGHTSPEED);
+            ECpathtimePhoton2->Fill(ecpath_phot2/LIGHTSPEED);
+            
+            timing_phot1 = ectime_phot1 - ecpath_phot1/LIGHTSPEED;
+            timing_phot2 = ectime_phot2 - ecpath_phot2/LIGHTSPEED;
+            
+            cuts_photID1_time = myPhotID.Check_PhotonTiming(timing_phot1,1);
+            cuts_photID2_time = myPhotID.Check_PhotonTiming(timing_phot2,2);
+            cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
+            
+            ECtime_ECl_Photon1->Fill(timing_phot1);
+            ECtime_ECl_Photon2->Fill(timing_phot2);
+            
+            ECtime_ECl_Start_Photon1->Fill(timing_phot1 - eventStartTime);
+            ECtime_ECl_Start_Photon2->Fill(timing_phot2 - eventStartTime);
+            
+            if(cuts_photID1_time) ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
+            if(cuts_photID2_time) ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
+
+            Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
+            Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
+            Double_t ecout_phot1 = reader.getProperty("ecout",BankIndex_part[3]);
+            Double_t ecout_phot2 = reader.getProperty("ecout",BankIndex_part[4]);
+            Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
+            Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
+
+            cuts_photID1_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot1,ecout_phot1);
+            cuts_photID2_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot2,ecout_phot2);
+            cuts_photID_ECinTimesECout = cuts_photID1_ECinTimesECout && cuts_photID2_ECinTimesECout;
+            
+            ECtotP_vs_P_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
+            ECtotP_vs_P_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
+            ECin_vs_ECout_Photon1->Fill(ecin_phot1,ecout_phot1);
+            ECin_vs_ECout_Photon2->Fill(ecin_phot2,ecout_phot2);
+
+            if(cuts_photID1_ECinTimesECout){
+                ECtotP_vs_P_InOutZeroCut_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
+                ECin_vs_ECout_InOutZeroCut_Photon1->Fill(ecin_phot1,ecout_phot1);
+            }
+
+            if(cuts_photID2_ECinTimesECout){
+                ECtotP_vs_P_InOutZeroCut_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
+                ECin_vs_ECout_InOutZeroCut_Photon2->Fill(ecin_phot2,ecout_phot2);
             }
             
-            if(cuts_ElecID){
-                CCnphe_elecID->Fill(emCCnphe,ii);
-                Mom_elecID->Fill(elec.P(),ii);
-                ECu_elecID->Fill(emECu,ii);
-                ECv_elecID->Fill(emECv,ii);
-                ECw_elecID->Fill(emECw,ii);
-                dtime_ECSC_elecID->Fill(emdt,ii);
-                ECtot_VS_P_elecID[ii]->Fill(elec.P(),emECtot);
-                ECtotP_VS_P_elecID[ii]->Fill(elec.P(),emECtot/elec.P());
-                ECin_VS_ECout_elecID[ii]->Fill(emECin,emECout);
-                Mom_VS_ECout_elecID[ii]->Fill(elec.P(),emECout);
-                ECu_VS_ECout_elecID[ii]->Fill(emECu,emECout);
-                ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
-                ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
-            }
-        }
-        //
-        // End of  Electron ID
-        //
-
-        //
-        // Start of Photon ID
-        //
-        cuts_photID1_mom = myPhotID.Check_PhotonMom(photon1.P());
-        cuts_photID2_mom = myPhotID.Check_PhotonMom(photon2.P());
-        cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
-        
-        MomentumPhoton1->Fill(photon1.P());
-        MomentumPhoton2->Fill(photon2.P());
-        if(cuts_photID1_mom) MomentumPhoton1_cut->Fill(photon1.P());
-        if(cuts_photID2_mom) MomentumPhoton2_cut->Fill(photon2.P());
-        
-        cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
-        cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
-        cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
-        
-        BetaPhoton1->Fill(photon1.Beta());
-        BetaPhoton2->Fill(photon2.Beta());
-        if(cuts_photID1_beta) BetaPhoton1_cut->Fill(photon1.Beta());
-        if(cuts_photID2_beta) BetaPhoton2_cut->Fill(photon2.Beta());
-
-        Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
-        Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
-        Double_t ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
-        Double_t ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
-        Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
-        Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
-
-        cuts_photID1_fidu = myPhotID.Check_PhotonECu(ecu_phot1);
-        cuts_photID2_fidu = myPhotID.Check_PhotonECu(ecu_phot2);
-        cuts_photID1_fidv = myPhotID.Check_PhotonECv(ecv_phot1);
-        cuts_photID2_fidv = myPhotID.Check_PhotonECv(ecv_phot2);
-        cuts_photID1_fidw = myPhotID.Check_PhotonECw(ecw_phot1);
-        cuts_photID2_fidw = myPhotID.Check_PhotonECw(ecw_phot2);
-        cuts_photID_fid = cuts_photID1_fidu && cuts_photID2_fidu && cuts_photID1_fidv && cuts_photID2_fidv && cuts_photID1_fidw && cuts_photID2_fidw;
-        
-        ECuPhoton1->Fill(ecu_phot1);
-        ECuPhoton2->Fill(ecu_phot2);
-        ECvPhoton1->Fill(ecv_phot1);
-        ECvPhoton2->Fill(ecv_phot2);
-        ECwPhoton1->Fill(ecw_phot1);
-        ECwPhoton2->Fill(ecw_phot2);
-        if(cuts_photID1_fidu) ECuPhoton1_cut->Fill(ecu_phot1);
-        if(cuts_photID2_fidu) ECuPhoton2_cut->Fill(ecu_phot2);
-        if(cuts_photID1_fidv) ECvPhoton1_cut->Fill(ecv_phot1);
-        if(cuts_photID2_fidv) ECvPhoton2_cut->Fill(ecv_phot2);
-        if(cuts_photID1_fidw) ECwPhoton1_cut->Fill(ecw_phot1);
-        if(cuts_photID2_fidw) ECwPhoton2_cut->Fill(ecw_phot2);
-
-        Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
-        Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
-        Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
-        Double_t ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
-
-        ECtimePhoton1->Fill(ectime_phot1);
-        ECtimePhoton2->Fill(ectime_phot2);
-        ECpathPhoton1->Fill(ecpath_phot1);
-        ECpathPhoton2->Fill(ecpath_phot2);
-        ECpathtimePhoton1->Fill(ecpath_phot1/LIGHTSPEED);
-        ECpathtimePhoton2->Fill(ecpath_phot2/LIGHTSPEED);
-        
-        timing_phot1 = ectime_phot1 - ecpath_phot1/LIGHTSPEED;
-        timing_phot2 = ectime_phot2 - ecpath_phot2/LIGHTSPEED;
-        
-        cuts_photID1_time = myPhotID.Check_PhotonTiming(timing_phot1,1);
-        cuts_photID2_time = myPhotID.Check_PhotonTiming(timing_phot2,2);
-        cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
-        
-        ECtime_ECl_Photon1->Fill(timing_phot1);
-        ECtime_ECl_Photon2->Fill(timing_phot2);
-        
-        ECtime_ECl_Start_Photon1->Fill(timing_phot1 - eventStartTime);
-        ECtime_ECl_Start_Photon2->Fill(timing_phot2 - eventStartTime);
-        
-        if(cuts_photID1_time) ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
-        if(cuts_photID2_time) ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
-
-        Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
-        Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
-        Double_t ecout_phot1 = reader.getProperty("ecout",BankIndex_part[3]);
-        Double_t ecout_phot2 = reader.getProperty("ecout",BankIndex_part[4]);
-        Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
-        Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
-
-        cuts_photID1_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot1,ecout_phot1);
-        cuts_photID2_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot2,ecout_phot2);
-        cuts_photID_ECinTimesECout = cuts_photID1_ECinTimesECout && cuts_photID2_ECinTimesECout;
-        
-        ECtotP_vs_P_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
-        ECtotP_vs_P_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
-        ECin_vs_ECout_Photon1->Fill(ecin_phot1,ecout_phot1);
-        ECin_vs_ECout_Photon2->Fill(ecin_phot2,ecout_phot2);
-
-        if(cuts_photID1_ECinTimesECout){
-            ECtotP_vs_P_InOutZeroCut_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
-            ECin_vs_ECout_InOutZeroCut_Photon1->Fill(ecin_phot1,ecout_phot1);
-        }
-
-        if(cuts_photID2_ECinTimesECout){
-            ECtotP_vs_P_InOutZeroCut_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
-            ECin_vs_ECout_InOutZeroCut_Photon2->Fill(ecin_phot2,ecout_phot2);
-        }
-        
-        cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time && cuts_photID_ECinTimesECout;
+            cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time && cuts_photID_ECinTimesECout;
 
             //
             // End of Photon ID
