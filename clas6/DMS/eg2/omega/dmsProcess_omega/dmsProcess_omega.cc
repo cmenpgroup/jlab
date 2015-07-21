@@ -44,6 +44,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool ElecID_All;
     bool ElecID_Mom;
     bool ElecID_ECvsP;
+    bool ElecID_ECin;
     bool ElecID_ECfid;
     bool ElecID_dtECSC;
     
@@ -175,6 +176,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ElecID_All = false;
         ElecID_Mom =false;
         ElecID_ECvsP = false;
+        ElecID_ECin = false;
         ElecID_ECfid = false;
         ElecID_dtECSC = false;
 
@@ -391,11 +393,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
      
+        // Use EVNT to use the automatic eg2 cuts
         if(reader.getBankRows("EVNT")){
             cuts_photID = true;
             ElecID_All = true;
         }
         
+        // Use EXPB to select the PID cuts
         if (reader.getBankRows("EXPB")) {
             //
             // Start of  Electron ID
@@ -436,11 +440,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
             emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
         
-            ElecID_Mom = myElecID.Check_ElecMom(elec.P());
-            ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
-            ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
-            ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
-            ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
+            ElecID_Mom = myElecID.Check_ElecMom(elec.P()); // e- momentum cut
+            ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass); // e- EC total energy vs momentum cut
+            ElecID_ECin = myElecID.Check_ElecECin(emECin); // e- EC inner cut
+            ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt); // e- timing cut
+            ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw); // e- fiducial cuts
+            ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_ECin && ElecID_dtECSC && ElecID_ECfid);  // all e- ID cuts
         
             myECgeom.Put_UVW(emECu,emECv,emECw);
             EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
@@ -709,7 +714,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             //
             // End of Photon ID
             //
-        }
+        } // end of if(EXPB)
         
         // SumLo = 0.0866593 and SumHi = 0.193608
         if(0.0866593 < TwoPhoton.M() && TwoPhoton.M() < 0.193608) {
