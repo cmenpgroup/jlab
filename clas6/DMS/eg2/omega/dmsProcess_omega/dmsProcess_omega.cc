@@ -564,7 +564,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             for(ii=0; ii<myElecID.Get_nElecID(); ii++){
                 cuts_ElecID = false; // intialize the cuts
             
-                if (myElecID.Get_elecIDLabel(ii).compare("No cuts")==0) {
+                if (myElecID.Get_elecIDLabel(ii).compare("No Cuts")==0) {
                     cuts_ElecID = true;
                 }else if (myElecID.Get_elecIDLabel(ii).compare("Momentum")==0) {
                     cuts_ElecID = myElecID.Check_ElecMom(elec.P());
