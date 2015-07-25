@@ -34,8 +34,8 @@ ElectronID::ElectronID()
     RangeCCnphe.push_back(1000); // Upper limit on CC num. photo-electrons
 
     double dtCentroid = 0.0;
-    double dtWidth = 0.06;
-    double dtNsigmas = 5.0;
+    double dtWidth = 0.6;
+    double dtNsigmas = 3.0;
     double dtLo = dtCentroid - dtNsigmas*dtWidth;
     double dtHi = dtCentroid + dtNsigmas*dtWidth;
     Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)

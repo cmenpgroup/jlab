@@ -212,8 +212,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         eventStartTime = reader.getStartTime(); // evetn start time
         StartTime->Fill(eventStartTime);
         
-        cout << processed << "\tEVNT: " << reader.getBankRows("EVNT") << "\tEXPB: " << reader.getBankRows("EXPB") << endl;
-        
         // get the first electron lorentz vector and vertex
 		TLorentzVector elec = reader.getLorentzVector(ID_ELECTRON, 0, MASS_ELECTRON);
 		TVector3 elec_vert = reader.getVertex(ID_ELECTRON, 0);
