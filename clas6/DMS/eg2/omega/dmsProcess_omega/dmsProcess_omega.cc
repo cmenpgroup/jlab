@@ -659,6 +659,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             if(cuts_photID1_fidw) ECwPhoton1_cut->Fill(ecw_phot1);
             if(cuts_photID2_fidw) ECwPhoton2_cut->Fill(ecw_phot2);
 
+            cout << "Test 1"<<endl;
             myECgeom.Put_UVW(ecu_phot1,ecv_phot1,ecw_phot1);
             EC_XvsY_local_Sector_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             if(cuts_photID1_fid){
@@ -667,6 +668,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 EC_XvsY_local_AntiFidCut_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             }
             
+            cout << "Test 2"<<endl;
             myECgeom.Put_UVW(ecu_phot2,ecv_phot2,ecw_phot2);
             EC_XvsY_local_Sector_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             if(cuts_photID2_fid){
