@@ -1585,7 +1585,7 @@ void BookHist(){
         
         sprintf(hname,"EC_XvsY_local_FidCut%i_Photon2",i+1);
         sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i, Photon 2",i+1);
-        EC_XvsY_local_FidCut_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        EC_XvsY_local_FidCut_Photon2[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
         
         sprintf(hname,"EC_XvsY_local_AntiFidCut%i_Photon2",i+1);
         sprintf(htitle,"EC local X vs local Y, EC fid. cut (anti), Sector %i, Photon2",i+1);
