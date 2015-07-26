@@ -1016,23 +1016,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     }
     cout<<endl;
     cout<<"Statistics on cuts"<<endl;
-    cout<<"Electron ID "<<ctr_elecID<<" ("<<ctr_elecID/entries<<")"<<endl;
-    cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<" ("<<ctr_elecID_Mom/entries<<")"<<endl;
-    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<" ("<<ctr_elecID_ECPvsP/entries<<")"<<endl;
-    cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<" ("<<ctr_elecID_ECin/entries<<")"<<endl;
-    cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<" ("<<ctr_elecID_dtECSC/entries<<")"<<endl;
-    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<" ("<<ctr_elecID_ECfid/entries<<")"<<endl<<endl;
-    cout<<"Photon ID "<<ctr_photID<<" ("<<ctr_photID/entries<<")"<<endl;
-    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<" ("<<ctr_photID_Mom/entries<<")"<<endl;
-    cout<<"Photon ID (beta) "<<ctr_photID_Beta<<" ("<<ctr_photID_Beta/entries<<")"<<endl;
-    cout<<"Photon ID (timing) "<<ctr_photID_timing<<" ("<<ctr_photID_timing/entries<<")"<<endl;
-    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<" ("<<ctr_photID_ECfid/entries<<")"<<endl<<endl;
-    cout<<"Omega ID "<<ctr_omegaID<<" ("<<ctr_omegaID/entries<<")"<<endl;
-    cout<<"Omega ID (Mpi0) "<<ctr_omegaID_Mpi0<<" ("<<ctr_omegaID_Mpi0/entries<<")"<<endl;
-    cout<<"Omega ID (OpAngElecPhoton) "<<ctr_omegaID_OpAngElecPhoton<<" ("<<ctr_omegaID_OpAngElecPhoton/entries<<")"<<endl;
-    cout<<"Omega ID (Zmatch) "<<ctr_omegaID_Zmatch<<" ("<<ctr_omegaID_Zmatch/entries<<")"<<endl;
-    cout<<"Omega ID (W) "<<ctr_omegaID_W<<" ("<<ctr_omegaID_W/entries<<")"<<endl;
-    cout<<"Omega ID (Q2) "<<ctr_omegaID_Q2<<" ("<<ctr_omegaID_Q2/entries<<")"<<endl;
+    cout<<"Electron ID "<<ctr_elecID<<" ("<<float(ctr_elecID)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<" ("<<float(ctr_elecID_Mom)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<" ("<<float(ctr_elecID_ECPvsP)/float(entries<<")"<<endl;
+    cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<" ("<<float(ctr_elecID_ECin)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<" ("<<float(ctr_elecID_dtECSC)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<" ("<<float(ctr_elecID_ECfid)/float(entries)<<")"<<endl<<endl;
+    cout<<"Photon ID "<<ctr_photID<<" ("<<float(ctr_photID)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<" ("<<float(ctr_photID_Mom)/float(entries<<")"<<endl;
+    cout<<"Photon ID (beta) "<<ctr_photID_Beta<<" ("<<float(ctr_photID_Beta)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (timing) "<<ctr_photID_timing<<" ("<<float(ctr_photID_timing)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<" ("<<float(ctr_photID_ECfid)/float(entries)<<")"<<endl<<endl;
+    cout<<"Omega ID "<<ctr_omegaID<<" ("<<float(ctr_omegaID)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (Mpi0) "<<ctr_omegaID_Mpi0<<" ("<<float(ctr_omegaID_Mpi0)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (OpAngElecPhoton) "<<ctr_omegaID_OpAngElecPhoton<<" ("<<float(ctr_omegaID_OpAngElecPhoton)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (Zmatch) "<<ctr_omegaID_Zmatch<<" ("<<float(ctr_omegaID_Zmatch)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (W) "<<ctr_omegaID_W<<" ("<<float(ctr_omegaID_W)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (Q2) "<<ctr_omegaID_Q2<<" ("<<float(ctr_omegaID_Q2)/float(entries)<<")"<<endl;
     
     return processed;
 }
