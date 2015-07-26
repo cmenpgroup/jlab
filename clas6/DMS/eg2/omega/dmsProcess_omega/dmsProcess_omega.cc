@@ -676,6 +676,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }else{
                 EC_XvsY_local_AntiFidCut_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             }
+            cout << "Test 3"<<endl;
             
             Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
             Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
