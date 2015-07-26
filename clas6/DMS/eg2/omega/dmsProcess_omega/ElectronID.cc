@@ -40,14 +40,21 @@ ElectronID::ElectronID()
     double dtHi = dtCentroid + dtNsigmas*dtWidth;
     Range_dtECSC.push_back(dtLo); // Lower limit on time difference between EC and SC (in ns)
     Range_dtECSC.push_back(dtHi); // Upper limit on time difference between EC and SC (in ns)
-   
-    EC_SamplingFrac_C[0][0] = 2.52E-1; EC_SamplingFrac_C[0][1] = 1.22E-2; EC_SamplingFrac_C[0][2] = -7.94E-3; EC_SamplingFrac_C[0][3] = 9.55E-3; EC_SamplingFrac_C[0][4] = 3.41E-2;
+
+    EC_SamplingFrac_C[0][0] = 0.226726; EC_SamplingFrac_C[0][1] = 0.0379557; EC_SamplingFrac_C[0][2] = -0.00855326; EC_SamplingFrac_C[0][3] = 7.27022e-09; EC_SamplingFrac_C[0][4] = 0.0370079;
+    EC_SamplingFrac_C[1][0] = 0.222333; EC_SamplingFrac_C[1][1] = 0.0581705; EC_SamplingFrac_C[1][2] = -0.0131283; EC_SamplingFrac_C[1][3] = 3.12094e-12; EC_SamplingFrac_C[1][4] = 0.0413565;
+    EC_SamplingFrac_C[2][0] = 0.245212; EC_SamplingFrac_C[2][1] = 0.0213835; EC_SamplingFrac_C[2][2] = -0.00277372; EC_SamplingFrac_C[2][3] = 8.27916e-08; EC_SamplingFrac_C[2][4] = 0.0426498;
+    EC_SamplingFrac_C[3][0] = 0.238399; EC_SamplingFrac_C[3][1] = 0.0301926; EC_SamplingFrac_C[3][2] = -0.00720393; EC_SamplingFrac_C[3][3] = -3.81029e-09; EC_SamplingFrac_C[3][4] = 0.0309331;
+    EC_SamplingFrac_C[4][0] = 0.241834; EC_SamplingFrac_C[4][1] = 0.0442975; EC_SamplingFrac_C[4][2] = -0.0105584; EC_SamplingFrac_C[4][3] = 9.74651e-09; EC_SamplingFrac_C[4][4] = 0.0303602;
+    EC_SamplingFrac_C[5][0] = 0.245868; EC_SamplingFrac_C[5][1] = 0.0545128; EC_SamplingFrac_C[5][2] = -0.0149168; EC_SamplingFrac_C[5][3] = 1.43097e-08; EC_SamplingFrac_C[5][4] = 0.0483305;
+
+/*    EC_SamplingFrac_C[0][0] = 2.52E-1; EC_SamplingFrac_C[0][1] = 1.22E-2; EC_SamplingFrac_C[0][2] = -7.94E-3; EC_SamplingFrac_C[0][3] = 9.55E-3; EC_SamplingFrac_C[0][4] = 3.41E-2;
     EC_SamplingFrac_C[1][0] = 2.78E-1; EC_SamplingFrac_C[1][1] = 1.87E-2; EC_SamplingFrac_C[1][2] = -2.38E-3; EC_SamplingFrac_C[1][3] = 1.399E-2; EC_SamplingFrac_C[1][4] = 3.75E-2;
     EC_SamplingFrac_C[2][0] = 2.62E-1; EC_SamplingFrac_C[2][1] = 2.31E-2; EC_SamplingFrac_C[2][2] = -3.54E-3; EC_SamplingFrac_C[2][3] = 9.32E-3; EC_SamplingFrac_C[2][4] = 2.90E-2;
     EC_SamplingFrac_C[3][0] = 2.51E-1; EC_SamplingFrac_C[3][1] = 2.01E-2; EC_SamplingFrac_C[3][2] = -3.32E-3; EC_SamplingFrac_C[3][3] = 8.21E-3; EC_SamplingFrac_C[3][4] = 2.99E-2;
     EC_SamplingFrac_C[4][0] = 2.63E-1; EC_SamplingFrac_C[4][1] = 9.55E-2; EC_SamplingFrac_C[4][2] = -1.02E-3; EC_SamplingFrac_C[4][3] = 2.25E-2; EC_SamplingFrac_C[4][4] = 3.06E-2;
     EC_SamplingFrac_C[5][0] = 2.55E-1; EC_SamplingFrac_C[5][1] = 2.32E-2; EC_SamplingFrac_C[5][2] = -3.05E-3; EC_SamplingFrac_C[5][3] = 1.17E-2; EC_SamplingFrac_C[5][4] = 3.64E-2;
-    
+*/
     EC_SamplingFrac_Fe[0][0] = 2.22E-1; EC_SamplingFrac_Fe[0][1] = 2.23E-2; EC_SamplingFrac_Fe[0][2] = -2.41E-3; EC_SamplingFrac_Fe[0][3] = 9.23E-3; EC_SamplingFrac_Fe[0][4] = 2.98E-2;
     EC_SamplingFrac_Fe[1][0] = 2.34E-1; EC_SamplingFrac_Fe[1][1] = 1.95E-2; EC_SamplingFrac_Fe[1][2] = -2.08E-3; EC_SamplingFrac_Fe[1][3] = 8.66E-3; EC_SamplingFrac_Fe[1][4] = 3.09E-2;
     EC_SamplingFrac_Fe[2][0] = 2.52E-1; EC_SamplingFrac_Fe[2][1] = 2.42E-2; EC_SamplingFrac_Fe[2][2] = -3.39E-3; EC_SamplingFrac_Fe[2][3] = 1.08E-2; EC_SamplingFrac_Fe[2][4] = 2.64E-2;
