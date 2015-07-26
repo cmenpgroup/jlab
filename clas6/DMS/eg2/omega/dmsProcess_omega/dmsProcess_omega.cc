@@ -1016,23 +1016,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     }
     cout<<endl;
     cout<<"Statistics on cuts"<<endl;
-    cout<<"Electron ID "<<ctr_elecID<<endl;
-    cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<endl;
-    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<endl;
-    cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<endl;
-    cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<endl;
-    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<endl<<endl;
-    cout<<"Photon ID "<<ctr_photID<<endl;
-    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<endl;
-    cout<<"Photon ID (beta) "<<ctr_photID_Beta<<endl;
-    cout<<"Photon ID (timing) "<<ctr_photID_timing<<endl;
-    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<endl<<endl;
-    cout<<"Omega ID "<<ctr_omegaID<<endl;
-    cout<<"Omega ID (Mpi0) "<<ctr_omegaID_Mpi0<<endl;
-    cout<<"Omega ID (OpAngElecPhoton) "<<ctr_omegaID_OpAngElecPhoton<<endl;
-    cout<<"Omega ID (Zmatch) "<<ctr_omegaID_Zmatch<<endl;
-    cout<<"Omega ID (W) "<<ctr_omegaID_W<<endl;
-    cout<<"Omega ID (Q2) "<<ctr_omegaID_Q2<<endl;
+    cout<<"Electron ID "<<ctr_elecID<<" ("<<ctr_elecID/entries<<")"<<endl;
+    cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<" ("<<ctr_elecID_Mom/entries<<")"<<endl;
+    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<" ("<<ctr_elecID_ECPvsP/entries<<")"<<endl;
+    cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<" ("<<ctr_elecID_ECin/entries<<")"<<endl;
+    cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<" ("<<ctr_elecID_dtECSC/entries<<")"<<endl;
+    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<" ("<<ctr_elecID_ECfid/entries<<")"<<endl<<endl;
+    cout<<"Photon ID "<<ctr_photID<<" ("<<ctr_photID/entries<<")"<<endl;
+    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<" ("<<ctr_photID_Mom/entries<<")"<<endl;
+    cout<<"Photon ID (beta) "<<ctr_photID_Beta<<" ("<<ctr_photID_Beta/entries<<")"<<endl;
+    cout<<"Photon ID (timing) "<<ctr_photID_timing<<" ("<<ctr_photID_timing/entries<<")"<<endl;
+    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<" ("<<ctr_photID_ECfid/entries<<")"<<endl<<endl;
+    cout<<"Omega ID "<<ctr_omegaID<<" ("<<ctr_omegaID/entries<<")"<<endl;
+    cout<<"Omega ID (Mpi0) "<<ctr_omegaID_Mpi0<<" ("<<ctr_omegaID_Mpi0/entries<<")"<<endl;
+    cout<<"Omega ID (OpAngElecPhoton) "<<ctr_omegaID_OpAngElecPhoton<<" ("<<ctr_omegaID_OpAngElecPhoton/entries<<")"<<endl;
+    cout<<"Omega ID (Zmatch) "<<ctr_omegaID_Zmatch<<" ("<<ctr_omegaID_Zmatch/entries<<")"<<endl;
+    cout<<"Omega ID (W) "<<ctr_omegaID_W<<" ("<<ctr_omegaID_W/entries<<")"<<endl;
+    cout<<"Omega ID (Q2) "<<ctr_omegaID_Q2<<" ("<<ctr_omegaID_Q2/entries<<")"<<endl;
     
     return processed;
 }
