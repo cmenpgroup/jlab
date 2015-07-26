@@ -97,6 +97,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     int ctr_photID_timing = 0;
     int ctr_photID_ECfid = 0;
     int ctr_photID = 0;
+
+    int ctr_omegaID_Mpi0 = 0;
+    int ctr_omegaID_Q2 = 0;
+    int ctr_omegaID_W = 0;
+    int ctr_omegaID_Zmatch = 0;
+    int ctr_omegaID_OpAngElecPhoton = 0;
+    int ctr_omegaID = 0;
     
     EG2Target myTgt;
     EG2Cuts myCuts;
@@ -852,6 +859,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             IMOmega_antiCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
 
             if(cutPi0Mass) { // applying the pi0 mass cut
+                ctr_omegaID_Mpi0++;
                 OpAng_VS_E_MassPi0Cut[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle);
                 IM2Photons[Vz_index]->Fill(TwoPhoton.M(),1);
                 IMOmega[Vz_index]->Fill(Omega.M(),1);
@@ -865,6 +873,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
             if(cutQSquared) { // applying the Q^2 cut
+                ctr_omegaID_Q2++;
                 IM2Photons[Vz_index]->Fill(TwoPhoton.M(),2);
                 IMOmega[Vz_index]->Fill(Omega.M(),2);
             }else{
@@ -876,6 +885,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
             if(cutW){ // applying the W cut
+                ctr_omegaID_W++;
                 IM2Photons[Vz_index]->Fill(TwoPhoton.M(),3);
                 IMOmega[Vz_index]->Fill(Omega.M(),3);
             }else{
@@ -887,6 +897,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
             if(cutZDiff){ // applying the e-,pion z-vertex matching cut
+                ctr_omegaID_Zmatch++;
                 IM2Photons[Vz_index]->Fill(TwoPhoton.M(),4);
                 IMOmega[Vz_index]->Fill(Omega.M(),4);
             }else{
@@ -898,6 +909,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
             if(cutOpAng_ElecPhoton) { // applying the e-,photon opening angle cut
+                ctr_omegaID_OpAngElecPhoton++;
                 IM2Photons[Vz_index]->Fill(TwoPhoton.M(),5);
                 IMOmega[Vz_index]->Fill(Omega.M(),5);
             }else{
@@ -933,6 +945,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
              // applying all cuts
             cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
             if(cutsAll){
+                ctr_omegaID++;
                 IMOmega[Vz_index]->Fill(Omega.M(),8);
                 W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
                 IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
@@ -1001,19 +1014,25 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         //-----------------------------------------------------
     }
-    
+    cout<<endl;
     cout<<"Statistics on cuts"<<endl;
     cout<<"Electron ID "<<ctr_elecID<<endl;
     cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<endl;
     cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<endl;
     cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<endl;
     cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<endl;
-    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<endl;
+    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<endl<<endl;
     cout<<"Photon ID "<<ctr_photID<<endl;
     cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<endl;
     cout<<"Photon ID (beta) "<<ctr_photID_Beta<<endl;
     cout<<"Photon ID (timing) "<<ctr_photID_timing<<endl;
-    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<endl;
+    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<endl<<endl;
+    cout<<"Omega ID "<<ctr_omegaID<<endl;
+    cout<<"Omega ID (Mpi0) "<<ctr_omegaID_Mpi0<<endl;
+    cout<<"Omega ID (OpAngElecPhoton) "<<ctr_omegaID_OpAngElecPhoton<<endl;
+    cout<<"Omega ID (Zmatch) "<<ctr_omegaID_Zmatch<<endl;
+    cout<<"Omega ID (W) "<<ctr_omegaID_W<<endl;
+    cout<<"Omega ID (Q2) "<<ctr_omegaID_Q2<<endl;
     
     return processed;
 }
