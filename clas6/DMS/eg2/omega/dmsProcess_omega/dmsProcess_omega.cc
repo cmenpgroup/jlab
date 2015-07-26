@@ -61,6 +61,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cuts_photID2_fidv;
     bool cuts_photID1_fidw;
     bool cuts_photID2_fidw;
+    bool cuts_photID1_fid;
+    bool cuts_photID2_fid;
     bool cuts_photID_fid;
     bool cuts_photID1_time;
     bool cuts_photID2_time;
@@ -193,6 +195,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cuts_photID2_fidv = false;
         cuts_photID1_fidw = false;
         cuts_photID2_fidw = false;
+        cuts_photID1_fid = false;
+        cuts_photID2_fid = false;
         cuts_photID_fid = false;
         cuts_photID1_time = false;
         cuts_photID2_time = false;
@@ -638,7 +642,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cuts_photID2_fidv = myPhotID.Check_PhotonECv(ecv_phot2);
             cuts_photID1_fidw = myPhotID.Check_PhotonECw(ecw_phot1);
             cuts_photID2_fidw = myPhotID.Check_PhotonECw(ecw_phot2);
-            cuts_photID_fid = cuts_photID1_fidu && cuts_photID2_fidu && cuts_photID1_fidv && cuts_photID2_fidv && cuts_photID1_fidw && cuts_photID2_fidw;
+            cuts_photID1_fid = cuts_photID1_fidu && cuts_photID1_fidv && cuts_photID1_fidw;
+            cuts_photID2_fid = cuts_photID2_fidu && cuts_photID2_fidv && cuts_photID2_fidw;
+            cuts_photID_fid = cuts_photID1_fid && cuts_photID2_fid;
             
             ECuPhoton1->Fill(ecu_phot1);
             ECuPhoton2->Fill(ecu_phot2);
@@ -653,6 +659,22 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             if(cuts_photID1_fidw) ECwPhoton1_cut->Fill(ecw_phot1);
             if(cuts_photID2_fidw) ECwPhoton2_cut->Fill(ecw_phot2);
 
+            myECgeom.Put_UVW(ecu_phot1,ecv_phot1,ecw_phot1);
+            EC_XvsY_local_Sector_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            if(cuts_photID1_fid){
+                EC_XvsY_local_FidCut_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }else{
+                EC_XvsY_local_AntiFidCut_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+            
+            myECgeom.Put_UVW(ecu_phot2,ecv_phot2,ecw_phot2);
+            EC_XvsY_local_Sector_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            if(cuts_photID2_fid){
+                EC_XvsY_local_FidCut_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }else{
+                EC_XvsY_local_AntiFidCut_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+            
             Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
             Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
             Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
@@ -1541,6 +1563,32 @@ void BookHist(){
     sprintf(htitle,"ECw of Photon 2 Cut");
 	ECwPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
+    for(i=0; i<MAX_SECTORS; i++){
+        sprintf(hname,"EC_XvsY_local_Sector_%i_Photon1",i+1);
+        sprintf(htitle,"EC local X vs local Y, Sector %i, Photon 1",i+1);
+        EC_XvsY_local_Sector_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_FidCut%i_Photon1",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i, Photon 1",i+1);
+        EC_XvsY_local_FidCut_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_AntiFidCut%i_Photon1",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut (anti), Sector %i, Photon1",i+1);
+        EC_XvsY_local_AntiFidCut_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+
+        sprintf(hname,"EC_XvsY_local_Sector_%i_Photon2",i+1);
+        sprintf(htitle,"EC local X vs local Y, Sector %i, Photon 2",i+1);
+        EC_XvsY_local_Sector_Photon2[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_FidCut%i_Photon2",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i, Photon 2",i+1);
+        EC_XvsY_local_FidCut_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_AntiFidCut%i_Photon2",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut (anti), Sector %i, Photon2",i+1);
+        EC_XvsY_local_AntiFidCut_Photon2[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+    }
+    
     sprintf(hname,"ECtime_ECl_Start_Photon1");
     sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 1");
     ECtime_ECl_Start_Photon1 = new TH1D(hname,htitle, 400, -80., 20.);
@@ -2187,6 +2235,42 @@ void WriteHist(string RootFile){
     ECwPhoton2_cut->GetYaxis()->SetTitle("Counts");
 	ECwPhoton2_cut->Write();
 
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_Sector_Photon1[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_Sector_Photon1[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_Sector_Photon1[i]->Write();
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_FidCut_Photon1[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon1[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon1[i]->Write();
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_AntiFidCut_Photon1[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon1[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon1[i]->Write();
+    }
+
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_Sector_Photon2[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_Sector_Photon2[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_Sector_Photon2[i]->Write();
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_FidCut_Photon2[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon2[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon2[i]->Write();
+    }
+    
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_AntiFidCut_Photon2[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon2[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon2[i]->Write();
+    }
+    
     ECtime_ECl_Start_Photon1->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
     ECtime_ECl_Start_Photon1->GetYaxis()->SetTitle("Counts");
     ECtime_ECl_Start_Photon1->Write();

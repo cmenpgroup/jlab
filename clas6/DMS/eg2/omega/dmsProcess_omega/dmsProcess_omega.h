@@ -197,6 +197,12 @@ TH2D *ECtotP_vs_P_InOutZeroCut_Photon1;
 TH2D *ECtotP_vs_P_InOutZeroCut_Photon2;
 TH2D *ECin_vs_ECout_InOutZeroCut_Photon1;
 TH2D *ECin_vs_ECout_InOutZeroCut_Photon2;
+TH2D *EC_XvsY_local_Sector_Photon1[6];
+TH2D *EC_XvsY_local_FidCut_Photon1[6];
+TH2D *EC_XvsY_local_AntiFidCut_Photon1[6];
+TH2D *EC_XvsY_local_Sector_Photon2[6];
+TH2D *EC_XvsY_local_FidCut_Photon2[6];
+TH2D *EC_XvsY_local_AntiFidCut_Photon2[6];
 
 //recon
 TH1D *Pi0Mass_PhotIDcuts;
