@@ -14,7 +14,8 @@ PhotonID::PhotonID()
     PhotonIDLabel.push_back("Timing");
     PhotonIDLabel.push_back("ECinTimesECout");
     
-    RangePhotonMom.push_back(0.3); // Lower limit on photon momentum (in GeV)
+//    RangePhotonMom.push_back(0.3); // Lower limit on photon momentum (in GeV)
+    RangePhotonMom.push_back(0.15); // Lower limit on photon momentum (in GeV)
     RangePhotonMom.push_back(1000.0); // Upper limit on photon momentum (in GeV)
 
     RangePhotonBeta.push_back(0.95); // Lower limit on photon beta
