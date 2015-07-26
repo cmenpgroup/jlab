@@ -1018,12 +1018,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     cout<<"Statistics on cuts"<<endl;
     cout<<"Electron ID "<<ctr_elecID<<" ("<<float(ctr_elecID)/float(entries)<<")"<<endl;
     cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<" ("<<float(ctr_elecID_Mom)/float(entries)<<")"<<endl;
-    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<" ("<<float(ctr_elecID_ECPvsP)/float(entries<<")"<<endl;
+    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<" ("<<float(ctr_elecID_ECPvsP)/float(entries)<<")"<<endl;
     cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<" ("<<float(ctr_elecID_ECin)/float(entries)<<")"<<endl;
     cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<" ("<<float(ctr_elecID_dtECSC)/float(entries)<<")"<<endl;
     cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<" ("<<float(ctr_elecID_ECfid)/float(entries)<<")"<<endl<<endl;
     cout<<"Photon ID "<<ctr_photID<<" ("<<float(ctr_photID)/float(entries)<<")"<<endl;
-    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<" ("<<float(ctr_photID_Mom)/float(entries<<")"<<endl;
+    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<" ("<<float(ctr_photID_Mom)/float(entries)<<")"<<endl;
     cout<<"Photon ID (beta) "<<ctr_photID_Beta<<" ("<<float(ctr_photID_Beta)/float(entries)<<")"<<endl;
     cout<<"Photon ID (timing) "<<ctr_photID_timing<<" ("<<float(ctr_photID_timing)/float(entries)<<")"<<endl;
     cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<" ("<<float(ctr_photID_ECfid)/float(entries)<<")"<<endl<<endl;
