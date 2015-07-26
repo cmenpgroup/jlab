@@ -85,6 +85,19 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     
     double timing_phot1, timing_phot2; // time difference between photon ECtime and ECpath/c
     
+    int ctr_elecID_Mom = 0;
+    int ctr_elecID_ECPvsP = 0;
+    int ctr_elecID_ECin = 0;
+    int ctr_elecID_dtECSC = 0;
+    int ctr_elecID_ECfid = 0;
+    int ctr_elecID = 0;
+    
+    int ctr_photID_Mom = 0;
+    int ctr_photID_Beta = 0;
+    int ctr_photID_timing = 0;
+    int ctr_photID_ECfid = 0;
+    int ctr_photID = 0;
+    
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
@@ -524,11 +537,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 ECinP_VS_ECoutP_Range[4]->Fill(emECin/elec.P(), emECout/elec.P());
             }
 
+            if(ElecID_Mom){
+                ctr_elecID_Mom++;
+            }
+            if(ElecID_dtECSC){
+                ctr_elecID_dtECSC++;
+            }
+            if(ElecID_ECin){
+                ctr_elecID_ECin++;
+            }
+            
             if(ElecID_ECvsP){
+                ctr_elecID_ECPvsP++;
                 ECtotP_VS_P_ECPCut[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
             }
         
             if(ElecID_ECfid){
+                ctr_elecID_ECfid++;
                 ECin_VS_ECout_ECfid->Fill(emECin,emECout);
                 EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             }else{
@@ -536,6 +561,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
         
             if(ElecID_All){
+                ctr_elecID++;
                 ECin_VS_ECout_elecID_All->Fill(emECin,emECout);
             }
 
@@ -614,6 +640,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cuts_photID1_mom = myPhotID.Check_PhotonMom(photon1.P());
             cuts_photID2_mom = myPhotID.Check_PhotonMom(photon2.P());
             cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
+            if(cuts_photID_mom){
+                ctr_photID_Mom++;
+            }
             
             MomentumPhoton1->Fill(photon1.P());
             MomentumPhoton2->Fill(photon2.P());
@@ -623,6 +652,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
             cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
             cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
+            if(cuts_photID_beta){
+                ctr_photID_Beta++;
+            }
             
             BetaPhoton1->Fill(photon1.Beta());
             BetaPhoton2->Fill(photon2.Beta());
@@ -645,6 +677,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cuts_photID1_fid = cuts_photID1_fidu && cuts_photID1_fidv && cuts_photID1_fidw;
             cuts_photID2_fid = cuts_photID2_fidu && cuts_photID2_fidv && cuts_photID2_fidw;
             cuts_photID_fid = cuts_photID1_fid && cuts_photID2_fid;
+            if(cuts_photID_fid){
+                ctr_photID_ECfid++;
+            }
             
             ECuPhoton1->Fill(ecu_phot1);
             ECuPhoton2->Fill(ecu_phot2);
@@ -693,6 +728,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cuts_photID1_time = myPhotID.Check_PhotonTiming(timing_phot1,1);
             cuts_photID2_time = myPhotID.Check_PhotonTiming(timing_phot2,2);
             cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
+            if(cuts_photID_time){
+                ctr_photID_timing++;
+            }
             
             ECtime_ECl_Photon1->Fill(timing_phot1);
             ECtime_ECl_Photon2->Fill(timing_phot2);
@@ -731,7 +769,10 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             
             cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time;
 //            cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time && cuts_photID_ECinTimesECout;
-
+            if(cuts_photID){
+                ctr_photID++;
+            }
+            
             //
             // End of Photon ID
             //
@@ -820,7 +861,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             cuts_woPi0Mass = (cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
             if(cuts_woPi0Mass){ // applying all cuts except the pi0 mass
                 IMOmega_woCut[Vz_index]->Fill(Omega.M(),1);
-                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),7);
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),8);
             }
             
             if(cutQSquared) { // applying the Q^2 cut
@@ -960,6 +1001,19 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         //-----------------------------------------------------
     }
+    
+    cout<<"Statistics on cuts"<<endl;
+    cout<<"Electron ID "<<ctr_elecID<<endl;
+    cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<endl;
+    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<endl;
+    cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<endl;
+    cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<endl;
+    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<endl;
+    cout<<"Photon ID "<<ctr_photID<<endl;
+    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<endl;
+    cout<<"Photon ID (beta) "<<ctr_photID_Beta<<endl;
+    cout<<"Photon ID (timing) "<<ctr_photID_timing<<endl;
+    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<endl;
     
     return processed;
 }
@@ -2428,7 +2482,6 @@ int main (int argc, char **argv) {
   
  
     BookHist(); // declare histograms
-    cout <<"Test 0"<<endl;
     
     for (i = optind; i < argc; ++i) {
         inFile = argv[i]; // process all arguments on command line.
