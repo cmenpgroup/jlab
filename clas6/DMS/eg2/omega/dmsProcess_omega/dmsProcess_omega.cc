@@ -80,9 +80,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double timeEC, timeSC, pathEC, pathSC;
     double dt_ECminusSC[5];
     
+    double pimBeta, pimSCpath, pimSCtime; // variables for pi- id cuts
+    double pipBeta, pipSCpath, pipSCtime; // variables for pi- id cuts
+    
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
+    double emECtime, emECpath, emSCtime, emSCpath; // more variables for electron id cuts
     double eventStartTime; // event start time from HEAD bank
     
+    double ectime_phot1, ecpath_phot1, ecu_phot1, ecv_phot1, ecw_phot1, phot1Beta; //variables for photon 1 cuts
+    double ectime_phot2, ecpath_phot2, ecu_phot2, ecv_phot2, ecw_phot2, phot2Beta; //variables for photon 2 cuts
     double timing_phot1, timing_phot2; // time difference between photon ECtime and ECpath/c
     
     int ctr_elecID_Mom = 0;
@@ -424,6 +430,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         // Use EXPB to select the PID cuts
         if (reader.getBankRows("EXPB")) {
             //
+            // Start of charged pion ID
+            //
+            pimSCtime = reader.getProperty("sctime",BankIndex_part[1]);
+            pimSCpath = reader.getProperty("scpath",BankIndex_part[1]);
+            pimBeta = (pimSCpath/pimSCtime)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(nPion.P(), pimBeta);
+            
+            pipSCtime = reader.getProperty("sctime",BankIndex_part[2]);
+            pipSCpath = reader.getProperty("scpath",BankIndex_part[2]);
+            pipBeta = (pipSCpath/pipSCtime)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(pPion.P(), pipBeta);
+            
+            //
+            // End of charged pion ID
+            //
+            
+            //
             // Start of  Electron ID
             //
             for(ii=0; ii<5; ii++){
@@ -460,8 +483,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             emECv = reader.getProperty("ecv",BankIndex_part[0]);
             emECw = reader.getProperty("ecw",BankIndex_part[0]);
             emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
-            emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
+            emECtime = reader.getProperty("ectime",BankIndex_part[0]);
+            emSCtime = reader.getProperty("sctime",BankIndex_part[0]);
+            emECpath = reader.getProperty("ecpath",BankIndex_part[0]);
+            emSCpath = reader.getProperty("scpath",BankIndex_part[0]);
+            emdt = emECtime - emSCtime - 0.7;
         
+            emBeta = (emSCpath/emSCtime)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(elec.P(), emBeta);
+            
             ElecID_Mom = myElecID.Check_ElecMom(elec.P()); // e- momentum cut
             ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass); // e- EC total energy vs momentum cut
             ElecID_ECin = myElecID.Check_ElecECin(emECin); // e- EC inner cut
@@ -644,6 +674,18 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             //
             // Start of Photon ID
             //
+            ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
+            ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
+            ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
+            ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
+            
+            ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
+            ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
+            ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
+            ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
+            ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
+            ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
+            
             cuts_photID1_mom = myPhotID.Check_PhotonMom(photon1.P());
             cuts_photID2_mom = myPhotID.Check_PhotonMom(photon2.P());
             cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
@@ -656,6 +698,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             if(cuts_photID1_mom) MomentumPhoton1_cut->Fill(photon1.P());
             if(cuts_photID2_mom) MomentumPhoton2_cut->Fill(photon2.P());
             
+            phot1Beta = (ecpath_phot1/ectime_phot1)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(photon1.P(), phot1Beta);
+
+            phot2Beta = (ecpath_phot2/ectime_phot2)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(photon2.P(), phot2Beta);
+            
             cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
             cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
             cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
@@ -667,13 +715,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             BetaPhoton2->Fill(photon2.Beta());
             if(cuts_photID1_beta) BetaPhoton1_cut->Fill(photon1.Beta());
             if(cuts_photID2_beta) BetaPhoton2_cut->Fill(photon2.Beta());
-
-            Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
-            Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
-            Double_t ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
-            Double_t ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
-            Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
-            Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
 
             cuts_photID1_fidu = myPhotID.Check_PhotonECu(ecu_phot1);
             cuts_photID2_fidu = myPhotID.Check_PhotonECu(ecu_phot2);
@@ -716,11 +757,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }else{
                 EC_XvsY_local_AntiFidCut_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
             }
-            
-            Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
-            Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
-            Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
-            Double_t ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
 
             ECtimePhoton1->Fill(ectime_phot1);
             ECtimePhoton2->Fill(ectime_phot2);
@@ -1187,6 +1223,10 @@ void BookHist(){
     sprintf(htitle,"Beta vs Momentum");
 	Beta_VS_Momentum = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
 
+    sprintf(hname,"Beta_VS_Momentum_Recalc");
+    sprintf(htitle,"Beta vs Momentum, Recalculated");
+    Beta_VS_Momentum_Recalc = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
+    
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
 	TotalMomentum = new TH2D(hname,htitle, 600, 0, 6, 7, -0.5, 6.5);
@@ -1831,6 +1871,10 @@ void WriteHist(string RootFile){
     Beta_VS_Momentum->GetYaxis()->SetTitle("#beta");
 	Beta_VS_Momentum->Write();
 
+    Beta_VS_Momentum_Recalc->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    Beta_VS_Momentum_Recalc->GetYaxis()->SetTitle("#beta");
+    Beta_VS_Momentum_Recalc->Write();
+    
     TotalMomentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
     TotalMomentum->GetYaxis()->SetTitle("Particle");
 	TotalMomentum->Write();
