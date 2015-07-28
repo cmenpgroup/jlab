@@ -436,11 +436,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             pimSCpath = reader.getProperty("scpath",BankIndex_part[1]);
             pimBeta = (pimSCpath/pimSCtime)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(nPion.P(), pimBeta);
+            Beta_Recalc->Fill(pimBeta,1);
             
             pipSCtime = reader.getProperty("sctime",BankIndex_part[2]);
             pipSCpath = reader.getProperty("scpath",BankIndex_part[2]);
             pipBeta = (pipSCpath/pipSCtime)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(pPion.P(), pipBeta);
+            Beta_Recalc->Fill(pipBeta,2);
             
             //
             // End of charged pion ID
@@ -491,6 +493,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
             emBeta = (emSCpath/emSCtime)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(elec.P(), emBeta);
+            Beta_Recalc->Fill(emBeta,0);
             
             ElecID_Mom = myElecID.Check_ElecMom(elec.P()); // e- momentum cut
             ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass); // e- EC total energy vs momentum cut
@@ -700,9 +703,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             
             phot1Beta = (ecpath_phot1/ectime_phot1)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(photon1.P(), phot1Beta);
-
+            Beta_Recalc->Fill(phot1Beta,3);
+            
             phot2Beta = (ecpath_phot2/ectime_phot2)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(photon2.P(), phot2Beta);
+            Beta_Recalc->Fill(phot2Beta,4);
             
             cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
             cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
@@ -1226,6 +1231,10 @@ void BookHist(){
     sprintf(hname,"Beta_VS_Momentum_Recalc");
     sprintf(htitle,"Beta vs Momentum, Recalculated");
     Beta_VS_Momentum_Recalc = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
+    
+    sprintf(hname,"Beta_Recalc");
+    sprintf(htitle,"Beta, Recalculated");
+    Beta_Recalc = new TH2D(hname,htitle, 320, 0.4, 2.0, 5, -0.5, 4.5);
     
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
@@ -1874,6 +1883,10 @@ void WriteHist(string RootFile){
     Beta_VS_Momentum_Recalc->GetXaxis()->SetTitle("Momentum (GeV/c)");
     Beta_VS_Momentum_Recalc->GetYaxis()->SetTitle("#beta");
     Beta_VS_Momentum_Recalc->Write();
+
+    Beta_Recalc->GetXaxis()->SetTitle("#beta");
+    Beta_Recalc->GetYaxis()->SetTitle("Particle");
+    Beta_Recalc->Write();
     
     TotalMomentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
     TotalMomentum->GetYaxis()->SetTitle("Particle");
