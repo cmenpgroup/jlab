@@ -84,7 +84,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double pipBeta, pipSCpath, pipSCtime; // variables for pi- id cuts
     
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
-    double emECtime, emECpath, emSCtime, emSCpath; // more variables for electron id cuts
+    double emECtime, emECpath, emSCtime, emSCpath, emBeta; // more variables for electron id cuts
     double eventStartTime; // event start time from HEAD bank
     
     double ectime_phot1, ecpath_phot1, ecu_phot1, ecv_phot1, ecw_phot1, phot1Beta; //variables for photon 1 cuts
