@@ -1288,19 +1288,19 @@ void BookHist(){
 
     sprintf(hname,"scMassSquared");
     sprintf(htitle,"TOF Mass^{2}");
-    scMassSquared = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+    scMassSquared = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
 
     sprintf(hname,"scMassSquared_elecID");
     sprintf(htitle,"TOF Mass^{2}, e- ID cuts");
-    scMassSquared_elecID = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+    scMassSquared_elecID = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
     
     sprintf(hname,"scMassSquared_photID");
     sprintf(htitle,"TOF Mass^{2}, photon ID cuts");
-    scMassSquared_photID = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+    scMassSquared_photID = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
 
     sprintf(hname,"scMassSquared_elecIDphotID");
     sprintf(htitle,"TOF Mass^{2}, e- and photon ID cuts");
-    scMassSquared_elecIDphotID = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+    scMassSquared_elecIDphotID = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
     
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
