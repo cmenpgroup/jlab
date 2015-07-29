@@ -854,10 +854,32 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             OmegaMass_AllCuts->Fill(Omega.M());
         }
         
+        if(ElecID_All){
+            scMassSquared_elecID->Fill(emSCMassSq,0);
+            scMassSquared_elecID->Fill(pimSCMassSq,1);
+            scMassSquared_elecID->Fill(pipSCMassSq,2);
+            scMassSquared_elecID->Fill(scMassSq_phot1,3);
+            scMassSquared_elecID->Fill(scMassSq_phot2,4);
+        }
+        
+        if(cuts_photID){
+            scMassSquared_photID->Fill(emSCMassSq,0);
+            scMassSquared_photID->Fill(pimSCMassSq,1);
+            scMassSquared_photID->Fill(pipSCMassSq,2);
+            scMassSquared_photID->Fill(scMassSq_phot1,3);
+            scMassSquared_photID->Fill(scMassSq_phot2,4);
+        }
+        
         //
         // Start omega ID
         //
         if(ElecID_All && cuts_photID){
+            scMassSquared_elecIDphotID->Fill(emSCMassSq,0);
+            scMassSquared_elecIDphotID->Fill(pimSCMassSq,1);
+            scMassSquared_elecIDphotID->Fill(pipSCMassSq,2);
+            scMassSquared_elecIDphotID->Fill(scMassSq_phot1,3);
+            scMassSquared_elecIDphotID->Fill(scMassSq_phot2,4);
+            
             // plot of two photon opening angle
             TwoPhotonAngle = TMath::RadToDeg()*photon1.Angle(photon2.Vect());
             OpAng_2Photons->Fill(TwoPhotonAngle);
@@ -1267,6 +1289,18 @@ void BookHist(){
     sprintf(hname,"scMassSquared");
     sprintf(htitle,"TOF Mass^{2}");
     scMassSquared = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+
+    sprintf(hname,"scMassSquared_elecID");
+    sprintf(htitle,"TOF Mass^{2}, e- ID cuts");
+    scMassSquared_elecID = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+    
+    sprintf(hname,"scMassSquared_photID");
+    sprintf(htitle,"TOF Mass^{2}, photon ID cuts");
+    scMassSquared_photID = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
+
+    sprintf(hname,"scMassSquared_elecIDphotID");
+    sprintf(htitle,"TOF Mass^{2}, e- and photon ID cuts");
+    scMassSquared_elecIDphotID = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
     
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
@@ -1923,6 +1957,18 @@ void WriteHist(string RootFile){
     scMassSquared->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
     scMassSquared->GetYaxis()->SetTitle("Particle");
     scMassSquared->Write();
+
+    scMassSquared_elecID->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared_elecID->GetYaxis()->SetTitle("Particle");
+    scMassSquared_elecID->Write();
+    
+    scMassSquared_photID->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared_photID->GetYaxis()->SetTitle("Particle");
+    scMassSquared_photID->Write();
+    
+    scMassSquared_elecIDphotID->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared_elecIDphotID->GetYaxis()->SetTitle("Particle");
+    scMassSquared_elecIDphotID->Write();
     
     TotalMomentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
     TotalMomentum->GetYaxis()->SetTitle("Particle");
