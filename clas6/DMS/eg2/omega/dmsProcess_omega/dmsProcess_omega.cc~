@@ -44,8 +44,34 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool ElecID_All;
     bool ElecID_Mom;
     bool ElecID_ECvsP;
+    bool ElecID_ECin;
     bool ElecID_ECfid;
     bool ElecID_dtECSC;
+    
+    //pi0 id cuts
+    bool cuts_photID1_mom;
+    bool cuts_photID2_mom;
+    bool cuts_photID_mom;
+    bool cuts_photID1_beta;
+    bool cuts_photID2_beta;
+    bool cuts_photID_beta;
+    bool cuts_photID1_fidu;
+    bool cuts_photID2_fidu;
+    bool cuts_photID1_fidv;
+    bool cuts_photID2_fidv;
+    bool cuts_photID1_fidw;
+    bool cuts_photID2_fidw;
+    bool cuts_photID1_fid;
+    bool cuts_photID2_fid;
+    bool cuts_photID_fid;
+    bool cuts_photID1_time;
+    bool cuts_photID2_time;
+    bool cuts_photID_time;
+    bool cuts_photID1_ECinTimesECout;
+    bool cuts_photID2_ECinTimesECout;
+    bool cuts_photID_ECinTimesECout;
+    bool cuts_photID;
+    bool cuts_pi0fit_mass;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, Mx, z_fracEnergy, W;
@@ -54,13 +80,42 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double timeEC, timeSC, pathEC, pathSC;
     double dt_ECminusSC[5];
     
+    double pimBeta, pimSCpath, pimSCtime, pimSCMassSq; // variables for pi- id cuts
+    double pipBeta, pipSCpath, pipSCtime, pipSCMassSq; // variables for pi- id cuts
+    
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
+    double emECtime, emECpath, emSCtime, emSCpath, emBeta, emSCMassSq; // more variables for electron id cuts
     double eventStartTime; // event start time from HEAD bank
+    
+    double ectime_phot1, ecpath_phot1, ecu_phot1, ecv_phot1, ecw_phot1, phot1Beta, scMassSq_phot1; //variables for photon 1 cuts
+    double ectime_phot2, ecpath_phot2, ecu_phot2, ecv_phot2, ecw_phot2, phot2Beta, scMassSq_phot2; //variables for photon 2 cuts
+    double timing_phot1, timing_phot2; // time difference between photon ECtime and ECpath/c
+    
+    int ctr_elecID_Mom = 0;
+    int ctr_elecID_ECPvsP = 0;
+    int ctr_elecID_ECin = 0;
+    int ctr_elecID_dtECSC = 0;
+    int ctr_elecID_ECfid = 0;
+    int ctr_elecID = 0;
+    
+    int ctr_photID_Mom = 0;
+    int ctr_photID_Beta = 0;
+    int ctr_photID_timing = 0;
+    int ctr_photID_ECfid = 0;
+    int ctr_photID = 0;
+
+    int ctr_omegaID_Mpi0 = 0;
+    int ctr_omegaID_Q2 = 0;
+    int ctr_omegaID_W = 0;
+    int ctr_omegaID_Zmatch = 0;
+    int ctr_omegaID_OpAngElecPhoton = 0;
+    int ctr_omegaID = 0;
     
     EG2Target myTgt;
     EG2Cuts myCuts;
     OmegaMixedEvent myMixEvt;
     ElectronID myElecID;
+    PhotonID myPhotID;
     EC_geometry myECgeom;
     
     myMixEvt.Put_NumberOfEventsToMix(1); // add number of mixed event iterations
@@ -73,6 +128,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myCuts.Print_Cuts();
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
+    myPhotID.Print_PhotonID();
     
     TVector3 TargetV3(0.043,-0.33,0);
     
@@ -148,8 +204,34 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         ElecID_All = false;
         ElecID_Mom =false;
         ElecID_ECvsP = false;
+        ElecID_ECin = false;
         ElecID_ECfid = false;
         ElecID_dtECSC = false;
+
+        //initialize photon id cuts
+        cuts_photID1_mom = false;
+        cuts_photID2_mom = false;
+        cuts_photID_mom = false;
+        cuts_photID1_beta = false;
+        cuts_photID2_beta = false;
+        cuts_photID_beta = false;
+        cuts_photID1_fidu = false;
+        cuts_photID2_fidu = false;
+        cuts_photID1_fidv = false;
+        cuts_photID2_fidv = false;
+        cuts_photID1_fidw = false;
+        cuts_photID2_fidw = false;
+        cuts_photID1_fid = false;
+        cuts_photID2_fid = false;
+        cuts_photID_fid = false;
+        cuts_photID1_time = false;
+        cuts_photID2_time = false;
+        cuts_photID_time = false;
+        cuts_photID1_ECinTimesECout = false;
+        cuts_photID2_ECinTimesECout = false;
+        cuts_photID_ECinTimesECout = false;
+        cuts_photID = false;
+        cuts_pi0fit_mass = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
         if (DEBUG) reader.printEvent();
@@ -339,69 +421,113 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 		Beta_VS_Momentum->Fill(photon1.P(), photon1.Beta());
 		Beta_VS_Momentum->Fill(photon2.P(), photon2.Beta());
      
-        //
-        // Start of  Electron ID
-        //
-        for(ii=0; ii<5; ii++){
-            switch (ii) {
-                case 0: partMom = elec.P(); break;
-                case 1: partMom = nPion.P(); break;
-                case 2: partMom = pPion.P(); break;
-                case 3: partMom = photon1.P(); break;
-                case 4: partMom = photon2.P(); break;
-                default: partMom = -1.0; break;
-            }
-        
-            CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
-            ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
-            ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
-            ECw->Fill(reader.getProperty("ecw",BankIndex_part[ii]),ii);
-            ECtot_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii]));
-            ECtotP_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii])/partMom);
-            ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
-            
-            timeEC = reader.getProperty("ectime",BankIndex_part[ii]);
-            timeSC = reader.getProperty("sctime",BankIndex_part[ii]);
-            pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
-            pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
-            dt_ECminusSC[ii] = timeEC - timeSC - 0.7;
-            dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
+        // Use EVNT to use the automatic eg2 cuts
+        if(reader.getBankRows("EVNT")){
+            cuts_photID = true;
+            ElecID_All = true;
         }
-
-        // Electron ID cuts
-        emECtot = reader.getProperty("ectot",BankIndex_part[0]);
-        emECin = reader.getProperty("ecin",BankIndex_part[0]);
-        emECout = reader.getProperty("ecout",BankIndex_part[0]);
-        emECu = reader.getProperty("ecu",BankIndex_part[0]);
-        emECv = reader.getProperty("ecv",BankIndex_part[0]);
-        emECw = reader.getProperty("ecw",BankIndex_part[0]);
-        emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
-        emdt = reader.getProperty("ectime",BankIndex_part[0]) - reader.getProperty("sctime",BankIndex_part[0]) - 0.7;
         
-        
-        ElecID_Mom = myElecID.Check_ElecMom(elec.P());
-        ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
-        ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt);
-        ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw);
-        ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_dtECSC && ElecID_ECfid);
-        
-        myECgeom.Put_UVW(emECu,emECv,emECw);
-        EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+        // Use EXPB to select the PID cuts
+        if (reader.getBankRows("EXPB")) {
+            //
+            // Start of charged pion ID
+            //
+            pimSCtime = reader.getProperty("sctime",BankIndex_part[1]);
+            pimSCpath = reader.getProperty("scpath",BankIndex_part[1]);
+            pimBeta = (pimSCpath/pimSCtime)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(nPion.P(), pimBeta);
+            Beta_Recalc->Fill(pimBeta,1);
+            
+            pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta);
+            scMassSquared->Fill(pimSCMassSq,1);
+            
+            pipSCtime = reader.getProperty("sctime",BankIndex_part[2]);
+            pipSCpath = reader.getProperty("scpath",BankIndex_part[2]);
+            pipBeta = (pipSCpath/pipSCtime)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(pPion.P(), pipBeta);
+            Beta_Recalc->Fill(pipBeta,2);
 
-        ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+            pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta);
+            scMassSquared->Fill(pipSCMassSq,2);
+            
+            //
+            // End of charged pion ID
+            //
+            
+            //
+            // Start of  Electron ID
+            //
+            for(ii=0; ii<5; ii++){
+                switch (ii) {
+                    case 0: partMom = elec.P(); break;
+                    case 1: partMom = nPion.P(); break;
+                    case 2: partMom = pPion.P(); break;
+                    case 3: partMom = photon1.P(); break;
+                    case 4: partMom = photon2.P(); break;
+                    default: partMom = -1.0; break;
+                }
+        
+                CCnphe->Fill(reader.getProperty("ccnphe",BankIndex_part[ii]),ii);
+                ECu->Fill(reader.getProperty("ecu",BankIndex_part[ii]),ii);
+                ECv->Fill(reader.getProperty("ecv",BankIndex_part[ii]),ii);
+                ECw->Fill(reader.getProperty("ecw",BankIndex_part[ii]),ii);
+                ECtot_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii]));
+                ECtotP_VS_P[ii]->Fill(partMom,reader.getProperty("ectot",BankIndex_part[ii])/partMom);
+                ECin_VS_ECout[ii]->Fill(reader.getProperty("ecin",BankIndex_part[ii]),reader.getProperty("ecout",BankIndex_part[ii]));
+            
+                timeEC = reader.getProperty("ectime",BankIndex_part[ii]);
+                timeSC = reader.getProperty("sctime",BankIndex_part[ii]);
+                pathEC = reader.getProperty("ecpath",BankIndex_part[ii]);
+                pathSC = reader.getProperty("scpath",BankIndex_part[ii]);
+                dt_ECminusSC[ii] = timeEC - timeSC - 0.7;
+                dtime_ECSC->Fill(dt_ECminusSC[ii],ii);
+            }
 
-        ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
-        /*
-        1	0.192702	-0.586568	0.0420221	-0.104084
-        2	0.2118	    -0.631934	0.0478416	-0.120601
-        3	0.179616	-0.515158	0.052625	-0.149614
-        4	0.198436	-0.621269	0.0387745	-0.0961029
-        5	0.231849	-0.734145	0.0349574	-0.0709758
-        6	0.177784	-0.451267	0.0620507	-0.17344
-        */
-        double aMean = 0.0, bMean = 0.0, aSigma = 0.0, bSigma = 0.0;
-        double aAbove = 0.0, bAbove = 0.0, aBelow = 0.0, bBelow = 0.0;
-        switch(Sector_index) {
+            // Electron ID cuts
+            emECtot = reader.getProperty("ectot",BankIndex_part[0]);
+            emECin = reader.getProperty("ecin",BankIndex_part[0]);
+            emECout = reader.getProperty("ecout",BankIndex_part[0]);
+            emECu = reader.getProperty("ecu",BankIndex_part[0]);
+            emECv = reader.getProperty("ecv",BankIndex_part[0]);
+            emECw = reader.getProperty("ecw",BankIndex_part[0]);
+            emCCnphe = reader.getProperty("ccnphe",BankIndex_part[0]);
+            emECtime = reader.getProperty("ectime",BankIndex_part[0]);
+            emSCtime = reader.getProperty("sctime",BankIndex_part[0]);
+            emECpath = reader.getProperty("ecpath",BankIndex_part[0]);
+            emSCpath = reader.getProperty("scpath",BankIndex_part[0]);
+            emdt = emECtime - emSCtime - 0.7;
+        
+            emBeta = (emSCpath/emSCtime)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(elec.P(), emBeta);
+            Beta_Recalc->Fill(emBeta,0);
+            
+            emSCMassSq = Get_scMassSquared(elec.P(),emBeta);
+            scMassSquared->Fill(emSCMassSq,0);
+            
+            ElecID_Mom = myElecID.Check_ElecMom(elec.P()); // e- momentum cut
+            ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass); // e- EC total energy vs momentum cut
+            ElecID_ECin = myElecID.Check_ElecECin(emECin); // e- EC inner cut
+            ElecID_dtECSC = myElecID.Check_Elec_dtECSC(emdt); // e- timing cut
+            ElecID_ECfid = myElecID.Check_ElecECu(emECu) && myElecID.Check_ElecECv(emECv) && myElecID.Check_ElecECw(emECw); // e- fiducial cuts
+            ElecID_All = (ElecID_Mom && ElecID_ECvsP && ElecID_ECin && ElecID_dtECSC && ElecID_ECfid);  // all e- ID cuts
+        
+            myECgeom.Put_UVW(emECu,emECv,emECw);
+            EC_XvsY_local_Sector[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+
+            ECtotP_VS_P_Sector[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+
+            ECinP_VS_ECoutP[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+            /*
+             1	0.192702	-0.586568	0.0420221	-0.104084
+             2	0.2118	    -0.631934	0.0478416	-0.120601
+             3	0.179616	-0.515158	0.052625	-0.149614
+             4	0.198436	-0.621269	0.0387745	-0.0961029
+             5	0.231849	-0.734145	0.0349574	-0.0709758
+             6	0.177784	-0.451267	0.0620507	-0.17344
+             */
+            double aMean = 0.0, bMean = 0.0, aSigma = 0.0, bSigma = 0.0;
+            double aAbove = 0.0, bAbove = 0.0, aBelow = 0.0, bBelow = 0.0;
+            switch(Sector_index) {
             case 1:
                 aMean = 0.192702;
                 bMean = -0.586568;
@@ -438,382 +564,540 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 aSigma = 0.0620507;
                 bSigma = -0.17344;
                 break;
-        }
-        aAbove = aMean + 2 * aSigma;
-        bAbove = bMean + 2 * bSigma;
-        aBelow = aMean - 2 * aSigma;
-        bBelow = bMean - 2 * bSigma;
+            }
+            aAbove = aMean + 2 * aSigma;
+            bAbove = bMean + 2 * bSigma;
+            aBelow = aMean - 2 * aSigma;
+            bBelow = bMean - 2 * bSigma;
 
-        if((emECout / elec.P() - (bBelow * emECin / elec.P() + aBelow) > 0) && (emECout / elec.P() - (bAbove * emECin / elec.P() + aAbove) < 0)) {
-            ECinP_VS_ECoutP_cut[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+            if((emECout / elec.P() - (bBelow * emECin / elec.P() + aBelow) > 0) && (emECout / elec.P() - (bAbove * emECin / elec.P() + aAbove) < 0)) {
+                ECinP_VS_ECoutP_cut[Sector_index-1]->Fill(emECin/elec.P(), emECout/elec.P());
+            }
+
+            if(elec.P() > 0.5 && elec.P() <= 1.0) {
+                ECinP_VS_ECoutP_Range[0]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 1.0 && elec.P() <= 1.5) {
+                ECinP_VS_ECoutP_Range[1]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 1.5 && elec.P() <= 2.0) {
+                ECinP_VS_ECoutP_Range[2]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 2.0 && elec.P() <= 2.5) {
+                ECinP_VS_ECoutP_Range[3]->Fill(emECin/elec.P(), emECout/elec.P());
+            } else if(elec.P() > 2.5 && elec.P() <= 3.0) {
+                ECinP_VS_ECoutP_Range[4]->Fill(emECin/elec.P(), emECout/elec.P());
+            }
+
+            if(ElecID_Mom){
+                ctr_elecID_Mom++;
+            }
+            if(ElecID_dtECSC){
+                ctr_elecID_dtECSC++;
+            }
+            if(ElecID_ECin){
+                ctr_elecID_ECin++;
+            }
+            
+            if(ElecID_ECvsP){
+                ctr_elecID_ECPvsP++;
+                ECtotP_VS_P_ECPCut[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+            }
+        
+            if(ElecID_ECfid){
+                ctr_elecID_ECfid++;
+                ECin_VS_ECout_ECfid->Fill(emECin,emECout);
+                EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }else{
+                EC_XvsY_local_AntiFidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+        
+            if(ElecID_All){
+                ctr_elecID++;
+                ECin_VS_ECout_elecID_All->Fill(emECin,emECout);
+            }
+
+            if (emECout < 0.01){
+                Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
+                Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+                elecZVert_ECoutCut->Fill(elec_vert.Z());
+                q2_ECoutCut->Fill(Qsq);
+            
+                ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
+                ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
+            
+                EC_XvsY_local_ECoutCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+            else {
+                Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
+                Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
+                elecZVert_AntiECoutCut->Fill(elec_vert.Z());
+                q2_AntiECoutCut->Fill(Qsq);
+            
+                ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
+                ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
+                ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
+            }
+        
+            // Testing the electron ID
+            for(ii=0; ii<myElecID.Get_nElecID(); ii++){
+                cuts_ElecID = false; // intialize the cuts
+            
+                if (myElecID.Get_elecIDLabel(ii).compare("No Cuts")==0) {
+                    cuts_ElecID = true;
+                }else if (myElecID.Get_elecIDLabel(ii).compare("Momentum")==0) {
+                    cuts_ElecID = myElecID.Check_ElecMom(elec.P());
+                }else if (myElecID.Get_elecIDLabel(ii).compare("EC U-view")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECu(emECu);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("EC V-view")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECv(emECv);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("EC W-view")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECw(emECw);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("ECin")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECin(emECin);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("CC Nphe")==0) {
+                    cuts_ElecID = myElecID.Check_ElecCCnphe(emCCnphe);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
+                    cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
+                }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
+                    cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
+                }else{
+                    cuts_ElecID = false;
+                }
+            
+                if(cuts_ElecID){
+                    CCnphe_elecID->Fill(emCCnphe,ii);
+                    Mom_elecID->Fill(elec.P(),ii);
+                    ECu_elecID->Fill(emECu,ii);
+                    ECv_elecID->Fill(emECv,ii);
+                    ECw_elecID->Fill(emECw,ii);
+                    dtime_ECSC_elecID->Fill(emdt,ii);
+                    ECtot_VS_P_elecID[ii]->Fill(elec.P(),emECtot);
+                    ECtotP_VS_P_elecID[ii]->Fill(elec.P(),emECtot/elec.P());
+                    ECin_VS_ECout_elecID[ii]->Fill(emECin,emECout);
+                    Mom_VS_ECout_elecID[ii]->Fill(elec.P(),emECout);
+                    ECu_VS_ECout_elecID[ii]->Fill(emECu,emECout);
+                    ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
+                    ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
+                }
+            }
+            //
+            // End of  Electron ID
+            //
+
+            //
+            // Start of Photon ID
+            //
+            ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
+            ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
+            ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
+            ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
+            
+            ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
+            ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
+            ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
+            ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
+            ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
+            ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
+            
+            cuts_photID1_mom = myPhotID.Check_PhotonMom(photon1.P());
+            cuts_photID2_mom = myPhotID.Check_PhotonMom(photon2.P());
+            cuts_photID_mom = cuts_photID1_mom && cuts_photID2_mom;
+            if(cuts_photID_mom){
+                ctr_photID_Mom++;
+            }
+            
+            MomentumPhoton1->Fill(photon1.P());
+            MomentumPhoton2->Fill(photon2.P());
+            if(cuts_photID1_mom) MomentumPhoton1_cut->Fill(photon1.P());
+            if(cuts_photID2_mom) MomentumPhoton2_cut->Fill(photon2.P());
+            
+            phot1Beta = (ecpath_phot1/ectime_phot1)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(photon1.P(), phot1Beta);
+            Beta_Recalc->Fill(phot1Beta,3);
+            
+            scMassSq_phot1 = Get_scMassSquared(photon1.P(),phot1Beta);
+            scMassSquared->Fill(scMassSq_phot1,3);
+            
+            phot2Beta = (ecpath_phot2/ectime_phot2)/LIGHTSPEED; // re-calculate beta
+            Beta_VS_Momentum_Recalc->Fill(photon2.P(), phot2Beta);
+            Beta_Recalc->Fill(phot2Beta,4);
+            
+            scMassSq_phot2 = Get_scMassSquared(photon2.P(),phot2Beta);
+            scMassSquared->Fill(scMassSq_phot2,4);
+            
+            cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
+            cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
+            cuts_photID_beta = cuts_photID1_beta && cuts_photID2_beta;
+            if(cuts_photID_beta){
+                ctr_photID_Beta++;
+            }
+            
+            BetaPhoton1->Fill(photon1.Beta());
+            BetaPhoton2->Fill(photon2.Beta());
+            if(cuts_photID1_beta) BetaPhoton1_cut->Fill(photon1.Beta());
+            if(cuts_photID2_beta) BetaPhoton2_cut->Fill(photon2.Beta());
+
+            cuts_photID1_fidu = myPhotID.Check_PhotonECu(ecu_phot1);
+            cuts_photID2_fidu = myPhotID.Check_PhotonECu(ecu_phot2);
+            cuts_photID1_fidv = myPhotID.Check_PhotonECv(ecv_phot1);
+            cuts_photID2_fidv = myPhotID.Check_PhotonECv(ecv_phot2);
+            cuts_photID1_fidw = myPhotID.Check_PhotonECw(ecw_phot1);
+            cuts_photID2_fidw = myPhotID.Check_PhotonECw(ecw_phot2);
+            cuts_photID1_fid = cuts_photID1_fidu && cuts_photID1_fidv && cuts_photID1_fidw;
+            cuts_photID2_fid = cuts_photID2_fidu && cuts_photID2_fidv && cuts_photID2_fidw;
+            cuts_photID_fid = cuts_photID1_fid && cuts_photID2_fid;
+            if(cuts_photID_fid){
+                ctr_photID_ECfid++;
+            }
+            
+            ECuPhoton1->Fill(ecu_phot1);
+            ECuPhoton2->Fill(ecu_phot2);
+            ECvPhoton1->Fill(ecv_phot1);
+            ECvPhoton2->Fill(ecv_phot2);
+            ECwPhoton1->Fill(ecw_phot1);
+            ECwPhoton2->Fill(ecw_phot2);
+            if(cuts_photID1_fidu) ECuPhoton1_cut->Fill(ecu_phot1);
+            if(cuts_photID2_fidu) ECuPhoton2_cut->Fill(ecu_phot2);
+            if(cuts_photID1_fidv) ECvPhoton1_cut->Fill(ecv_phot1);
+            if(cuts_photID2_fidv) ECvPhoton2_cut->Fill(ecv_phot2);
+            if(cuts_photID1_fidw) ECwPhoton1_cut->Fill(ecw_phot1);
+            if(cuts_photID2_fidw) ECwPhoton2_cut->Fill(ecw_phot2);
+
+            myECgeom.Put_UVW(ecu_phot1,ecv_phot1,ecw_phot1);
+            EC_XvsY_local_Sector_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            if(cuts_photID1_fid){
+                EC_XvsY_local_FidCut_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }else{
+                EC_XvsY_local_AntiFidCut_Photon1[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+            
+            myECgeom.Put_UVW(ecu_phot2,ecv_phot2,ecw_phot2);
+            EC_XvsY_local_Sector_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            if(cuts_photID2_fid){
+                EC_XvsY_local_FidCut_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }else{
+                EC_XvsY_local_AntiFidCut_Photon2[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+            }
+
+            ECtimePhoton1->Fill(ectime_phot1);
+            ECtimePhoton2->Fill(ectime_phot2);
+            ECpathPhoton1->Fill(ecpath_phot1);
+            ECpathPhoton2->Fill(ecpath_phot2);
+            ECpathtimePhoton1->Fill(ecpath_phot1/LIGHTSPEED);
+            ECpathtimePhoton2->Fill(ecpath_phot2/LIGHTSPEED);
+            
+            timing_phot1 = ectime_phot1 - ecpath_phot1/LIGHTSPEED;
+            timing_phot2 = ectime_phot2 - ecpath_phot2/LIGHTSPEED;
+            
+            cuts_photID1_time = myPhotID.Check_PhotonTiming(timing_phot1,1);
+            cuts_photID2_time = myPhotID.Check_PhotonTiming(timing_phot2,2);
+            cuts_photID_time = cuts_photID1_time && cuts_photID2_time;
+            if(cuts_photID_time){
+                ctr_photID_timing++;
+            }
+            
+            ECtime_ECl_Photon1->Fill(timing_phot1);
+            ECtime_ECl_Photon2->Fill(timing_phot2);
+            
+            ECtime_ECl_Start_Photon1->Fill(timing_phot1 - eventStartTime);
+            ECtime_ECl_Start_Photon2->Fill(timing_phot2 - eventStartTime);
+            
+            if(cuts_photID1_time) ECtime_ECl_Photon1_cut->Fill(ectime_phot1 - ecpath_phot1/LIGHTSPEED);
+            if(cuts_photID2_time) ECtime_ECl_Photon2_cut->Fill(ectime_phot2 - ecpath_phot2/LIGHTSPEED);
+
+            Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
+            Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
+            Double_t ecout_phot1 = reader.getProperty("ecout",BankIndex_part[3]);
+            Double_t ecout_phot2 = reader.getProperty("ecout",BankIndex_part[4]);
+            Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
+            Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
+
+            cuts_photID1_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot1,ecout_phot1);
+            cuts_photID2_ECinTimesECout = myPhotID.Check_PhotonECinTimesECout(ecin_phot2,ecout_phot2);
+            cuts_photID_ECinTimesECout = cuts_photID1_ECinTimesECout && cuts_photID2_ECinTimesECout;
+            
+            ECtotP_vs_P_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
+            ECtotP_vs_P_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
+            ECin_vs_ECout_Photon1->Fill(ecin_phot1,ecout_phot1);
+            ECin_vs_ECout_Photon2->Fill(ecin_phot2,ecout_phot2);
+
+            if(cuts_photID1_ECinTimesECout){
+                ECtotP_vs_P_InOutZeroCut_Photon1->Fill(photon1.P(),ectot_phot1/photon1.P());
+                ECin_vs_ECout_InOutZeroCut_Photon1->Fill(ecin_phot1,ecout_phot1);
+            }
+
+            if(cuts_photID2_ECinTimesECout){
+                ECtotP_vs_P_InOutZeroCut_Photon2->Fill(photon2.P(),ectot_phot2/photon2.P());
+                ECin_vs_ECout_InOutZeroCut_Photon2->Fill(ecin_phot2,ecout_phot2);
+            }
+            
+            cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time;
+//            cuts_photID = cuts_photID_mom && cuts_photID_beta && cuts_photID_fid && cuts_photID_time && cuts_photID_ECinTimesECout;
+            if(cuts_photID){
+                ctr_photID++;
+            }
+            
+            //
+            // End of Photon ID
+            //
+        } // end of if(EXPB)
+        
+        // SumLo = 0.0866593 and SumHi = 0.193608
+        if(0.0866593 < TwoPhoton.M() && TwoPhoton.M() < 0.193608) {
+            cuts_pi0fit_mass = true;
         }
 
-        if(elec.P() > 0.5 && elec.P() <= 1.0) {
-            ECinP_VS_ECoutP_Range[0]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 1.0 && elec.P() <= 1.5) {
-            ECinP_VS_ECoutP_Range[1]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 1.5 && elec.P() <= 2.0) {
-            ECinP_VS_ECoutP_Range[2]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 2.0 && elec.P() <= 2.5) {
-            ECinP_VS_ECoutP_Range[3]->Fill(emECin/elec.P(), emECout/elec.P());
-        } else if(elec.P() > 2.5 && elec.P() <= 3.0) {
-            ECinP_VS_ECoutP_Range[4]->Fill(emECin/elec.P(), emECout/elec.P());
-        }
-
-        if(ElecID_ECvsP){
-            ECtotP_VS_P_ECPCut[Sector_index-1]->Fill(elec.P(),emECtot/elec.P());
+        if(cuts_photID && ElecID_All) {
+            Pi0Mass_PhotIDcuts->Fill(TwoPhoton.M());
         }
         
-        if(ElecID_ECfid){
-            ECin_VS_ECout_ECfid->Fill(emECin,emECout);
-            EC_XvsY_local_FidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
-        }else{
-            EC_XvsY_local_AntiFidCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
+        if(cuts_photID && ElecID_All && cuts_pi0fit_mass) {
+            OmegaMass_AllCuts->Fill(Omega.M());
         }
         
         if(ElecID_All){
-            ECin_VS_ECout_elecID_All->Fill(emECin,emECout);
-        }
-
-        if (emECout < 0.01){
-            Beta_VS_Momentum_ECoutCut->Fill(elec.P(), elec.Beta());
-            Theta_VS_Phi_ECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
-            elecZVert_ECoutCut->Fill(elec_vert.Z());
-            q2_ECoutCut->Fill(Qsq);
-            
-            ECtot_VS_P_ECoutCut->Fill(elec.P(),emECtot);
-            ECtotP_VS_P_ECoutCut->Fill(elec.P(),emECtot/elec.P());
-            ECtotMinusECin_ECoutCut->Fill(emECtot-emECin);
-            
-            EC_XvsY_local_ECoutCut[Sector_index-1]->Fill(myECgeom.Get_Xlocal(),myECgeom.Get_Ylocal());
-        }
-        else {
-            Beta_VS_Momentum_AntiECoutCut->Fill(elec.P(), elec.Beta());
-            Theta_VS_Phi_AntiECoutCut->Fill(elec.Theta() * TMath::RadToDeg(), elec.Phi() * TMath::RadToDeg());
-            elecZVert_AntiECoutCut->Fill(elec_vert.Z());
-            q2_AntiECoutCut->Fill(Qsq);
-            
-            ECtot_VS_P_AntiECoutCut->Fill(elec.P(),emECtot);
-            ECtotP_VS_P_AntiECoutCut->Fill(elec.P(),emECtot/elec.P());
-            ECtotMinusECin_AntiECoutCut->Fill(emECtot-emECin);
+            scMassSquared_elecID->Fill(emSCMassSq,0);
+            scMassSquared_elecID->Fill(pimSCMassSq,1);
+            scMassSquared_elecID->Fill(pipSCMassSq,2);
+            scMassSquared_elecID->Fill(scMassSq_phot1,3);
+            scMassSquared_elecID->Fill(scMassSq_phot2,4);
         }
         
-        // Testing the electron ID
-        for(ii=0; ii<myElecID.Get_nElecID(); ii++){
-            cuts_ElecID = false; // intialize the cuts
+        if(cuts_photID){
+            scMassSquared_photID->Fill(emSCMassSq,0);
+            scMassSquared_photID->Fill(pimSCMassSq,1);
+            scMassSquared_photID->Fill(pipSCMassSq,2);
+            scMassSquared_photID->Fill(scMassSq_phot1,3);
+            scMassSquared_photID->Fill(scMassSq_phot2,4);
+        }
+
+        /*
+            1 - pi+ pi-
+            2 - pi+ pi0
+            3 - pi- pi0
+        */
+
+        TLorentzVector pipPi0 = pPion + TwoPhoton;
+        TLorentzVector pimPi0 = nPion + TwoPhoton;
+        mass2Pions_VS_massOmega_NC[0]->Fill(TwoPion.M(), Omega.M()); // no cuts
+        mass2Pions_VS_massOmega_NC[1]->Fill(pipPi0.M(), Omega.M()); // no cuts
+        mass2Pions_VS_massOmega_NC[2]->Fill(pimPi0.M(), Omega.M()); // no cuts
+        
+        //
+        // Start omega ID
+        //
+        if(ElecID_All && cuts_photID){
+            scMassSquared_elecIDphotID->Fill(emSCMassSq,0);
+            scMassSquared_elecIDphotID->Fill(pimSCMassSq,1);
+            scMassSquared_elecIDphotID->Fill(pipSCMassSq,2);
+            scMassSquared_elecIDphotID->Fill(scMassSq_phot1,3);
+            scMassSquared_elecIDphotID->Fill(scMassSq_phot2,4);
             
-            if (myElecID.Get_elecIDLabel(ii).compare("No cuts")==0) {
-                cuts_ElecID = true;
-            }else if (myElecID.Get_elecIDLabel(ii).compare("Momentum")==0) {
-                cuts_ElecID = myElecID.Check_ElecMom(elec.P());
-            }else if (myElecID.Get_elecIDLabel(ii).compare("EC U-view")==0) {
-                cuts_ElecID = myElecID.Check_ElecECu(emECu);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("EC V-view")==0) {
-                cuts_ElecID = myElecID.Check_ElecECv(emECv);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("EC W-view")==0) {
-                cuts_ElecID = myElecID.Check_ElecECw(emECw);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("ECin")==0) {
-                cuts_ElecID = myElecID.Check_ElecECin(emECin);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("CC Nphe")==0) {
-                cuts_ElecID = myElecID.Check_ElecCCnphe(emCCnphe);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("dt(EC-SC)")==0) {
-                cuts_ElecID = myElecID.Check_Elec_dtECSC(emdt);
-            }else if (myElecID.Get_elecIDLabel(ii).compare("ECtot/P VS P")==0) {
-                cuts_ElecID = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass);
+            // plot of two photon opening angle
+            TwoPhotonAngle = TMath::RadToDeg()*photon1.Angle(photon2.Vect());
+            OpAng_2Photons->Fill(TwoPhotonAngle);
+
+            elecPhoton1Angle = TMath::RadToDeg()*elec.Angle(photon1.Vect());
+            OpAng_elecPhoton1->Fill(elecPhoton1Angle);
+
+            elecPhoton2Angle = TMath::RadToDeg()*elec.Angle(photon2.Vect());
+            OpAng_elecPhoton2->Fill(elecPhoton2Angle);
+            
+            // plots by target (Vz_index)
+            LongMom[Vz_index]->Fill(Omega.P()-Omega.Pt()); // omega long. mom.
+            TransMom[Vz_index]->Fill(Omega.Pt()); // omega trans. mom.
+            
+            OpAng_VS_IM2Photons[Vz_index]->Fill(TwoPhoton.M(),TwoPhotonAngle); // opening angle vs 2 photon inv. mass
+            OpAng_VS_E[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle); // opening angle vs 2 photon total energy
+            
+            MissMom[Vz_index]->Fill((beam + target - Omega).P());  // mising mom.
+            MMsq[Vz_index]->Fill((beam + target - Omega).M2()); // missing mass^2
+            
+            // plots of variable vs the omega inv. mass
+            IM2Pions_VS_IMOmega[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
+            IM2Photons_VS_IMOmega[Vz_index]->Fill(TwoPhoton.M(), Omega.M()); // variable = 2 photon inv. mass
+            Q2_VS_IMOmega[Vz_index]->Fill(Qsq, Omega.M()); // variable = Q^2
+            Pt_VS_IMOmega[Vz_index]->Fill(Omega.Pt(), Omega.M()); // variable = omega trans. mom.
+            Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
+            OpAng_VS_IMOmega[Vz_index]->Fill(Omega.M(), TwoPhotonAngle); // variable = 2 photon opening angle
+
+            /*
+                1 - pi+ pi-
+                2 - pi+ pi0
+                3 - pi- pi0
+            */
+            mass2Pions_VS_massOmega_EPC[0]->Fill(TwoPion.M(), Omega.M()); // electron and photon cuts
+            mass2Pions_VS_massOmega_EPC[1]->Fill(pipPi0.M(), Omega.M()); // electron and photon cuts
+            mass2Pions_VS_massOmega_EPC[2]->Fill(pimPi0.M(), Omega.M()); // electron and photon cuts
+
+            // set the cuts
+            cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M()); // pi0 mass cut
+            cutQSquared = myCuts.Check_QSquared(Qsq); // Q^2 cut
+            cutW = myCuts.Check_Wcut(W); // W cut
+            
+            cutZDiff_ElectronNPion = myCuts.Check_Zdiff_ElecPim(elecNPionZVertDiff); // e-,pi- z-vertex matching cut
+            cutZDiff_ElectronPPion = myCuts.Check_Zdiff_ElecPip(elecPPionZVertDiff); // e-,pi+ z-vertex matching cut
+            cutZDiff = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion); // final e-,pion z-vertex matching cut
+
+            cutOpAng_ElecPhoton1 = myCuts.Check_OpAng_ElecPhoton(elecPhoton1Angle); // e-,photon 1 opening angle cut
+            cutOpAng_ElecPhoton2 = myCuts.Check_OpAng_ElecPhoton(elecPhoton2Angle); // e-,photon 2 opening angle cut
+            cutOpAng_ElecPhoton = (cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2); // final e-,photon opening angle cut
+            
+            cutBetaPhoton1 = myCuts.Check_BetaPhoton(photon1.Beta()); // photon 1 beta cut
+            cutBetaPhoton2 = myCuts.Check_BetaPhoton(photon2.Beta()); // photon 2 beta cut
+            cutBetaPhoton = (cutBetaPhoton1 && cutBetaPhoton2); // final photon beta cut
+            
+            cutElecR = myCuts.Check_ElectronR(elec_vert.Perp()); // electron vertex radius (x,y)
+            
+            cutOmegaMass = myCuts.Check_MassOmega(Omega.M()); // omega mass cut
+            cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M()); // sideband cuts on the omega mass
+            
+            // omega inv. mass histograms
+            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),0); // inv. mass of 2 photons
+            IMOmega[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
+            IMOmega_woCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
+            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
+
+            if(cutPi0Mass) { // applying the pi0 mass cut
+                ctr_omegaID_Mpi0++;
+                OpAng_VS_E_MassPi0Cut[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle);
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),1);
+                IMOmega[Vz_index]->Fill(Omega.M(),1);
             }else{
-                cuts_ElecID = false;
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),1);
+            }
+            cuts_woPi0Mass = (cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+            if(cuts_woPi0Mass){ // applying all cuts except the pi0 mass
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),1);
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),8);
             }
             
-            if(cuts_ElecID){
-                CCnphe_elecID->Fill(emCCnphe,ii);
-                Mom_elecID->Fill(elec.P(),ii);
-                ECu_elecID->Fill(emECu,ii);
-                ECv_elecID->Fill(emECv,ii);
-                ECw_elecID->Fill(emECw,ii);
-                dtime_ECSC_elecID->Fill(emdt,ii);
-                ECtot_VS_P_elecID[ii]->Fill(elec.P(),emECtot);
-                ECtotP_VS_P_elecID[ii]->Fill(elec.P(),emECtot/elec.P());
-                ECin_VS_ECout_elecID[ii]->Fill(emECin,emECout);
-                Mom_VS_ECout_elecID[ii]->Fill(elec.P(),emECout);
-                ECu_VS_ECout_elecID[ii]->Fill(emECu,emECout);
-                ECv_VS_ECout_elecID[ii]->Fill(emECv,emECout);
-                ECw_VS_ECout_elecID[ii]->Fill(emECw,emECout);
+            if(cutQSquared) { // applying the Q^2 cut
+                ctr_omegaID_Q2++;
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),2);
+                IMOmega[Vz_index]->Fill(Omega.M(),2);
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),2);
+            }
+            cuts_woQsquared = (cutPi0Mass && cutZDiff && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+            if(cuts_woQsquared){ // applying all cuts except Q^2
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),2);
+            }
+            
+            if(cutW){ // applying the W cut
+                ctr_omegaID_W++;
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),3);
+                IMOmega[Vz_index]->Fill(Omega.M(),3);
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),3);
+            }
+            cuts_woW = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton);
+            if(cuts_woW){ // applying all cuts except W
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),3);
+            }
+            
+            if(cutZDiff){ // applying the e-,pion z-vertex matching cut
+                ctr_omegaID_Zmatch++;
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),4);
+                IMOmega[Vz_index]->Fill(Omega.M(),4);
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),4);
+            }
+            cuts_woZDiff = (cutPi0Mass && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
+            if(cuts_woZDiff){ // applying all cuts except the e-,pion z-vertex matching
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),4);
+            }
+            
+            if(cutOpAng_ElecPhoton) { // applying the e-,photon opening angle cut
+                ctr_omegaID_OpAngElecPhoton++;
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),5);
+                IMOmega[Vz_index]->Fill(Omega.M(),5);
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),5);
+            }
+            cuts_woOpAng_ElecPhoton = (cutPi0Mass && cutZDiff && cutQSquared && cutBetaPhoton && cutW);
+            if(cuts_woOpAng_ElecPhoton){ // applying all cuts except the e-,photon opening angle
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),5);
+            }
+            
+            if(cutBetaPhoton){ // applying the photon beta cut
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),6);
+                IMOmega[Vz_index]->Fill(Omega.M(),6);
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),6);
+            }
+            cuts_woBetaPhoton = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
+            if(cuts_woBetaPhoton){ // applying all cuts except the photon beta
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),6);
+            }
+
+            if(cutElecR){ // applying the photon beta cut
+                IM2Photons[Vz_index]->Fill(TwoPhoton.M(),7);
+                IMOmega[Vz_index]->Fill(Omega.M(),7);
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),7);
+            }
+            cuts_woElecR = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW && cutBetaPhoton);
+            if(cuts_woElecR){ // applying all cuts except the photon beta
+                IMOmega_woCut[Vz_index]->Fill(Omega.M(),7);
+            }
+            
+             // applying all cuts
+            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
+            if(cutsAll){
+                ctr_omegaID++;
+                IMOmega[Vz_index]->Fill(Omega.M(),8);
+                W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
+                IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
+                PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
+
+                Xvert_VS_Yvert_AllCuts[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
+
+                /*
+                    1 - pi+ pi-
+                    2 - pi+ pi0
+                    3 - pi- pi0
+                */
+                mass2Pions_VS_massOmega_EPOC[0]->Fill(TwoPion.M(), Omega.M()); // electron, photon, and omega cuts
+                mass2Pions_VS_massOmega_EPOC[1]->Fill(pipPi0.M(), Omega.M()); // electron, photon, and omega cuts
+                mass2Pions_VS_massOmega_EPOC[2]->Fill(pimPi0.M(), Omega.M()); // electron, photon, and omega cuts
+
+                if(cutOmegaMass){
+                    Xvert_VS_Yvert_Omega[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
+                    PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
+                }
+                if(cutOmegaMass_sb){
+                    PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
+                }
+            }else{
+                IMOmega_antiCut[Vz_index]->Fill(Omega.M(),8);
+            }
+        
+            for(k=0; k<NUM_ENTRIES_OFFSET; k++){ // loop over number of mixed event iterations
+                for(j=0; j<NUM_MIXING_METHODS; j++){ // loop over number of mixed event methods
+                    IM2Photons_ME[Vz_index]->Fill(Mass_TwoPhoton_ME[j][k],j); // inv. mass of 2 photons
+                    IMOmega_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j); // inv. mass of pi+ pi- 2 photons
+                    if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
+                        IM2Photons_OpAng_ElecPhoton_Cut_ME[Vz_index]->Fill(Mass_TwoPhoton_ME[j][k],j);
+                        IMOmega_OpAng_ElecPhoton_Cut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
+                    }
+                    if(cutPi0Mass) {
+                        IMOmega_MassPi0Cut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
+                    }
+                    if(cutZDiff_ElectronNPion && cutZDiff_ElectronPPion){
+                        IMOmega_ZVertCut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
+                    }
+                    if(cutQSquared) {
+                        IMOmega_QsqCut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
+                    }
+                    if(cutsAll){
+                        IMOmega_AllCuts_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
+                    }
+                }
             }
         }
         //
-        // End of  Electron ID
+        // End omega ID
         //
-
-        //
-        // Start of Photon ID
-        //
-        Mom_photID1->Fill(photon1.P());
-        Mom_photID2->Fill(photon2.P());
-        if(photon1.P() > 0.3) {
-            Mom_photID1_cut->Fill(photon1.P());
-        }
-        if(photon2.P() > 0.3) {
-            Mom_photID2_cut->Fill(photon2.P());
-        }
-
-        Beta_photID1->Fill(photon1.Beta());
-        Beta_photID2->Fill(photon2.Beta());
-        if(0.95 < photon1.Beta() && photon1.Beta() < 1.95) {
-            Beta_photID1_cut->Fill(photon1.Beta());
-        }
-        if(0.95 < photon2.Beta() && photon2.Beta() < 1.95) {
-            Beta_photID2_cut->Fill(photon2.Beta());
-        }
-        Double_t ecu_phot1 = reader.getProperty("ecu",BankIndex_part[3]);
-        Double_t ecu_phot2 = reader.getProperty("ecu",BankIndex_part[4]);
-        Double_t ecv_phot1 = reader.getProperty("ecv",BankIndex_part[3]);
-        Double_t ecv_phot2 = reader.getProperty("ecv",BankIndex_part[4]);
-        Double_t ecw_phot1 = reader.getProperty("ecw",BankIndex_part[3]);
-        Double_t ecw_phot2 = reader.getProperty("ecw",BankIndex_part[4]);
-
-        ECu_photID1->Fill(ecu_phot1);
-        ECu_photID2->Fill(ecu_phot2);
-        ECv_photID1->Fill(ecv_phot1);
-        ECv_photID2->Fill(ecv_phot2);
-        ECw_photID1->Fill(ecw_phot1);
-        ECw_photID2->Fill(ecw_phot2);
-        if(40 < ecu_phot1 && ecu_phot1 < 410) {
-            ECu_photID1_cut->Fill(ecu_phot1);
-        }
-        if(40 < ecu_phot2 && ecu_phot2 < 410) {
-            ECu_photID2_cut->Fill(ecu_phot2);
-        }
-        if(ecv_phot1 < 370) {
-            ECv_photID1_cut->Fill(ecv_phot1);
-        }
-        if(ecv_phot2 < 370) {
-            ECv_photID2_cut->Fill(ecv_phot2);
-        }
-        if(ecw_phot1 < 410) {
-            ECw_photID1_cut->Fill(ecw_phot1);
-        }
-        if(ecw_phot2 < 410) {
-            ECw_photID2_cut->Fill(ecw_phot2);
-        }
-
-        Double_t ectime_phot1 = reader.getProperty("ectime",BankIndex_part[3]);
-        Double_t ectime_phot2 = reader.getProperty("ectime",BankIndex_part[4]);
-        Double_t ecpath_phot1 = reader.getProperty("ecpath",BankIndex_part[3]);
-        Double_t ecpath_phot2 = reader.getProperty("ecpath",BankIndex_part[4]);
-
-        ECtime1->Fill(ectime_phot1);
-        ECtime2->Fill(ectime_phot2);
-        ECpath1->Fill(ecpath_phot1);
-        ECpath2->Fill(ecpath_phot2);
-        ECpathtime1->Fill(ecpath_phot1/30.0);
-        ECpathtime2->Fill(ecpath_phot2/30.0);
-        
-        ECtime_ECl_photID1->Fill(ectime_phot1 - ecpath_phot1/30.0);
-        ECtime_ECl_photID2->Fill(ectime_phot2 - ecpath_phot2/30.0);
-        
-        ECtime_ECl_Start_photID1->Fill(eventStartTime - ectime_phot1 + ecpath_phot1/30.0);
-        ECtime_ECl_Start_photID2->Fill(eventStartTime - ectime_phot2 + ecpath_phot2/30.0);
-
-        if((ectime_phot1 - ecpath_phot1/30.0 > -0.0882054 - 3.0 * 0.640051) && (ectime_phot1 - ecpath_phot1/30.0 < -0.0882054 + 3.0 * 0.640051)) {
-            ECtime_ECl_photID1_cut->Fill(ectime_phot1 - ecpath_phot1/30.0);
-        }
-        if((ectime_phot2 - ecpath_phot2/30.0 > -0.166546 - 3.0 * 0.710022) && (ectime_phot2 - ecpath_phot2/30.0 < -0.166546 + 3.0 * 0.710022)) {
-            ECtime_ECl_photID2_cut->Fill(ectime_phot2 - ecpath_phot2/30.0);
-        }
-
-        Double_t ecin_phot1 = reader.getProperty("ecin",BankIndex_part[3]);
-        Double_t ecin_phot2 = reader.getProperty("ecin",BankIndex_part[4]);
-        Double_t ecout_phot1 = reader.getProperty("ecout",BankIndex_part[3]);
-        Double_t ecout_phot2 = reader.getProperty("ecout",BankIndex_part[4]);
-        Double_t ectot_phot1 = reader.getProperty("ectot",BankIndex_part[3]);
-        Double_t ectot_phot2 = reader.getProperty("ectot",BankIndex_part[4]);
-
-        ECtotP_vs_P_phot1->Fill(photon1.P(),ectot_phot1/photon1.P());
-        ECtotP_vs_P_phot2->Fill(photon2.P(),ectot_phot2/photon2.P());
-        ECin_vs_ECout_phot1->Fill(ecin_phot1,ecout_phot1);
-        ECin_vs_ECout_phot2->Fill(ecin_phot2,ecout_phot2);
-        //
-        // End of Photon ID
-        //
-
-        // plot of two photon opening angle
-		TwoPhotonAngle = TMath::RadToDeg()*photon1.Angle(photon2.Vect());
-		OpAng_2Photons->Fill(TwoPhotonAngle);
-
-		elecPhoton1Angle = TMath::RadToDeg()*elec.Angle(photon1.Vect());
-        OpAng_elecPhoton1->Fill(elecPhoton1Angle);
-
-		elecPhoton2Angle = TMath::RadToDeg()*elec.Angle(photon2.Vect());
-        OpAng_elecPhoton2->Fill(elecPhoton2Angle);
-        
-        // plots by target (Vz_index)
-		LongMom[Vz_index]->Fill(Omega.P()-Omega.Pt()); // omega long. mom.
-		TransMom[Vz_index]->Fill(Omega.Pt()); // omega trans. mom.
-        
-		OpAng_VS_IM2Photons[Vz_index]->Fill(TwoPhoton.M(),TwoPhotonAngle); // opening angle vs 2 photon inv. mass
-		OpAng_VS_E[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle); // opening angle vs 2 photon total energy
-        
-		MissMom[Vz_index]->Fill((beam + target - Omega).P());  // mising mom.
-		MMsq[Vz_index]->Fill((beam + target - Omega).M2()); // missing mass^2
-        
-        // plots of variable vs the omega inv. mass
-		IM2Pions_VS_IMOmega[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
-        IM2Photons_VS_IMOmega[Vz_index]->Fill(TwoPhoton.M(), Omega.M()); // variable = 2 photon inv. mass
-		Q2_VS_IMOmega[Vz_index]->Fill(Qsq, Omega.M()); // variable = Q^2
-		Pt_VS_IMOmega[Vz_index]->Fill(Omega.Pt(), Omega.M()); // variable = omega trans. mom.
-		Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
-		OpAng_VS_IMOmega[Vz_index]->Fill(Omega.M(), TwoPhotonAngle); // variable = 2 photon opening angle
-
-        // set the cuts
-        cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M()); // pi0 mass cut
-        cutQSquared = myCuts.Check_QSquared(Qsq); // Q^2 cut
-        cutW = myCuts.Check_Wcut(W); // W cut
-        
-        cutZDiff_ElectronNPion = myCuts.Check_Zdiff_ElecPim(elecNPionZVertDiff); // e-,pi- z-vertex matching cut
-        cutZDiff_ElectronPPion = myCuts.Check_Zdiff_ElecPip(elecPPionZVertDiff); // e-,pi+ z-vertex matching cut
-        cutZDiff = (cutZDiff_ElectronNPion && cutZDiff_ElectronPPion); // final e-,pion z-vertex matching cut
-
-        cutOpAng_ElecPhoton1 = myCuts.Check_OpAng_ElecPhoton(elecPhoton1Angle); // e-,photon 1 opening angle cut
-        cutOpAng_ElecPhoton2 = myCuts.Check_OpAng_ElecPhoton(elecPhoton2Angle); // e-,photon 2 opening angle cut
-        cutOpAng_ElecPhoton = (cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2); // final e-,photon opening angle cut
-        
-        cutBetaPhoton1 = myCuts.Check_BetaPhoton(photon1.Beta()); // photon 1 beta cut
-        cutBetaPhoton2 = myCuts.Check_BetaPhoton(photon2.Beta()); // photon 2 beta cut
-        cutBetaPhoton = (cutBetaPhoton1 && cutBetaPhoton2); // final photon beta cut
-        
-        cutElecR = myCuts.Check_ElectronR(elec_vert.Perp()); // electron vertex radius (x,y)
-        
-        cutOmegaMass = myCuts.Check_MassOmega(Omega.M()); // omega mass cut
-        cutOmegaMass_sb = myCuts.Check_MassOmega_sb(Omega.M()); // sideband cuts on the omega mass
-        
-        // omega inv. mass histograms
-        IM2Photons[Vz_index]->Fill(TwoPhoton.M(),0); // inv. mass of 2 photons
-		IMOmega[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
-		IMOmega_woCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
-        IMOmega_antiCut[Vz_index]->Fill(Omega.M(),0); // inv. mass of pi+ pi- 2 photons
-        
-        if(cutPi0Mass) { // applying the pi0 mass cut
-            OpAng_VS_E_MassPi0Cut[Vz_index]->Fill(TwoPhoton.E(),TwoPhotonAngle);
-			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),1);
-            IMOmega[Vz_index]->Fill(Omega.M(),1);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),1);
-        }
-        cuts_woPi0Mass = (cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
-        if(cuts_woPi0Mass){ // applying all cuts except the pi0 mass
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),1);
-            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),7);
-        }
-        
-        if(cutQSquared) { // applying the Q^2 cut
-            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),2);
-            IMOmega[Vz_index]->Fill(Omega.M(),2);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),2);
-        }
-        cuts_woQsquared = (cutPi0Mass && cutZDiff && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
-        if(cuts_woQsquared){ // applying all cuts except Q^2
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),2);
-        }
-        
-        if(cutW){ // applying the W cut
-			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),3);
-            IMOmega[Vz_index]->Fill(Omega.M(),3);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),3);
-        }
-        cuts_woW = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton);
-        if(cuts_woW){ // applying all cuts except W
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),3);
-        }
-        
-        if(cutZDiff){ // applying the e-,pion z-vertex matching cut
-			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),4);
-            IMOmega[Vz_index]->Fill(Omega.M(),4);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),4);
-        }
-        cuts_woZDiff = (cutPi0Mass && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
-        if(cuts_woZDiff){ // applying all cuts except the e-,pion z-vertex matching
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),4);
-        }
-        
-        if(cutOpAng_ElecPhoton) { // applying the e-,photon opening angle cut
-			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),5);
-            IMOmega[Vz_index]->Fill(Omega.M(),5);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),5);
-        }
-        cuts_woOpAng_ElecPhoton = (cutPi0Mass && cutZDiff && cutQSquared && cutBetaPhoton && cutW);
-        if(cuts_woOpAng_ElecPhoton){ // applying all cuts except the e-,photon opening angle
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),5);
-        }
-        
-        if(cutBetaPhoton){ // applying the photon beta cut
-			IM2Photons[Vz_index]->Fill(TwoPhoton.M(),6);
-            IMOmega[Vz_index]->Fill(Omega.M(),6);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),6);
-        }
-        cuts_woBetaPhoton = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
-        if(cuts_woBetaPhoton){ // applying all cuts except the photon beta
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),6);
-        }
-
-        if(cutElecR){ // applying the photon beta cut
-            IM2Photons[Vz_index]->Fill(TwoPhoton.M(),7);
-            IMOmega[Vz_index]->Fill(Omega.M(),7);
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),7);
-        }
-        cuts_woElecR = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW && cutBetaPhoton);
-        if(cuts_woElecR){ // applying all cuts except the photon beta
-            IMOmega_woCut[Vz_index]->Fill(Omega.M(),7);
-        }
-        
-         // applying all cuts
-        cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutBetaPhoton && cutW);
-        if(cutsAll){
-            IMOmega[Vz_index]->Fill(Omega.M(),8);
-            W_VS_IMOmega_AllCuts[Vz_index]->Fill(W, Omega.M()); // variable = W
-            IM2Pions_VS_IMOmega_AllCuts[Vz_index]->Fill(TwoPion.M(), Omega.M()); // variable = pion pair inv. mass
-            PtSq_Omega_AllCuts[Vz_index]->Fill(Omega.Perp2());
-
-            Xvert_VS_Yvert_AllCuts[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
-
-            if(cutOmegaMass){
-                Xvert_VS_Yvert_Omega[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
-                PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
-            }
-            if(cutOmegaMass_sb){
-                PtSq_Omega_AllCuts_IMOmegaSBCut[Vz_index]->Fill(Omega.Perp2());
-            }
-        }else{
-            IMOmega_antiCut[Vz_index]->Fill(Omega.M(),8);
-        }
-    
-        for(k=0; k<NUM_ENTRIES_OFFSET; k++){ // loop over number of mixed event iterations
-            for(j=0; j<NUM_MIXING_METHODS; j++){ // loop over number of mixed event methods
-                IM2Photons_ME[Vz_index]->Fill(Mass_TwoPhoton_ME[j][k],j); // inv. mass of 2 photons
-                IMOmega_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j); // inv. mass of pi+ pi- 2 photons
-                if(cutOpAng_ElecPhoton1 && cutOpAng_ElecPhoton2) {
-                    IM2Photons_OpAng_ElecPhoton_Cut_ME[Vz_index]->Fill(Mass_TwoPhoton_ME[j][k],j);
-                    IMOmega_OpAng_ElecPhoton_Cut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
-                }
-                if(cutPi0Mass) {
-                    IMOmega_MassPi0Cut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
-                }
-                if(cutZDiff_ElectronNPion && cutZDiff_ElectronPPion){
-                    IMOmega_ZVertCut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
-                }
-                if(cutQSquared) {
-                    IMOmega_QsqCut_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
-                }
-                if(cutsAll){
-                    IMOmega_AllCuts_ME[Vz_index]->Fill(Mass_Omega_ME[j][k],j);
-                }
-            }
-        }
         
         //-----------------------------------------------------
         // plots to check special relativistic kinematics
@@ -838,6 +1122,25 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         //-----------------------------------------------------
     }
+    cout<<endl;
+    cout<<"Statistics on cuts"<<endl;
+    cout<<"Electron ID "<<ctr_elecID<<" ("<<float(ctr_elecID)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (Mom.) "<<ctr_elecID_Mom<<" ("<<float(ctr_elecID_Mom)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (ECPvsP) "<<ctr_elecID_ECPvsP<<" ("<<float(ctr_elecID_ECPvsP)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (ECin) "<<ctr_elecID_ECin<<" ("<<float(ctr_elecID_ECin)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (dtECSC) "<<ctr_elecID_dtECSC<<" ("<<float(ctr_elecID_dtECSC)/float(entries)<<")"<<endl;
+    cout<<"Electron ID (ECfid) "<<ctr_elecID_ECfid<<" ("<<float(ctr_elecID_ECfid)/float(entries)<<")"<<endl<<endl;
+    cout<<"Photon ID "<<ctr_photID<<" ("<<float(ctr_photID)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (Mom.) "<<ctr_photID_Mom<<" ("<<float(ctr_photID_Mom)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (beta) "<<ctr_photID_Beta<<" ("<<float(ctr_photID_Beta)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (timing) "<<ctr_photID_timing<<" ("<<float(ctr_photID_timing)/float(entries)<<")"<<endl;
+    cout<<"Photon ID (ECfid) "<<ctr_photID_ECfid<<" ("<<float(ctr_photID_ECfid)/float(entries)<<")"<<endl<<endl;
+    cout<<"Omega ID "<<ctr_omegaID<<" ("<<float(ctr_omegaID)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (Mpi0) "<<ctr_omegaID_Mpi0<<" ("<<float(ctr_omegaID_Mpi0)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (OpAngElecPhoton) "<<ctr_omegaID_OpAngElecPhoton<<" ("<<float(ctr_omegaID_OpAngElecPhoton)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (Zmatch) "<<ctr_omegaID_Zmatch<<" ("<<float(ctr_omegaID_Zmatch)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (W) "<<ctr_omegaID_W<<" ("<<float(ctr_omegaID_W)/float(entries)<<")"<<endl;
+    cout<<"Omega ID (Q2) "<<ctr_omegaID_Q2<<" ("<<float(ctr_omegaID_Q2)/float(entries)<<")"<<endl;
     
     return processed;
 }
@@ -865,6 +1168,19 @@ int GetSectorByPhi(Double_t phi_rad){
         ret = 6;
     }
     
+    return ret;
+}
+
+double Get_scMassSquared(double fMom, double fBeta){
+
+    double ret;
+    double fBetaSq = fBeta*fBeta;
+    
+    if(fBetaSq){
+        ret = fMom*fMom*(1.0-fBetaSq)/fBetaSq;
+    }else{
+        ret = -99.0;
+    }
     return ret;
 }
 
@@ -992,6 +1308,30 @@ void BookHist(){
     sprintf(htitle,"Beta vs Momentum");
 	Beta_VS_Momentum = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
 
+    sprintf(hname,"Beta_VS_Momentum_Recalc");
+    sprintf(htitle,"Beta vs Momentum, Recalculated");
+    Beta_VS_Momentum_Recalc = new TH2D(hname,htitle, 500, 0, 5, 115, 0, 1.15);
+    
+    sprintf(hname,"Beta_Recalc");
+    sprintf(htitle,"Beta, Recalculated");
+    Beta_Recalc = new TH2D(hname,htitle, 320, 0.4, 2.0, 5, -0.5, 4.5);
+
+    sprintf(hname,"scMassSquared");
+    sprintf(htitle,"TOF Mass^{2}");
+    scMassSquared = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
+
+    sprintf(hname,"scMassSquared_elecID");
+    sprintf(htitle,"TOF Mass^{2}, e- ID cuts");
+    scMassSquared_elecID = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
+    
+    sprintf(hname,"scMassSquared_photID");
+    sprintf(htitle,"TOF Mass^{2}, photon ID cuts");
+    scMassSquared_photID = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
+
+    sprintf(hname,"scMassSquared_elecIDphotID");
+    sprintf(htitle,"TOF Mass^{2}, e- and photon ID cuts");
+    scMassSquared_elecIDphotID = new TH2D(hname,htitle, 800, -0.5, 1.5, 5, -0.5, 4.5);
+    
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
 	TotalMomentum = new TH2D(hname,htitle, 600, 0, 6, 7, -0.5, 6.5);
@@ -1372,147 +1712,233 @@ void BookHist(){
 
     sprintf(hname,"MomentumPhoton1");
     sprintf(htitle,"Total Momentum of Photon 1");
-	Mom_photID1 = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton1 = new TH1D(hname,htitle, 500, 0, 5);
 
     sprintf(hname,"MomentumPhoton2");
     sprintf(htitle,"Total Momentum of Photon 2");
-	Mom_photID2 = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton2 = new TH1D(hname,htitle, 500, 0, 5);
 
-    sprintf(hname,"MomentumPhoton1Cut");
+    sprintf(hname,"MomentumPhoton1_cut");
     sprintf(htitle,"Total Momentum of Photon 1 Cut");
-	Mom_photID1_cut = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton1_cut = new TH1D(hname,htitle, 500, 0, 5);
 
-    sprintf(hname,"MomentumPhoton2Cut");
+    sprintf(hname,"MomentumPhoton2_cut");
     sprintf(htitle,"Total Momentum of Photon 2 Cut");
-	Mom_photID2_cut = new TH1D(hname,htitle, 500, 0, 5);
+	MomentumPhoton2_cut = new TH1D(hname,htitle, 500, 0, 5);
 
     sprintf(hname,"BetaPhoton1");
     sprintf(htitle,"Beta of Photon 1");
-	Beta_photID1 = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton1 = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
     sprintf(hname,"BetaPhoton2");
     sprintf(htitle,"Beta of Photon 2");
-	Beta_photID2 = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton2 = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
-    sprintf(hname,"BetaPhoton1Cut");
+    sprintf(hname,"BetaPhoton1_cut");
     sprintf(htitle,"Beta of Photon 1 Cut");
-	Beta_photID1_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton1_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
-    sprintf(hname,"BetaPhoton2Cut");
+    sprintf(hname,"BetaPhoton2_cut");
     sprintf(htitle,"Beta of Photon 2 Cut");
-	Beta_photID2_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
+	BetaPhoton2_cut = new TH1D(hname,htitle, 100, 0.8, 2.1);
 
     sprintf(hname,"ECuPhoton1");
     sprintf(htitle,"ECu of Photon 1");
-	ECu_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton1 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECuPhoton2");
     sprintf(htitle,"ECu of Photon 2");
-	ECu_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton2 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECvPhoton1");
     sprintf(htitle,"ECv of Photon 1");
-	ECv_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton1 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECvPhoton2");
     sprintf(htitle,"ECv of Photon 2");
-	ECv_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton2 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECwPhoton1");
     sprintf(htitle,"ECw of Photon 1");
-	ECw_photID1 = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton1 = new TH1D(hname,htitle, 450, 0, 450);
 
     sprintf(hname,"ECwPhoton2");
     sprintf(htitle,"ECw of Photon 2");
-	ECw_photID2 = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton2 = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECuPhoton1Cut");
+    sprintf(hname,"ECuPhoton1_cut");
     sprintf(htitle,"ECu of Photon 1 Cut");
-	ECu_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton1_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECuPhoton2Cut");
+    sprintf(hname,"ECuPhoton2_cut");
     sprintf(htitle,"ECu of Photon 2 Cut");
-	ECu_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECuPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECvPhoton1Cut");
+    sprintf(hname,"ECvPhoton1_cut");
     sprintf(htitle,"ECv of Photon 1 Cut");
-	ECv_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton1_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECvPhoton2Cut");
+    sprintf(hname,"ECvPhoton2_cut");
     sprintf(htitle,"ECv of Photon 2 Cut");
-	ECv_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECvPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECwPhoton1Cut");
+    sprintf(hname,"ECwPhoton1_cut");
     sprintf(htitle,"ECw of Photon 1 Cut");
-	ECw_photID1_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton1_cut = new TH1D(hname,htitle, 450, 0, 450);
 
-    sprintf(hname,"ECwPhoton2Cut");
+    sprintf(hname,"ECwPhoton2_cut");
     sprintf(htitle,"ECw of Photon 2 Cut");
-	ECw_photID2_cut = new TH1D(hname,htitle, 450, 0, 450);
+	ECwPhoton2_cut = new TH1D(hname,htitle, 450, 0, 450);
 
+    for(i=0; i<MAX_SECTORS; i++){
+        sprintf(hname,"EC_XvsY_local_Sector_%i_Photon1",i+1);
+        sprintf(htitle,"EC local X vs local Y, Sector %i, Photon 1",i+1);
+        EC_XvsY_local_Sector_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_FidCut%i_Photon1",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i, Photon 1",i+1);
+        EC_XvsY_local_FidCut_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_AntiFidCut%i_Photon1",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut (anti), Sector %i, Photon1",i+1);
+        EC_XvsY_local_AntiFidCut_Photon1[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+
+        sprintf(hname,"EC_XvsY_local_Sector_%i_Photon2",i+1);
+        sprintf(htitle,"EC local X vs local Y, Sector %i, Photon 2",i+1);
+        EC_XvsY_local_Sector_Photon2[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_FidCut%i_Photon2",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut, Sector %i, Photon 2",i+1);
+        EC_XvsY_local_FidCut_Photon2[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+        
+        sprintf(hname,"EC_XvsY_local_AntiFidCut%i_Photon2",i+1);
+        sprintf(htitle,"EC local X vs local Y, EC fid. cut (anti), Sector %i, Photon2",i+1);
+        EC_XvsY_local_AntiFidCut_Photon2[i] = new TH2D(hname,htitle, 200, -200, 200, 200, -200,200);
+    }
+    
     sprintf(hname,"ECtime_ECl_Start_Photon1");
-    sprintf(htitle,"ECtime - EClength/c of Photon 1");
-    ECtime_ECl_Start_photID1 = new TH1D(hname,htitle, 420, -40., 100.);
+    sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 1");
+    ECtime_ECl_Start_Photon1 = new TH1D(hname,htitle, 400, -80., 20.);
     
     sprintf(hname,"ECtime_ECl_Start_Photon2");
-    sprintf(htitle,"ECtime - EClength/c of Photon 2");
-    ECtime_ECl_Start_photID2 = new TH1D(hname,htitle, 420, -40., 100.);
+    sprintf(htitle,"ECtime - StartTime - EClength/c of Photon 2");
+    ECtime_ECl_Start_Photon2 = new TH1D(hname,htitle, 400, -80., 20.);
     
     sprintf(hname,"ECtime_ECl_Photon1");
     sprintf(htitle,"ECtime - EClength/c of Photon 1");
-    ECtime_ECl_photID1 = new TH1D(hname,htitle, 200, -10, 5);
+    ECtime_ECl_Photon1 = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon2");
     sprintf(htitle,"ECtime - EClength/c of Photon 2");
-    ECtime_ECl_photID2 = new TH1D(hname,htitle, 200, -10, 5);
+    ECtime_ECl_Photon2 = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon1_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 1 Cut");
-    ECtime_ECl_photID1_cut = new TH1D(hname,htitle, 200, -3, 2);//TODO
+    ECtime_ECl_Photon1_cut = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtime_ECl_Photon2_cut");
     sprintf(htitle,"ECtime - EClength/c of Photon 2 Cut");
-    ECtime_ECl_photID2_cut = new TH1D(hname,htitle, 200, -3, 2);
+    ECtime_ECl_Photon2_cut = new TH1D(hname,htitle, 200, -3, 2);
 
     sprintf(hname,"ECtimePhoton1");
     sprintf(htitle,"ECtime of Photon 1");
-    ECtime1 = new TH1D(hname,htitle, 100, 5, 25);
+    ECtimePhoton1 = new TH1D(hname,htitle, 300, 10, 25);
 
     sprintf(hname,"ECtimePhoton2");
     sprintf(htitle,"ECtime of Photon 2");
-    ECtime2 = new TH1D(hname,htitle, 100, 5, 25);
+    ECtimePhoton2 = new TH1D(hname,htitle, 300, 10, 25);
 
     sprintf(hname,"ECpathPhoton1");
     sprintf(htitle,"ECpath of Photon 1");
-    ECpath1 = new TH1D(hname,htitle, 200, 450, 650);
+    ECpathPhoton1 = new TH1D(hname,htitle, 200, 450, 650);
 
     sprintf(hname,"ECpathPhoton2");
     sprintf(htitle,"ECpath of Photon 2");
-    ECpath2 = new TH1D(hname,htitle, 200, 450, 650);
+    ECpathPhoton2 = new TH1D(hname,htitle, 200, 450, 650);
 
     sprintf(hname,"ECpathtimePhoton1");
     sprintf(htitle,"ECpath/c of Photon 1");
-    ECpathtime1 = new TH1D(hname,htitle, 100, 15, 25);
+    ECpathtimePhoton1 = new TH1D(hname,htitle, 300, 17, 20);
     
     sprintf(hname,"ECpathtimePhoton2");
     sprintf(htitle,"ECpath/c of Photon 2");
-    ECpathtime2 = new TH1D(hname,htitle, 100, 15, 25);
+    ECpathtimePhoton2 = new TH1D(hname,htitle, 300, 17, 20);
     
-    sprintf(hname,"ECtotP_vs_P_phot1");
+    sprintf(hname,"ECtotP_vs_P_Photon1");
     sprintf(htitle,"ECtot / P vs P of Photon 1");
-    ECtotP_vs_P_phot1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    ECtotP_vs_P_Photon1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
 
-    sprintf(hname,"ECtotP_vs_P_phot2");
+    sprintf(hname,"ECtotP_vs_P_Photon2");
     sprintf(htitle,"ECtot / P vs P of Photon 2");
-    ECtotP_vs_P_phot2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    ECtotP_vs_P_Photon2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
 
-    sprintf(hname,"ECin_vs_ECout_phot1");
+    sprintf(hname,"ECin_vs_ECout_Photon1");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
-    ECin_vs_ECout_phot1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    ECin_vs_ECout_Photon1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
 
-    sprintf(hname,"ECin_vs_ECout_phot2");
+    sprintf(hname,"ECin_vs_ECout_Photon2");
     sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
-    ECin_vs_ECout_phot2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    ECin_vs_ECout_Photon2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+
+    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_Photon1");
+    sprintf(htitle,"ECtot / P vs P of Photon 1");
+    ECtotP_vs_P_InOutZeroCut_Photon1 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    
+    sprintf(hname,"ECtotP_vs_P_InOutZeroCut_Photon2");
+    sprintf(htitle,"ECtot / P vs P of Photon 2");
+    ECtotP_vs_P_InOutZeroCut_Photon2 = new TH2D(hname,htitle, 500, 0, 5, 500, 0, 0.5);
+    
+    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_Photon1");
+    sprintf(htitle,"EC_{in} vs EC_{out} of Photon 1");
+    ECin_vs_ECout_InOutZeroCut_Photon1 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    
+    sprintf(hname,"ECin_vs_ECout_InOutZeroCut_Photon2");
+    sprintf(htitle,"EC_{in} vs EC_{out} of Photon 2");
+    ECin_vs_ECout_InOutZeroCut_Photon2 = new TH2D(hname,htitle, 100, 0, 0.5, 100, 0, 0.35);
+    
+    sprintf(hname,"Recon_Pi0_Mass_PhotID_Cuts");
+    sprintf(htitle,"Reconstructed #pi^{0} Mass - Photon ID Cuts");
+    Pi0Mass_PhotIDcuts = new TH1D(hname,htitle, 100, 0, 1);
+
+    sprintf(hname,"Recon_Omega_Mass_All_Cuts");
+    sprintf(htitle,"Reconstructed #omega Mass - All Cuts");
+    OmegaMass_AllCuts = new TH1D(hname,htitle,100,0,3);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_NC1");
+    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - No Cuts");
+    mass2Pions_VS_massOmega_NC[0] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_NC2");
+    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - No Cuts");
+    mass2Pions_VS_massOmega_NC[1] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_NC3");
+    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - No Cuts");
+    mass2Pions_VS_massOmega_NC[2] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_EPC1");
+    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron and Photon Cuts");
+    mass2Pions_VS_massOmega_NC[0] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_EPC2");
+    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron and Photon Cuts");
+    mass2Pions_VS_massOmega_NC[1] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_EPC3");
+    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron and Photon Cuts");
+    mass2Pions_VS_massOmega_NC[2] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_EPOC1");
+    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron, Photon, and Omega Cuts");
+    mass2Pions_VS_massOmega_NC[0] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_EPOC2");
+    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron, Photon, and Omega Cuts");
+    mass2Pions_VS_massOmega_NC[1] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
+
+    sprintf(hname,"mass2Pions_VS_massOmega_EPOC3");
+    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron, Photon, and Omega Cuts");
+    mass2Pions_VS_massOmega_NC[2] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
 }
 
 //
@@ -1586,6 +2012,30 @@ void WriteHist(string RootFile){
     Beta_VS_Momentum->GetYaxis()->SetTitle("#beta");
 	Beta_VS_Momentum->Write();
 
+    Beta_VS_Momentum_Recalc->GetXaxis()->SetTitle("Momentum (GeV/c)");
+    Beta_VS_Momentum_Recalc->GetYaxis()->SetTitle("#beta");
+    Beta_VS_Momentum_Recalc->Write();
+
+    Beta_Recalc->GetXaxis()->SetTitle("#beta");
+    Beta_Recalc->GetYaxis()->SetTitle("Particle");
+    Beta_Recalc->Write();
+
+    scMassSquared->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared->GetYaxis()->SetTitle("Particle");
+    scMassSquared->Write();
+
+    scMassSquared_elecID->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared_elecID->GetYaxis()->SetTitle("Particle");
+    scMassSquared_elecID->Write();
+    
+    scMassSquared_photID->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared_photID->GetYaxis()->SetTitle("Particle");
+    scMassSquared_photID->Write();
+    
+    scMassSquared_elecIDphotID->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared_elecIDphotID->GetYaxis()->SetTitle("Particle");
+    scMassSquared_elecIDphotID->Write();
+    
     TotalMomentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
     TotalMomentum->GetYaxis()->SetTitle("Particle");
 	TotalMomentum->Write();
@@ -1992,149 +2442,249 @@ void WriteHist(string RootFile){
     TDirectory *cdPhotID = out->mkdir("PhotonID");
     cdPhotID->cd();
     
-    Mom_photID1->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID1->GetYaxis()->SetTitle("Counts");
-	Mom_photID1->Write();
+    MomentumPhoton1->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton1->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton1->Write();
 
-    Mom_photID2->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID2->GetYaxis()->SetTitle("Counts");
-	Mom_photID2->Write();
+    MomentumPhoton2->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton2->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton2->Write();
 
-    Mom_photID1_cut->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID1_cut->GetYaxis()->SetTitle("Counts");
-	Mom_photID1_cut->Write();
+    MomentumPhoton1_cut->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton1_cut->Write();
 
-    Mom_photID2_cut->GetXaxis()->SetTitle("P (GeV/c)");
-    Mom_photID2_cut->GetYaxis()->SetTitle("Counts");
-	Mom_photID2_cut->Write();
+    MomentumPhoton2_cut->GetXaxis()->SetTitle("P (GeV/c)");
+    MomentumPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	MomentumPhoton2_cut->Write();
 
-    Beta_photID1->GetXaxis()->SetTitle("#beta");
-    Beta_photID1->GetYaxis()->SetTitle("Counts");
-	Beta_photID1->Write();
+    BetaPhoton1->GetXaxis()->SetTitle("#beta");
+    BetaPhoton1->GetYaxis()->SetTitle("Counts");
+	BetaPhoton1->Write();
 
-    Beta_photID2->GetXaxis()->SetTitle("#beta");
-    Beta_photID2->GetYaxis()->SetTitle("Counts");
-	Beta_photID2->Write();
+    BetaPhoton2->GetXaxis()->SetTitle("#beta");
+    BetaPhoton2->GetYaxis()->SetTitle("Counts");
+	BetaPhoton2->Write();
 
-    Beta_photID1_cut->GetXaxis()->SetTitle("#beta");
-    Beta_photID1_cut->GetYaxis()->SetTitle("Counts");
-	Beta_photID1_cut->Write();
+    BetaPhoton1_cut->GetXaxis()->SetTitle("#beta");
+    BetaPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	BetaPhoton1_cut->Write();
 
-    Beta_photID2_cut->GetXaxis()->SetTitle("#beta");
-    Beta_photID2_cut->GetYaxis()->SetTitle("Counts");
-	Beta_photID2_cut->Write();
+    BetaPhoton2_cut->GetXaxis()->SetTitle("#beta");
+    BetaPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	BetaPhoton2_cut->Write();
 
-    ECu_photID1->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID1->GetYaxis()->SetTitle("Counts");
-	ECu_photID1->Write();
+    ECuPhoton1->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton1->GetYaxis()->SetTitle("Counts");
+	ECuPhoton1->Write();
 
-    ECu_photID2->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID2->GetYaxis()->SetTitle("Counts");
-	ECu_photID2->Write();
+    ECuPhoton2->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton2->GetYaxis()->SetTitle("Counts");
+	ECuPhoton2->Write();
 
-    ECv_photID1->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID1->GetYaxis()->SetTitle("Counts");
-	ECv_photID1->Write();
+    ECvPhoton1->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton1->GetYaxis()->SetTitle("Counts");
+	ECvPhoton1->Write();
 
-    ECv_photID2->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID2->GetYaxis()->SetTitle("Counts");
-	ECv_photID2->Write();
+    ECvPhoton2->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton2->GetYaxis()->SetTitle("Counts");
+	ECvPhoton2->Write();
 
-    ECw_photID1->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID1->GetYaxis()->SetTitle("Counts");
-	ECw_photID1->Write();
+    ECwPhoton1->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton1->GetYaxis()->SetTitle("Counts");
+	ECwPhoton1->Write();
 
-    ECw_photID2->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID2->GetYaxis()->SetTitle("Counts");
-	ECw_photID2->Write();
+    ECwPhoton2->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton2->GetYaxis()->SetTitle("Counts");
+	ECwPhoton2->Write();
 
-    ECu_photID1_cut->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID1_cut->GetYaxis()->SetTitle("Counts");
-	ECu_photID1_cut->Write();
+    ECuPhoton1_cut->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	ECuPhoton1_cut->Write();
 
-    ECu_photID2_cut->GetXaxis()->SetTitle("EC U (cm)");
-    ECu_photID2_cut->GetYaxis()->SetTitle("Counts");
-	ECu_photID2_cut->Write();
+    ECuPhoton2_cut->GetXaxis()->SetTitle("EC U (cm)");
+    ECuPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	ECuPhoton2_cut->Write();
 
-    ECv_photID1_cut->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID1_cut->GetYaxis()->SetTitle("Counts");
-	ECv_photID1_cut->Write();
+    ECvPhoton1_cut->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	ECvPhoton1_cut->Write();
 
-    ECv_photID2_cut->GetXaxis()->SetTitle("EC V (cm)");
-    ECv_photID2_cut->GetYaxis()->SetTitle("Counts");
-	ECv_photID2_cut->Write();
+    ECvPhoton2_cut->GetXaxis()->SetTitle("EC V (cm)");
+    ECvPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	ECvPhoton2_cut->Write();
 
-    ECw_photID1_cut->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID1_cut->GetYaxis()->SetTitle("Counts");
-	ECw_photID1_cut->Write();
+    ECwPhoton1_cut->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton1_cut->GetYaxis()->SetTitle("Counts");
+	ECwPhoton1_cut->Write();
 
-    ECw_photID2_cut->GetXaxis()->SetTitle("EC W (cm)");
-    ECw_photID2_cut->GetYaxis()->SetTitle("Counts");
-	ECw_photID2_cut->Write();
+    ECwPhoton2_cut->GetXaxis()->SetTitle("EC W (cm)");
+    ECwPhoton2_cut->GetYaxis()->SetTitle("Counts");
+	ECwPhoton2_cut->Write();
 
-    ECtime_ECl_Start_photID1->GetXaxis()->SetTitle("t_{start} - t_{EC} + l_{EC}/c (cm)");
-    ECtime_ECl_Start_photID1->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_Start_photID1->Write();
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_Sector_Photon1[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_Sector_Photon1[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_Sector_Photon1[i]->Write();
+    }
     
-    ECtime_ECl_Start_photID2->GetXaxis()->SetTitle("t_{start} - t_{EC} + l_{EC}/c (cm)");
-    ECtime_ECl_Start_photID2->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_Start_photID2->Write();
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_FidCut_Photon1[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon1[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon1[i]->Write();
+    }
     
-    ECtime_ECl_photID1->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
-    ECtime_ECl_photID1->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID1->Write();
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_AntiFidCut_Photon1[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon1[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon1[i]->Write();
+    }
 
-    ECtime_ECl_photID2->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
-    ECtime_ECl_photID2->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID2->Write();
-
-    ECtime_ECl_photID1_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c (ns)");
-    ECtime_ECl_photID1_cut->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID1_cut->Write();
-
-    ECtime_ECl_photID2_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
-    ECtime_ECl_photID2_cut->GetYaxis()->SetTitle("Counts");
-    ECtime_ECl_photID2_cut->Write();
-
-    ECtime1->GetXaxis()->SetTitle("EC_{time} (ns)");
-    ECtime1->GetYaxis()->SetTitle("Counts");
-    ECtime1->Write();
-
-    ECtime2->GetXaxis()->SetTitle("EC_{time} (ns)");
-    ECtime2->GetYaxis()->SetTitle("Counts");
-    ECtime2->Write();
-
-    ECpath1->GetXaxis()->SetTitle("EC_{path} (cm)");
-    ECpath1->GetYaxis()->SetTitle("Counts");
-    ECpath1->Write();
-
-    ECpath2->GetXaxis()->SetTitle("EC_{path} (cm)");
-    ECpath2->GetYaxis()->SetTitle("Counts");
-    ECpath2->Write();
-
-    ECpathtime1->GetXaxis()->SetTitle("EC_{path}/c (ns)");
-    ECpathtime1->GetYaxis()->SetTitle("Counts");
-    ECpathtime1->Write();
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_Sector_Photon2[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_Sector_Photon2[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_Sector_Photon2[i]->Write();
+    }
     
-    ECpathtime2->GetXaxis()->SetTitle("EC_{path}/c (ns)");
-    ECpathtime2->GetYaxis()->SetTitle("Counts");
-    ECpathtime2->Write();
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_FidCut_Photon2[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon2[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_FidCut_Photon2[i]->Write();
+    }
     
-    ECtotP_vs_P_phot1->GetXaxis()->SetTitle("P (GeV/c)");
-    ECtotP_vs_P_phot1->GetYaxis()->SetTitle("EC_{tot} / P");
-    ECtotP_vs_P_phot1->Write();
+    for(i=0; i<MAX_SECTORS; i++){
+        EC_XvsY_local_AntiFidCut_Photon2[i]->GetXaxis()->SetTitle("EC X_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon2[i]->GetYaxis()->SetTitle("EC Y_{local} (cm)");
+        EC_XvsY_local_AntiFidCut_Photon2[i]->Write();
+    }
+    
+    ECtime_ECl_Start_Photon1->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
+    ECtime_ECl_Start_Photon1->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Start_Photon1->Write();
+    
+    ECtime_ECl_Start_Photon2->GetXaxis()->SetTitle("t_{EC} - t_{start} - l_{EC}/c (cm)");
+    ECtime_ECl_Start_Photon2->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Start_Photon2->Write();
+    
+    ECtime_ECl_Photon1->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
+    ECtime_ECl_Photon1->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon1->Write();
 
-    ECtotP_vs_P_phot2->GetXaxis()->SetTitle("P (GeV/c)");
-    ECtotP_vs_P_phot2->GetYaxis()->SetTitle("EC_{tot} / P");
-    ECtotP_vs_P_phot2->Write();
+    ECtime_ECl_Photon2->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
+    ECtime_ECl_Photon2->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon2->Write();
 
-    ECin_vs_ECout_phot1->GetXaxis()->SetTitle("EC_{in}");
-    ECin_vs_ECout_phot1->GetYaxis()->SetTitle("EC_{out}");
-    ECin_vs_ECout_phot1->Write();
+    ECtime_ECl_Photon1_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c (ns)");
+    ECtime_ECl_Photon1_cut->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon1_cut->Write();
 
-    ECin_vs_ECout_phot2->GetXaxis()->SetTitle("EC_{in}");
-    ECin_vs_ECout_phot2->GetYaxis()->SetTitle("EC_{out}");
-    ECin_vs_ECout_phot2->Write();
+    ECtime_ECl_Photon2_cut->GetXaxis()->SetTitle("t_{EC} - l_{EC}/c  (ns)");
+    ECtime_ECl_Photon2_cut->GetYaxis()->SetTitle("Counts");
+    ECtime_ECl_Photon2_cut->Write();
+
+    ECtimePhoton1->GetXaxis()->SetTitle("EC_{time} (ns)");
+    ECtimePhoton1->GetYaxis()->SetTitle("Counts");
+    ECtimePhoton1->Write();
+
+    ECtimePhoton2->GetXaxis()->SetTitle("EC_{time} (ns)");
+    ECtimePhoton2->GetYaxis()->SetTitle("Counts");
+    ECtimePhoton2->Write();
+
+    ECpathPhoton1->GetXaxis()->SetTitle("EC_{path} (cm)");
+    ECpathPhoton1->GetYaxis()->SetTitle("Counts");
+    ECpathPhoton1->Write();
+
+    ECpathPhoton2->GetXaxis()->SetTitle("EC_{path} (cm)");
+    ECpathPhoton2->GetYaxis()->SetTitle("Counts");
+    ECpathPhoton2->Write();
+
+    ECpathtimePhoton1->GetXaxis()->SetTitle("EC_{path}/c (ns)");
+    ECpathtimePhoton1->GetYaxis()->SetTitle("Counts");
+    ECpathtimePhoton1->Write();
+    
+    ECpathtimePhoton2->GetXaxis()->SetTitle("EC_{path}/c (ns)");
+    ECpathtimePhoton2->GetYaxis()->SetTitle("Counts");
+    ECpathtimePhoton2->Write();
+    
+    ECtotP_vs_P_Photon1->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_Photon1->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_Photon1->Write();
+
+    ECtotP_vs_P_Photon2->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_Photon2->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_Photon2->Write();
+
+    ECin_vs_ECout_Photon1->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_Photon1->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_Photon1->Write();
+
+    ECin_vs_ECout_Photon2->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_Photon2->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_Photon2->Write();
+
+    ECtotP_vs_P_InOutZeroCut_Photon1->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_InOutZeroCut_Photon1->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_InOutZeroCut_Photon1->Write();
+    
+    ECtotP_vs_P_InOutZeroCut_Photon2->GetXaxis()->SetTitle("P (GeV/c)");
+    ECtotP_vs_P_InOutZeroCut_Photon2->GetYaxis()->SetTitle("EC_{tot} / P");
+    ECtotP_vs_P_InOutZeroCut_Photon2->Write();
+    
+    ECin_vs_ECout_InOutZeroCut_Photon1->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_InOutZeroCut_Photon1->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_InOutZeroCut_Photon1->Write();
+    
+    ECin_vs_ECout_InOutZeroCut_Photon2->GetXaxis()->SetTitle("EC_{in}");
+    ECin_vs_ECout_InOutZeroCut_Photon2->GetYaxis()->SetTitle("EC_{out}");
+    ECin_vs_ECout_InOutZeroCut_Photon2->Write();
+    
+    // create a directory for reconstructed particle cuts
+    TDirectory *cdReconC = out->mkdir("ReconCuts");
+    cdReconC->cd();
+
+    Pi0Mass_PhotIDcuts->GetXaxis()->SetTitle("Reconstructed #pi^{0} mass (GeV/c^{2})");
+    Pi0Mass_PhotIDcuts->GetYaxis()->SetTitle("Counts");
+    Pi0Mass_PhotIDcuts->Write();
+
+    OmegaMass_AllCuts->GetXaxis()->SetTitle("Reconstructed #omega mass (GeV/c^{2})");
+    OmegaMass_AllCuts->GetYaxis()->SetTitle("Counts");
+    OmegaMass_AllCuts->Write();
+
+    mass2Pions_VS_massOmega_NC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
+    mass2Pions_VS_massOmega_NC[0]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_NC[0]->Write();
+
+    mass2Pions_VS_massOmega_NC[1]->GetXaxis()->SetTitle("IM #pi^{+} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_NC[1]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_NC[1]->Write();
+
+    mass2Pions_VS_massOmega_NC[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_NC[2]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_NC[2]->Write();
+
+    mass2Pions_VS_massOmega_EPC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPC[0]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPC[0]->Write();
+
+    mass2Pions_VS_massOmega_EPC[1]->GetXaxis()->SetTitle("IM #pi^{+} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPC[1]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPC[1]->Write();
+
+    mass2Pions_VS_massOmega_EPC[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPC[2]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPC[2]->Write();
+
+    mass2Pions_VS_massOmega_EPOC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPOC[0]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPOC[0]->Write();
+
+    mass2Pions_VS_massOmega_EPOC[1]->GetXaxis()->SetTitle("IM #pi^{+} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPOC[1]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPOC[1]->Write();
+
+    mass2Pions_VS_massOmega_EPOC[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPOC[2]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
+    mass2Pions_VS_massOmega_EPOC[2]->Write();
     
     out->Close();
 }
@@ -2192,7 +2742,6 @@ int main (int argc, char **argv) {
   
  
     BookHist(); // declare histograms
-    cout <<"Test 0"<<endl;
     
     for (i = optind; i < argc; ++i) {
         inFile = argv[i]; // process all arguments on command line.

@@ -68,7 +68,7 @@ Float_t FitOmega(TH1D *hist, char *plotFilePrefix)
 	hBgFit->SetTitle("Background");
 
 	// fit the histogram
-	Double_t par[7]={1.0,0.782,1.0,1.0,1.0,1.0,1.0};
+	Double_t par[7]={300.0,0.782,1.0,1.0,1.0,1.0,1.0};
     TF1 *g1 = new TF1("g1",gaussFit,PeakLo,PeakHi,3); // declare fit fcn
     TF1 *pol = new TF1("pol",polFit,xLo,xHi,4);
     TF1 *t1 = new TF1("t1",totFit,xLo,xHi,7);

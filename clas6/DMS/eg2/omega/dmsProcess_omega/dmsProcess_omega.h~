@@ -13,6 +13,7 @@
 #include "EG2Target.h"
 #include "EG2Cuts.h"
 #include "ElectronID.h"
+#include "PhotonID.h"
 #include "EC_geometry.h"
 #include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
@@ -36,6 +37,8 @@ double MASS_PION_NEUTRAL = 0.135; // mass of neutral pion in GeV/c^2
 double MASS_PROTON = 0.938; // mass of proton in GeV/c^2
 double MASS_DEUTERIUM = 2*MASS_PROTON; // mass of deuterium in GeV/c^2
 
+double LIGHTSPEED = 30.0; // speed of light in cm/ns
+
 //double BEAM_ENERGY = 4.5; // electron beam energy in GeV
 double BEAM_ENERGY = 5.01; // electron beam energy in GeV
 
@@ -52,6 +55,12 @@ TH2D *Yvert;
 TH2D *ZVertDiff;
 TH2D *Xvert_VS_Yvert[5];
 TH2D *Beta_VS_Momentum;
+TH2D *Beta_VS_Momentum_Recalc;
+TH2D *Beta_Recalc;
+TH2D *scMassSquared;
+TH2D *scMassSquared_elecID;
+TH2D *scMassSquared_photID;
+TH2D *scMassSquared_elecIDphotID;
 TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
@@ -154,44 +163,59 @@ TH1D *GammaPi0;
 TH1D *BetaPi0;
 
 // photon id
-TH1D *Mom_photID1;
-TH1D *Mom_photID2;
-TH1D *Mom_photID1_cut;
-TH1D *Mom_photID2_cut;
-TH1D *Beta_photID1;
-TH1D *Beta_photID2;
-TH1D *Beta_photID1_cut;
-TH1D *Beta_photID2_cut;
-TH1D *ECu_photID1;
-TH1D *ECu_photID2;
-TH1D *ECv_photID1;
-TH1D *ECv_photID2;
-TH1D *ECw_photID1;
-TH1D *ECw_photID2;
-TH1D *ECu_photID1_cut;
-TH1D *ECu_photID2_cut;
-TH1D *ECv_photID1_cut;
-TH1D *ECv_photID2_cut;
-TH1D *ECw_photID1_cut;
-TH1D *ECw_photID2_cut;
-TH1D *ECtime_ECl_Start_photID1;
-TH1D *ECtime_ECl_Start_photID2;
-TH1D *ECtime_ECl_photID1;
-TH1D *ECtime_ECl_photID2;
-TH1D *ECtime_ECl_photID1_cut;
-TH1D *ECtime_ECl_photID2_cut;
-TH1D *ECtime1;
-TH1D *ECtime2;
-TH1D *ECpath1;
-TH1D *ECpath2;
-TH1D *ECpathtime1;
-TH1D *ECpathtime2;
-TH2D *ECtotP_vs_P_phot1;
-TH2D *ECtotP_vs_P_phot2;
-TH2D *ECin_vs_ECout_phot1;
-TH2D *ECin_vs_ECout_phot2;
+TH1D *MomentumPhoton1;
+TH1D *MomentumPhoton2;
+TH1D *MomentumPhoton1_cut;
+TH1D *MomentumPhoton2_cut;
+TH1D *BetaPhoton1;
+TH1D *BetaPhoton2;
+TH1D *BetaPhoton1_cut;
+TH1D *BetaPhoton2_cut;
+TH1D *ECuPhoton1;
+TH1D *ECuPhoton2;
+TH1D *ECvPhoton1;
+TH1D *ECvPhoton2;
+TH1D *ECwPhoton1;
+TH1D *ECwPhoton2;
+TH1D *ECuPhoton1_cut;
+TH1D *ECuPhoton2_cut;
+TH1D *ECvPhoton1_cut;
+TH1D *ECvPhoton2_cut;
+TH1D *ECwPhoton1_cut;
+TH1D *ECwPhoton2_cut;
+TH1D *ECtime_ECl_Start_Photon1;
+TH1D *ECtime_ECl_Start_Photon2;
+TH1D *ECtime_ECl_Photon1;
+TH1D *ECtime_ECl_Photon2;
+TH1D *ECtime_ECl_Photon1_cut;
+TH1D *ECtime_ECl_Photon2_cut;
+TH1D *ECtimePhoton1;
+TH1D *ECtimePhoton2;
+TH1D *ECpathPhoton1;
+TH1D *ECpathPhoton2;
+TH1D *ECpathtimePhoton1;
+TH1D *ECpathtimePhoton2;
+TH2D *ECtotP_vs_P_Photon1;
+TH2D *ECtotP_vs_P_Photon2;
+TH2D *ECin_vs_ECout_Photon1;
+TH2D *ECin_vs_ECout_Photon2;
+TH2D *ECtotP_vs_P_InOutZeroCut_Photon1;
+TH2D *ECtotP_vs_P_InOutZeroCut_Photon2;
+TH2D *ECin_vs_ECout_InOutZeroCut_Photon1;
+TH2D *ECin_vs_ECout_InOutZeroCut_Photon2;
+TH2D *EC_XvsY_local_Sector_Photon1[6];
+TH2D *EC_XvsY_local_FidCut_Photon1[6];
+TH2D *EC_XvsY_local_AntiFidCut_Photon1[6];
+TH2D *EC_XvsY_local_Sector_Photon2[6];
+TH2D *EC_XvsY_local_FidCut_Photon2[6];
+TH2D *EC_XvsY_local_AntiFidCut_Photon2[6];
+
+//recon
+TH1D *Pi0Mass_PhotIDcuts;
+TH1D *OmegaMass_AllCuts;
 
 int GetSectorByPhi(double phi_rad);
+double Get_scMassSquared(double fMom, double fBeta);
 int process (string inFile, int MaxEvents, int dEvents, int targMass);
 void PrintUsage(char *processName);
 void PrintAnalysisTime(float tStart, float tStop);
