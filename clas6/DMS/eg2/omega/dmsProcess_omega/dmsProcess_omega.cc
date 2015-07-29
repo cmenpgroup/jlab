@@ -80,15 +80,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double timeEC, timeSC, pathEC, pathSC;
     double dt_ECminusSC[5];
     
-    double pimBeta, pimSCpath, pimSCtime; // variables for pi- id cuts
-    double pipBeta, pipSCpath, pipSCtime; // variables for pi- id cuts
+    double pimBeta, pimSCpath, pimSCtime, pimSCMassSq; // variables for pi- id cuts
+    double pipBeta, pipSCpath, pipSCtime, pipSCMassSq; // variables for pi- id cuts
     
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
-    double emECtime, emECpath, emSCtime, emSCpath, emBeta; // more variables for electron id cuts
+    double emECtime, emECpath, emSCtime, emSCpath, emBeta, emSCMassSq; // more variables for electron id cuts
     double eventStartTime; // event start time from HEAD bank
     
-    double ectime_phot1, ecpath_phot1, ecu_phot1, ecv_phot1, ecw_phot1, phot1Beta; //variables for photon 1 cuts
-    double ectime_phot2, ecpath_phot2, ecu_phot2, ecv_phot2, ecw_phot2, phot2Beta; //variables for photon 2 cuts
+    double ectime_phot1, ecpath_phot1, ecu_phot1, ecv_phot1, ecw_phot1, phot1Beta, scMassSq_phot1; //variables for photon 1 cuts
+    double ectime_phot2, ecpath_phot2, ecu_phot2, ecv_phot2, ecw_phot2, phot2Beta, scMassSq_phot2; //variables for photon 2 cuts
     double timing_phot1, timing_phot2; // time difference between photon ECtime and ECpath/c
     
     int ctr_elecID_Mom = 0;
@@ -438,11 +438,17 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(nPion.P(), pimBeta);
             Beta_Recalc->Fill(pimBeta,1);
             
+            pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta);
+            scMassSquared->Fill(pimSCMassSq,1);
+            
             pipSCtime = reader.getProperty("sctime",BankIndex_part[2]);
             pipSCpath = reader.getProperty("scpath",BankIndex_part[2]);
             pipBeta = (pipSCpath/pipSCtime)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(pPion.P(), pipBeta);
             Beta_Recalc->Fill(pipBeta,2);
+
+            pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta);
+            scMassSquared->Fill(pipSCMassSq,2);
             
             //
             // End of charged pion ID
@@ -494,6 +500,9 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             emBeta = (emSCpath/emSCtime)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(elec.P(), emBeta);
             Beta_Recalc->Fill(emBeta,0);
+            
+            emSCMassSq = Get_scMassSquared(elec.P(),emBeta);
+            scMassSquared->Fill(emSCMassSq,0);
             
             ElecID_Mom = myElecID.Check_ElecMom(elec.P()); // e- momentum cut
             ElecID_ECvsP = myElecID.Check_ElecECoverP(elec.P(),emECtot,Sector_index,targMass); // e- EC total energy vs momentum cut
@@ -705,9 +714,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(photon1.P(), phot1Beta);
             Beta_Recalc->Fill(phot1Beta,3);
             
+            scMassSq_phot1 = Get_scMassSquared(photon1.P(),phot1Beta);
+            scMassSquared->Fill(scMassSq_phot1,3);
+            
             phot2Beta = (ecpath_phot2/ectime_phot2)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(photon2.P(), phot2Beta);
             Beta_Recalc->Fill(phot2Beta,4);
+            
+            scMassSq_phot2 = Get_scMassSquared(photon2.P(),phot2Beta);
+            scMassSquared->Fill(scMassSq_phot2,4);
             
             cuts_photID1_beta = myPhotID.Check_PhotonBeta(photon1.Beta());
             cuts_photID2_beta = myPhotID.Check_PhotonBeta(photon2.Beta());
@@ -1104,6 +1119,19 @@ int GetSectorByPhi(Double_t phi_rad){
     return ret;
 }
 
+double Get_scMassSquared(double fMom, double fBeta){
+
+    double ret;
+    double fBetaSq = fBeta*fBeta;
+    
+    if(fBetaSq){
+        ret = fMom*fMom*(1.0-fBetaSq)/fBetaSq
+    }else{
+        ret = -99.0;
+    }
+    return ret;
+}
+
 //
 // CheckCut - return 1 for true and 0 for false cut
 //
@@ -1235,6 +1263,10 @@ void BookHist(){
     sprintf(hname,"Beta_Recalc");
     sprintf(htitle,"Beta, Recalculated");
     Beta_Recalc = new TH2D(hname,htitle, 320, 0.4, 2.0, 5, -0.5, 4.5);
+
+    sprintf(hname,"scMassSquared");
+    sprintf(htitle,"TOF Mass^{2}");
+    scMassSquared = new TH2D(hname,htitle, 400, -0.5, 1.5, 5, -0.5, 4.5);
     
     sprintf(hname,"TotalMomentum");
     sprintf(htitle,"Total Momentum");
@@ -1887,6 +1919,10 @@ void WriteHist(string RootFile){
     Beta_Recalc->GetXaxis()->SetTitle("#beta");
     Beta_Recalc->GetYaxis()->SetTitle("Particle");
     Beta_Recalc->Write();
+
+    scMassSquared->GetXaxis()->SetTitle("TOF M^{2} (GeV^{2}/c^{2})");
+    scMassSquared->GetYaxis()->SetTitle("Particle");
+    scMassSquared->Write();
     
     TotalMomentum->GetXaxis()->SetTitle("Momentum (GeV/c)");
     TotalMomentum->GetYaxis()->SetTitle("Particle");

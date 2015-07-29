@@ -57,6 +57,7 @@ TH2D *Xvert_VS_Yvert[5];
 TH2D *Beta_VS_Momentum;
 TH2D *Beta_VS_Momentum_Recalc;
 TH2D *Beta_Recalc;
+TH2D *scMassSquared;
 TH2D *Theta_VS_Phi[7];
 TH2D *TotalMomentum;
 TH2D *elecZVert_VS_Phi;
