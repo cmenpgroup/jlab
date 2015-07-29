@@ -1125,7 +1125,7 @@ double Get_scMassSquared(double fMom, double fBeta){
     double fBetaSq = fBeta*fBeta;
     
     if(fBetaSq){
-        ret = fMom*fMom*(1.0-fBetaSq)/fBetaSq
+        ret = fMom*fMom*(1.0-fBetaSq)/fBetaSq;
     }else{
         ret = -99.0;
     }
