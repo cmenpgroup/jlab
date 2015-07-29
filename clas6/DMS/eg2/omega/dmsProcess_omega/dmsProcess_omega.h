@@ -212,6 +212,7 @@ TH1D *Pi0Mass_PhotIDcuts;
 TH1D *OmegaMass_AllCuts;
 
 int GetSectorByPhi(double phi_rad);
+double Get_scMassSquared(double fMom, double fBeta);
 int process (string inFile, int MaxEvents, int dEvents, int targMass);
 void PrintUsage(char *processName);
 void PrintAnalysisTime(float tStart, float tStop);
