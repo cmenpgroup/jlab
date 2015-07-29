@@ -438,7 +438,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(nPion.P(), pimBeta);
             Beta_Recalc->Fill(pimBeta,1);
             
-            pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta);
+            pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta); // calculate the TOF mass-squared
             scMassSquared->Fill(pimSCMassSq,1);
             
             pipSCtime = reader.getProperty("sctime",BankIndex_part[2]);
@@ -447,7 +447,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(pPion.P(), pipBeta);
             Beta_Recalc->Fill(pipBeta,2);
 
-            pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta);
+            pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta); // calculate the TOF mass-squared
             scMassSquared->Fill(pipSCMassSq,2);
             
             //
