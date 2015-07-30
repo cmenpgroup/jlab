@@ -40,6 +40,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cuts_woBetaPhoton;
     bool cutsAll;
     
+    // electron id cuts
     bool cuts_ElecID;
     bool ElecID_All;
     bool ElecID_Mom;
@@ -72,6 +73,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     bool cuts_photID_ECinTimesECout;
     bool cuts_photID;
     bool cuts_pi0fit_mass;
+    
+    // charged pion id cuts
+    bool cuts_nPion_scmsq;
+    bool cuts_nPion_dbeta;
+    bool cuts_pPion_scmsq;
+    bool cuts_pPion_dbeta;
+    bool cuts_chPion;
     
 	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
     double Qsq, nu, Mx, z_fracEnergy, W;
@@ -119,6 +127,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     OmegaMixedEvent myMixEvt;
     ElectronID myElecID;
     PhotonID myPhotID;
+    ChargedPionID myChPionID;
     EC_geometry myECgeom;
     
     myMixEvt.Put_NumberOfEventsToMix(1); // add number of mixed event iterations
@@ -132,6 +141,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     myMixEvt.Print_Info();
     myElecID.Print_ElectronID();
     myPhotID.Print_PhotonID();
+    myChPionID.Print_ChargedPionID();
     
     TVector3 TargetV3(0.043,-0.33,0);
     
@@ -204,6 +214,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cuts_woOpAng_ElecPhoton = false;
         cuts_woElecR = false;
         
+        // initialize electron id cuts
         ElecID_All = false;
         ElecID_Mom =false;
         ElecID_ECvsP = false;
@@ -235,6 +246,13 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         cuts_photID_ECinTimesECout = false;
         cuts_photID = false;
         cuts_pi0fit_mass = false;
+        
+        // initialize charged pion cuts
+        cuts_nPion_dbeta = false;
+        cuts_nPion_scmsq = false;
+        cuts_pPion_dbeta = false;
+        cuts_pPion_scmsq = false;
+        cuts_chPion = false;
         
         if (!(processed % dEvents)) cout << "Processed Entries: " << processed << endl;
         if (DEBUG) reader.printEvent();
@@ -445,6 +463,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             pimdBeta = pimBeta - pimBetaMass; // difference in beta for measured and ideal beta
             dBeta_VS_Momentum[1]->Fill(nPion.P(), pimdBeta);
             
+            cuts_nPion_dbeta = myChPionID.Check_ChargedPionDiffBeta(pimdBeta); // cut on pi- beta difference
+            
             pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta); // calculate the TOF mass-squared
             scMassSquared->Fill(pimSCMassSq,1);
             
@@ -458,9 +478,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             pipdBeta = pipBeta - pipBetaMass; // difference in beta for measured and ideal beta
             dBeta_VS_Momentum[2]->Fill(pPion.P(), pipdBeta);
             
+            cuts_pPion_dbeta = myChPionID.Check_ChargedPionDiffBeta(pipdBeta); // cut on pi+ beta difference
+            
             pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta); // calculate the TOF mass-squared
             scMassSquared->Fill(pipSCMassSq,2);
             
+            cuts_chPion = cuts_nPion_dbeta && cuts_pPion_dbeta;
             //
             // End of charged pion ID
             //
@@ -1071,7 +1094,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
              // applying all cuts
-            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
+            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW && cuts_chPion);
             if(cutsAll){
                 ctr_omegaID++;
                 IMOmega[Vz_index]->Fill(Omega.M(),8);

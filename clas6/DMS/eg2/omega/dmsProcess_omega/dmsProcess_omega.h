@@ -14,6 +14,7 @@
 #include "EG2Cuts.h"
 #include "ElectronID.h"
 #include "PhotonID.h"
+#include "ChargePionID.h"
 #include "EC_geometry.h"
 #include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
