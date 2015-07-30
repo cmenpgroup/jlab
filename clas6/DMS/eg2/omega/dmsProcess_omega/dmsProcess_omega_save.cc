@@ -80,18 +80,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     double timeEC, timeSC, pathEC, pathSC;
     double dt_ECminusSC[5];
     
-    double pimBeta, pimSCpath, pimSCtime, pimSCMassSq, pimBetaMass, pimdBeta; // variables for pi- id cuts
-    double pipBeta, pipSCpath, pipSCtime, pipSCMassSq, pipBetaMass, pipdBeta; // variables for pi- id cuts
+    double pimBeta, pimSCpath, pimSCtime, pimSCMassSq; // variables for pi- id cuts
+    double pipBeta, pipSCpath, pipSCtime, pipSCMassSq; // variables for pi- id cuts
     
     double emECu, emECv, emECw, emECin, emECout, emECtot, emCCnphe, emdt; // variables for electron id cuts
-    double emECtime, emECpath, emSCtime, emSCpath; // more variables for electron id cuts
-    double emBeta, emSCMassSq, emBetaMass, emdBeta; // more variables for electron id cuts
+    double emECtime, emECpath, emSCtime, emSCpath, emBeta, emSCMassSq; // more variables for electron id cuts
     double eventStartTime; // event start time from HEAD bank
     
     double ectime_phot1, ecpath_phot1, ecu_phot1, ecv_phot1, ecw_phot1, phot1Beta, scMassSq_phot1; //variables for photon 1 cuts
-    double phot1BetaMass, phot1dBeta;
     double ectime_phot2, ecpath_phot2, ecu_phot2, ecv_phot2, ecw_phot2, phot2Beta, scMassSq_phot2; //variables for photon 2 cuts
-    double phot2BetaMass, phot2dBeta;
     double timing_phot1, timing_phot2; // time difference between photon ECtime and ECpath/c
     
     int ctr_elecID_Mom = 0;
@@ -441,11 +438,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(nPion.P(), pimBeta);
             Beta_Recalc->Fill(pimBeta,1);
             
-            pimBetaMass = Get_BetaFromMass(nPion.P(),MASS_PION_CHARGED); // calculate beta from ideal pi- mass
-            pimdBeta = pimBeta - pimBetaMass; // difference in beta for measured and ideal beta
-            dBeta_VS_Momentum[1]->Fill(nPion.P(), pimdBeta);
-            
-            pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta); // calculate the TOF mass-squared
+            pimSCMassSq = Get_scMassSquared(nPion.P(),pimBeta);
             scMassSquared->Fill(pimSCMassSq,1);
             
             pipSCtime = reader.getProperty("sctime",BankIndex_part[2]);
@@ -454,11 +447,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(pPion.P(), pipBeta);
             Beta_Recalc->Fill(pipBeta,2);
 
-            pipBetaMass = Get_BetaFromMass(pPion.P(),MASS_PION_CHARGED); // calculate beta from ideal pi+ mass
-            pipdBeta = pipBeta - pipBetaMass; // difference in beta for measured and ideal beta
-            dBeta_VS_Momentum[2]->Fill(pPion.P(), pipdBeta);
-            
-            pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta); // calculate the TOF mass-squared
+            pipSCMassSq = Get_scMassSquared(pPion.P(),pipBeta);
             scMassSquared->Fill(pipSCMassSq,2);
             
             //
@@ -511,10 +500,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             emBeta = (emSCpath/emSCtime)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(elec.P(), emBeta);
             Beta_Recalc->Fill(emBeta,0);
-            
-            emBetaMass = Get_BetaFromMass(elec.P(),MASS_ELECTRON); // calculate beta from ideal pi- mass
-            emdBeta = emBeta - emBetaMass; // difference in beta for measured and ideal beta
-            dBeta_VS_Momentum[0]->Fill(elec.P(), emdBeta);
             
             emSCMassSq = Get_scMassSquared(elec.P(),emBeta);
             scMassSquared->Fill(emSCMassSq,0);
@@ -729,20 +714,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Beta_VS_Momentum_Recalc->Fill(photon1.P(), phot1Beta);
             Beta_Recalc->Fill(phot1Beta,3);
             
-            phot1BetaMass = Get_BetaFromMass(photon1.P(),MASS_PHOTON); // calculate beta from ideal photon mass
-            phot1dBeta = phot1Beta - phot1BetaMass; // difference in beta for measured and ideal beta
-            dBeta_VS_Momentum[3]->Fill(photon1.P(), phot1dBeta);
-            
             scMassSq_phot1 = Get_scMassSquared(photon1.P(),phot1Beta);
             scMassSquared->Fill(scMassSq_phot1,3);
             
             phot2Beta = (ecpath_phot2/ectime_phot2)/LIGHTSPEED; // re-calculate beta
             Beta_VS_Momentum_Recalc->Fill(photon2.P(), phot2Beta);
             Beta_Recalc->Fill(phot2Beta,4);
-
-            phot2BetaMass = Get_BetaFromMass(photon2.P(),MASS_PHOTON); // calculate beta from ideal photon mass
-            phot2dBeta = phot2Beta - phot2BetaMass; // difference in beta for measured and ideal beta
-            dBeta_VS_Momentum[4]->Fill(photon2.P(), phot2dBeta);
             
             scMassSq_phot2 = Get_scMassSquared(photon2.P(),phot2Beta);
             scMassSquared->Fill(scMassSq_phot2,4);
@@ -892,29 +869,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             scMassSquared_photID->Fill(scMassSq_phot1,3);
             scMassSquared_photID->Fill(scMassSq_phot2,4);
         }
-
-        /*
-            1 - pi+ pi-
-            2 - pi+ pi0
-            3 - pi- pi0
-        */
-
-        TLorentzVector pipPi0 = pPion + TwoPhoton;
-        TLorentzVector pimPi0 = nPion + TwoPhoton;
-        mass2Pions_VS_massOmega_NC[0]->Fill(TwoPion.M(), Omega.M()); // no cuts
-        mass2Pions_VS_massOmega_NC[1]->Fill(pipPi0.M(), Omega.M()); // no cuts
-        mass2Pions_VS_massOmega_NC[2]->Fill(pimPi0.M(), Omega.M()); // no cuts
         
         //
         // Start omega ID
         //
         if(ElecID_All && cuts_photID){
-            dBeta_VS_Momentum_EPC[0]->Fill(elec.P(), emdBeta);
-            dBeta_VS_Momentum_EPC[1]->Fill(nPion.P(), pimdBeta);
-            dBeta_VS_Momentum_EPC[2]->Fill(pPion.P(), pipdBeta);
-            dBeta_VS_Momentum_EPC[3]->Fill(photon1.P(), phot1dBeta);
-            dBeta_VS_Momentum_EPC[4]->Fill(photon2.P(), phot2dBeta);
-
             scMassSquared_elecIDphotID->Fill(emSCMassSq,0);
             scMassSquared_elecIDphotID->Fill(pimSCMassSq,1);
             scMassSquared_elecIDphotID->Fill(pipSCMassSq,2);
@@ -948,15 +907,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Pt_VS_IMOmega[Vz_index]->Fill(Omega.Pt(), Omega.M()); // variable = omega trans. mom.
             Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
             OpAng_VS_IMOmega[Vz_index]->Fill(Omega.M(), TwoPhotonAngle); // variable = 2 photon opening angle
-
-            /*
-                1 - pi+ pi-
-                2 - pi+ pi0
-                3 - pi- pi0
-            */
-            mass2Pions_VS_massOmega_EPC[0]->Fill(TwoPion.M(), Omega.M()); // electron and photon cuts
-            mass2Pions_VS_massOmega_EPC[1]->Fill(pipPi0.M(), Omega.M()); // electron and photon cuts
-            mass2Pions_VS_massOmega_EPC[2]->Fill(pimPi0.M(), Omega.M()); // electron and photon cuts
 
             // set the cuts
             cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M()); // pi0 mass cut
@@ -1081,15 +1031,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
                 Xvert_VS_Yvert_AllCuts[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
 
-                /*
-                    1 - pi+ pi-
-                    2 - pi+ pi0
-                    3 - pi- pi0
-                */
-                mass2Pions_VS_massOmega_EPOC[0]->Fill(TwoPion.M(), Omega.M()); // electron, photon, and omega cuts
-                mass2Pions_VS_massOmega_EPOC[1]->Fill(pipPi0.M(), Omega.M()); // electron, photon, and omega cuts
-                mass2Pions_VS_massOmega_EPOC[2]->Fill(pimPi0.M(), Omega.M()); // electron, photon, and omega cuts
-
                 if(cutOmegaMass){
                     Xvert_VS_Yvert_Omega[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
                     PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
@@ -1200,11 +1141,6 @@ int GetSectorByPhi(Double_t phi_rad){
     return ret;
 }
 
-// Return the Time-of-Flight mass squared
-//
-//          fMom = particle momentum
-//          fBeta = particle beta
-//
 double Get_scMassSquared(double fMom, double fBeta){
 
     double ret;
@@ -1212,24 +1148,6 @@ double Get_scMassSquared(double fMom, double fBeta){
     
     if(fBetaSq){
         ret = fMom*fMom*(1.0-fBetaSq)/fBetaSq;
-    }else{
-        ret = -99.0;
-    }
-    return ret;
-}
-
-
-// Return the expected particle beta given the mass and momentum
-//
-//          fMom = particle momentum
-//          fMass = particle mass
-//
-double Get_BetaFromMass(double fMom, double fMass){
-    
-    double ret;
-    
-    if(fMom){
-        ret = 1.0/sqrt((fMass*fMass)/(fMom*fMom) + 1.0);
     }else{
         ret = -99.0;
     }
@@ -1443,14 +1361,6 @@ void BookHist(){
         sprintf(hname,"ECtotP_VS_P_%s",myDetPart.Get_DetPartLabel(i).c_str());
         sprintf(htitle,"ECtot/P vs P, %s",myDetPart.Get_DetPartLabel(i).c_str());
         ECtotP_VS_P[i] = new TH2D(hname,htitle, 500, 0, 5, 100, 0, 0.5);
-        
-        sprintf(hname,"dBeta_VS_Momentum_%s",myDetPart.Get_DetPartLabel(i).c_str());
-        sprintf(htitle,"#Delta #beta vs Momentum, %s",myDetPart.Get_DetPartLabel(i).c_str());
-        dBeta_VS_Momentum[i] = new TH2D(hname,htitle, 500, 0, 5, 200, -0.25, 0.25);
-
-        sprintf(hname,"dBeta_VS_Momentum_EPC_%s",myDetPart.Get_DetPartLabel(i).c_str());
-        sprintf(htitle,"#Delta #beta vs Momentum with e- and photon ID, %s",myDetPart.Get_DetPartLabel(i).c_str());
-        dBeta_VS_Momentum_EPC[i] = new TH2D(hname,htitle, 500, 0, 5, 200, -0.25, 0.25);
     }
 
     // electron ID histogram
@@ -1963,42 +1873,6 @@ void BookHist(){
     sprintf(hname,"Recon_Omega_Mass_All_Cuts");
     sprintf(htitle,"Reconstructed #omega Mass - All Cuts");
     OmegaMass_AllCuts = new TH1D(hname,htitle,100,0,3);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_NC1");
-    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - No Cuts");
-    mass2Pions_VS_massOmega_NC[0] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_NC2");
-    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - No Cuts");
-    mass2Pions_VS_massOmega_NC[1] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_NC3");
-    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - No Cuts");
-    mass2Pions_VS_massOmega_NC[2] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPC1");
-    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron and Photon Cuts");
-    mass2Pions_VS_massOmega_EPC[0] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPC2");
-    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron and Photon Cuts");
-    mass2Pions_VS_massOmega_EPC[1] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPC3");
-    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron and Photon Cuts");
-    mass2Pions_VS_massOmega_EPC[2] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPOC1");
-    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron, Photon, and Omega Cuts");
-    mass2Pions_VS_massOmega_EPOC[0] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPOC2");
-    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron, Photon, and Omega Cuts");
-    mass2Pions_VS_massOmega_EPOC[1] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPOC3");
-    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Electron, Photon, and Omega Cuts");
-    mass2Pions_VS_massOmega_EPOC[2] = new TH2D(hname, htitle, 100, 0, 1., nIMomega, IMomegaLo, IMomegaHi);
 }
 
 //
@@ -2122,18 +1996,6 @@ void WriteHist(string RootFile){
         Xvert_VS_Yvert[i]->GetXaxis()->SetTitle("X vertex (cm)");
         Xvert_VS_Yvert[i]->GetYaxis()->SetTitle("Y vertex (cm)");
         Xvert_VS_Yvert[i]->Write();
-    }
-
-    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
-        dBeta_VS_Momentum[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
-        dBeta_VS_Momentum[i]->GetYaxis()->SetTitle("#Delta #beta");
-        dBeta_VS_Momentum[i]->Write();
-    }
-
-    for(i=0; i<myDetPart.Get_nDetPartLabel(); i++){
-        dBeta_VS_Momentum_EPC[i]->GetXaxis()->SetTitle("Momentum (GeV/c)");
-        dBeta_VS_Momentum_EPC[i]->GetYaxis()->SetTitle("#Delta #beta");
-        dBeta_VS_Momentum_EPC[i]->Write();
     }
     
     // create a directory for check on detector info
@@ -2721,42 +2583,6 @@ void WriteHist(string RootFile){
     OmegaMass_AllCuts->GetXaxis()->SetTitle("Reconstructed #omega mass (GeV/c^{2})");
     OmegaMass_AllCuts->GetYaxis()->SetTitle("Counts");
     OmegaMass_AllCuts->Write();
-
-    mass2Pions_VS_massOmega_NC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
-    mass2Pions_VS_massOmega_NC[0]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_NC[0]->Write();
-
-    mass2Pions_VS_massOmega_NC[1]->GetXaxis()->SetTitle("IM #pi^{+} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_NC[1]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_NC[1]->Write();
-
-    mass2Pions_VS_massOmega_NC[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_NC[2]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_NC[2]->Write();
-
-    mass2Pions_VS_massOmega_EPC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPC[0]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPC[0]->Write();
-
-    mass2Pions_VS_massOmega_EPC[1]->GetXaxis()->SetTitle("IM #pi^{+} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPC[1]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPC[1]->Write();
-
-    mass2Pions_VS_massOmega_EPC[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPC[2]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPC[2]->Write();
-
-    mass2Pions_VS_massOmega_EPOC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPOC[0]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPOC[0]->Write();
-
-    mass2Pions_VS_massOmega_EPOC[1]->GetXaxis()->SetTitle("IM #pi^{+} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPOC[1]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPOC[1]->Write();
-
-    mass2Pions_VS_massOmega_EPOC[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPOC[2]->GetYaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2})");
-    mass2Pions_VS_massOmega_EPOC[2]->Write();
     
     out->Close();
 }
