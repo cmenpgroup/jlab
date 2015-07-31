@@ -9,7 +9,7 @@ ChargedPionID::ChargedPionID()
     ChargedPionIDLabel.push_back("SCMassSq");
     ChargedPionIDLabel.push_back("DiffBeta");
 
-    RangeChargedPionDiffBeta.push_back(-0.4); // Lower limit on beta_TOF - beta_ideal
+    RangeChargedPionDiffBeta.push_back(-0.035); // Lower limit on beta_TOF - beta_ideal
     RangeChargedPionDiffBeta.push_back(0.025); // Upper limit on beta_TOF - beta_ideal
     
     double Centroid, Width, Nsigmas, Lo, Hi;
