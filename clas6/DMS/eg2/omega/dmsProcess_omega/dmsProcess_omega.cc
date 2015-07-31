@@ -446,6 +446,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         if(reader.getBankRows("EVNT")){
             cuts_photID = true;
             ElecID_All = true;
+            cuts_chPion = true;
         }
         
         // Use EXPB to select the PID cuts
@@ -931,7 +932,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         //
         // Start omega ID
         //
-        if(ElecID_All && cuts_photID){
+        if(ElecID_All && cuts_photID && cuts_chPion){
             dBeta_VS_Momentum_EPC[0]->Fill(elec.P(), emdBeta);
             dBeta_VS_Momentum_EPC[1]->Fill(nPion.P(), pimdBeta);
             dBeta_VS_Momentum_EPC[2]->Fill(pPion.P(), pipdBeta);
@@ -1094,7 +1095,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
              // applying all cuts
-            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW && cuts_chPion);
+            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
             if(cutsAll){
                 ctr_omegaID++;
                 IMOmega[Vz_index]->Fill(Omega.M(),8);
