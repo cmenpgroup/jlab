@@ -18,8 +18,8 @@ ChargedPionID::ChargedPionID()
     Nsigmas = 3.0;
     Lo = Centroid - Nsigmas*Width;
     Hi = Centroid + Nsigmas*Width;
-    RangeChargedPionSCMassSq.push_back(dtLo);
-    RangeChargedPionSCMassSq.push_back(dtHi);
+    RangeChargedPionSCMassSq.push_back(Lo);
+    RangeChargedPionSCMassSq.push_back(Hi);
 
 }
 
