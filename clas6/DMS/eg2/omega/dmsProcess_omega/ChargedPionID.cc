@@ -13,11 +13,11 @@ ChargedPionID::ChargedPionID()
     RangeChargedPionDiffBeta.push_back(0.025); // Upper limit on beta_TOF - beta_ideal
     
     double Centroid, Width, Nsigmas, Lo, Hi;
-    dtCentroid = 0.017956;
-    dtWidth = 0.005;
-    dtNsigmas = 3.0;
-    dtLo = dtCentroid - dtNsigmas*dtWidth;
-    dtHi = dtCentroid + dtNsigmas*dtWidth;
+    Centroid = 0.017956;
+    Width = 0.005;
+    Nsigmas = 3.0;
+    Lo = Centroid - Nsigmas*Width;
+    Hi = Centroid + Nsigmas*Width;
     RangeChargedPionSCMassSq.push_back(dtLo);
     RangeChargedPionSCMassSq.push_back(dtHi);
 
