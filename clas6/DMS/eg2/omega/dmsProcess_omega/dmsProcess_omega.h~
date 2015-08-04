@@ -213,6 +213,9 @@ TH2D *EC_XvsY_local_AntiFidCut_Photon2[6];
 //recon
 TH1D *Pi0Mass_PhotIDcuts;
 TH1D *OmegaMass_AllCuts;
+TH2D *mass2Pions_VS_massOmega_NC[3];
+TH2D *mass2Pions_VS_massOmega_EPC[3];
+TH2D *mass2Pions_VS_massOmega_EPOC[3];
 
 int GetSectorByPhi(double phi_rad);
 double Get_scMassSquared(double fMom, double fBeta);
