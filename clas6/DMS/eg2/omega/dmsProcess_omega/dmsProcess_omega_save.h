@@ -14,7 +14,6 @@
 #include "EG2Cuts.h"
 #include "ElectronID.h"
 #include "PhotonID.h"
-#include "ChargedPionID.h"
 #include "EC_geometry.h"
 #include "Vertex_Corrections.h"
 #include "OmegaMixedEvent.h"
@@ -57,8 +56,6 @@ TH2D *ZVertDiff;
 TH2D *Xvert_VS_Yvert[5];
 TH2D *Beta_VS_Momentum;
 TH2D *Beta_VS_Momentum_Recalc;
-TH2D *dBeta_VS_Momentum[5];
-TH2D *dBeta_VS_Momentum_EPC[5];
 TH2D *Beta_Recalc;
 TH2D *scMassSquared;
 TH2D *scMassSquared_elecID;
@@ -216,19 +213,9 @@ TH2D *EC_XvsY_local_AntiFidCut_Photon2[6];
 //recon
 TH1D *Pi0Mass_PhotIDcuts;
 TH1D *OmegaMass_AllCuts;
-TH2D *mass2Pions_VS_massOmega_NC[3];
-TH1D *mass2Pions_VS_massOmega_NCX[3];
-TH1D *mass2Pions_VS_massOmega_NCY[3];
-TH2D *mass2Pions_VS_massOmega_EPC[3];
-TH1D *mass2Pions_VS_massOmega_EPCX[3];
-TH1D *mass2Pions_VS_massOmega_EPCY[3];
-TH2D *mass2Pions_VS_massOmega_EPOC[3];
-TH1D *mass2Pions_VS_massOmega_EPOCX[3];
-TH1D *mass2Pions_VS_massOmega_EPOCY[3];
 
 int GetSectorByPhi(double phi_rad);
 double Get_scMassSquared(double fMom, double fBeta);
-double Get_BetaFromMass(double fMom, double fMass);
 int process (string inFile, int MaxEvents, int dEvents, int targMass);
 void PrintUsage(char *processName);
 void PrintAnalysisTime(float tStart, float tStop);
