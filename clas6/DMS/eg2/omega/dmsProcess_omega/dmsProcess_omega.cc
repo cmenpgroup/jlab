@@ -925,18 +925,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
 
         TLorentzVector pipPi0 = pPion + TwoPhoton;
         TLorentzVector pimPi0 = nPion + TwoPhoton;
-        mass2Pions_VS_massOmega_NC[0]->Fill(TwoPion.M(), Omega.M()); // no cuts
-        mass2Pions_VS_massOmega_NC[1]->Fill(pipPi0.M(), Omega.M()); // no cuts
-        mass2Pions_VS_massOmega_NC[2]->Fill(pimPi0.M(), Omega.M()); // no cuts
-
-        mass2Pions_VS_massOmega_NCX[0] = mass2Pions_VS_massOmega_NC[0]->ProjectionX();
-        mass2Pions_VS_massOmega_NCX[1] = mass2Pions_VS_massOmega_NC[1]->ProjectionX();
-        mass2Pions_VS_massOmega_NCX[2] = mass2Pions_VS_massOmega_NC[2]->ProjectionX();
-
-        mass2Pions_VS_massOmega_NCY[0] = mass2Pions_VS_massOmega_NC[0]->ProjectionY();
-        mass2Pions_VS_massOmega_NCY[1] = mass2Pions_VS_massOmega_NC[1]->ProjectionY();
-        mass2Pions_VS_massOmega_NCY[2] = mass2Pions_VS_massOmega_NC[2]->ProjectionY();
-        
+        if(TwoPion.M() < 0.48 || TwoPion.M() > 0.51) {
+            mass2Pions_VS_massOmega_NC[0]->Fill(TwoPion.M(), Omega.M()); // no cuts
+            mass2Pions_VS_massOmega_NC[1]->Fill(pipPi0.M(), Omega.M()); // no cuts
+            mass2Pions_VS_massOmega_NC[2]->Fill(pimPi0.M(), Omega.M()); // no cuts
+        }
         //
         // Start omega ID
         //
@@ -986,16 +979,12 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 2 - pi+ pi0
                 3 - pi- pi0
             */
-            mass2Pions_VS_massOmega_EPC[0]->Fill(TwoPion.M(), Omega.M()); // electron and photon cuts
-            mass2Pions_VS_massOmega_EPC[1]->Fill(pipPi0.M(), Omega.M()); // electron and photon cuts
-            mass2Pions_VS_massOmega_EPC[2]->Fill(pimPi0.M(), Omega.M()); // electron and photon cuts
-            mass2Pions_VS_massOmega_EPCX[0] = mass2Pions_VS_massOmega_EPC[0]->ProjectionX();
-            mass2Pions_VS_massOmega_EPCX[1] = mass2Pions_VS_massOmega_EPC[1]->ProjectionX();
-            mass2Pions_VS_massOmega_EPCX[2] = mass2Pions_VS_massOmega_EPC[2]->ProjectionX();
 
-            mass2Pions_VS_massOmega_EPCY[0] = mass2Pions_VS_massOmega_EPC[0]->ProjectionY();
-            mass2Pions_VS_massOmega_EPCY[1] = mass2Pions_VS_massOmega_EPC[1]->ProjectionY();
-            mass2Pions_VS_massOmega_EPCY[2] = mass2Pions_VS_massOmega_EPC[2]->ProjectionY();
+            if(TwoPion.M() < 0.48 || TwoPion.M() > 0.51) {
+                mass2Pions_VS_massOmega_EPC[0]->Fill(TwoPion.M(), Omega.M()); // electron and photon cuts
+                mass2Pions_VS_massOmega_EPC[1]->Fill(pipPi0.M(), Omega.M()); // electron and photon cuts
+                mass2Pions_VS_massOmega_EPC[2]->Fill(pimPi0.M(), Omega.M()); // electron and photon cuts
+            }
 
             // set the cuts
             cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M()); // pi0 mass cut
@@ -1125,18 +1114,11 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                     2 - pi+ pi0
                     3 - pi- pi0
                 */
-                mass2Pions_VS_massOmega_EPOC[0]->Fill(TwoPion.M(), Omega.M()); // electron, photon, and omega cuts
-                mass2Pions_VS_massOmega_EPOC[1]->Fill(pipPi0.M(), Omega.M()); // electron, photon, and omega cuts
-                mass2Pions_VS_massOmega_EPOC[2]->Fill(pimPi0.M(), Omega.M()); // electron, photon, and omega cuts
-
-                mass2Pions_VS_massOmega_EPOCX[0] = mass2Pions_VS_massOmega_EPOC[0]->ProjectionX();
-                mass2Pions_VS_massOmega_EPOCX[1] = mass2Pions_VS_massOmega_EPOC[1]->ProjectionX();
-                mass2Pions_VS_massOmega_EPOCX[2] = mass2Pions_VS_massOmega_EPOC[2]->ProjectionX();
-
-                mass2Pions_VS_massOmega_EPOCY[0] = mass2Pions_VS_massOmega_EPOC[0]->ProjectionY();
-                mass2Pions_VS_massOmega_EPOCY[1] = mass2Pions_VS_massOmega_EPOC[1]->ProjectionY();
-                mass2Pions_VS_massOmega_EPOCY[2] = mass2Pions_VS_massOmega_EPOC[2]->ProjectionY();
-
+                if(TwoPion.M() < 0.48 || TwoPion.M() > 0.51) {
+                    mass2Pions_VS_massOmega_EPOC[0]->Fill(TwoPion.M(), Omega.M()); // electron, photon, and omega cuts
+                    mass2Pions_VS_massOmega_EPOC[1]->Fill(pipPi0.M(), Omega.M()); // electron, photon, and omega cuts
+                    mass2Pions_VS_massOmega_EPOC[2]->Fill(pimPi0.M(), Omega.M()); // electron, photon, and omega cuts
+                }
                 if(cutOmegaMass){
                     Xvert_VS_Yvert_Omega[Vz_index]->Fill(elec_vert.X(), elec_vert.Y());
                     PtSq_Omega_AllCuts_IMOmegaCut[Vz_index]->Fill(Omega.Perp2());
@@ -1171,6 +1153,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
                 }
             }
         }
+
         //
         // End omega ID
         //
@@ -1198,6 +1181,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         //-----------------------------------------------------
     }
+    mass2Pions_VS_massOmega_NCX[0] = mass2Pions_VS_massOmega_NC[0]->ProjectionX();
+    mass2Pions_VS_massOmega_NCX[1] = mass2Pions_VS_massOmega_NC[1]->ProjectionX();
+    mass2Pions_VS_massOmega_NCX[2] = mass2Pions_VS_massOmega_NC[2]->ProjectionX();
+    mass2Pions_VS_massOmega_EPCX[0] = mass2Pions_VS_massOmega_EPC[0]->ProjectionX();
+    mass2Pions_VS_massOmega_EPCX[1] = mass2Pions_VS_massOmega_EPC[1]->ProjectionX();
+    mass2Pions_VS_massOmega_EPCX[2] = mass2Pions_VS_massOmega_EPC[2]->ProjectionX();
+    mass2Pions_VS_massOmega_EPOCX[0] = mass2Pions_VS_massOmega_EPOC[0]->ProjectionX();
+    mass2Pions_VS_massOmega_EPOCX[1] = mass2Pions_VS_massOmega_EPOC[1]->ProjectionX();
+    mass2Pions_VS_massOmega_EPOCX[2] = mass2Pions_VS_massOmega_EPOC[2]->ProjectionX();
     cout<<endl;
     cout<<"Statistics on cuts"<<endl;
     cout<<"Electron ID "<<ctr_elecID<<" ("<<float(ctr_elecID)/float(entries)<<")"<<endl;
@@ -2034,18 +2026,6 @@ void BookHist(){
     sprintf(hname,"mass2Pions_VS_massOmega_NCX3");
     sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - X Projection No Cuts");
     mass2Pions_VS_massOmega_NCX[2] = new TH1D(hname, htitle, 100, 0, 1.);//, nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_NCY1");
-    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection No Cuts");
-    mass2Pions_VS_massOmega_NCY[0] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_NCY2");
-    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection No Cuts");
-    mass2Pions_VS_massOmega_NCY[1] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_NCY3");
-    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection No Cuts");
-    mass2Pions_VS_massOmega_NCY[2] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
 //endtodo
 
     sprintf(hname,"mass2Pions_VS_massOmega_EPC1");
@@ -2072,18 +2052,6 @@ void BookHist(){
     sprintf(hname,"mass2Pions_VS_massOmega_EPCX3");
     sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - X Projection Electron and Photon Cuts");
     mass2Pions_VS_massOmega_EPCX[2] = new TH1D(hname, htitle, 100, 0, 1.);//, nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPCY1");
-    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection Electron and Photon Cuts");
-    mass2Pions_VS_massOmega_EPCY[0] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPCY2");
-    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection Electron and Photon Cuts");
-    mass2Pions_VS_massOmega_EPCY[1] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPCY3");
-    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection Electron and Photon Cuts");
-    mass2Pions_VS_massOmega_EPCY[2] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
 //endtodo
 
     sprintf(hname,"mass2Pions_VS_massOmega_EPOC1");
@@ -2110,18 +2078,6 @@ void BookHist(){
     sprintf(hname,"mass2Pions_VS_massOmega_EPOCX3");
     sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - X Projection Electron, Photon, and Omega Cuts");
     mass2Pions_VS_massOmega_EPOCX[2] = new TH1D(hname, htitle, 100, 0, 1.);//, nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPOCY1");
-    sprintf(htitle,"IM #pi^{+} #pi^{-} vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection Electron, Photon, and Omega Cuts");
-    mass2Pions_VS_massOmega_EPOCY[0] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPOCY2");
-    sprintf(htitle,"IM #pi^{+} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection Electron, Photon, and Omega Cuts");
-    mass2Pions_VS_massOmega_EPOCY[1] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
-
-    sprintf(hname,"mass2Pions_VS_massOmega_EPOCY3");
-    sprintf(htitle,"IM #pi^{-} #gamma #gamma vs IM #pi^{+} #pi^{-} #gamma #gamma - Y Projection Electron, Photon, and Omega Cuts");
-    mass2Pions_VS_massOmega_EPOCY[2] = new TH1D(hname, htitle, /*100, 0, 1., */nIMomega, IMomegaLo, IMomegaHi);
 //endtodo
 }
 
@@ -2870,18 +2826,6 @@ void WriteHist(string RootFile){
     mass2Pions_VS_massOmega_NCX[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
     mass2Pions_VS_massOmega_NCX[2]->GetYaxis()->SetTitle("Counts");
     mass2Pions_VS_massOmega_NCX[2]->Write();
-
-    mass2Pions_VS_massOmega_NCY[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [+-]");
-    mass2Pions_VS_massOmega_NCY[0]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_NCY[0]->Write();
-
-    mass2Pions_VS_massOmega_NCY[1]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [+0]");
-    mass2Pions_VS_massOmega_NCY[1]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_NCY[1]->Write();
-
-    mass2Pions_VS_massOmega_NCY[2]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [-0]");
-    mass2Pions_VS_massOmega_NCY[2]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_NCY[2]->Write();
 //endtodo
 
     mass2Pions_VS_massOmega_EPC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
@@ -2908,18 +2852,6 @@ void WriteHist(string RootFile){
     mass2Pions_VS_massOmega_EPCX[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
     mass2Pions_VS_massOmega_EPCX[2]->GetYaxis()->SetTitle("Counts");
     mass2Pions_VS_massOmega_EPCX[2]->Write();
-
-    mass2Pions_VS_massOmega_EPCY[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [+-]");
-    mass2Pions_VS_massOmega_EPCY[0]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_EPCY[0]->Write();
-
-    mass2Pions_VS_massOmega_EPCY[1]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [+0]");
-    mass2Pions_VS_massOmega_EPCY[1]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_EPCY[1]->Write();
-
-    mass2Pions_VS_massOmega_EPCY[2]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [-0]");
-    mass2Pions_VS_massOmega_EPCY[2]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_EPCY[2]->Write();
 //endtodo
 
     mass2Pions_VS_massOmega_EPOC[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} (GeV/c^{2})");
@@ -2946,18 +2878,6 @@ void WriteHist(string RootFile){
     mass2Pions_VS_massOmega_EPOCX[2]->GetXaxis()->SetTitle("IM #pi^{-} #gamma #gamma (GeV/c^{2})");
     mass2Pions_VS_massOmega_EPOCX[2]->GetYaxis()->SetTitle("Counts");
     mass2Pions_VS_massOmega_EPOCX[2]->Write();
-
-    mass2Pions_VS_massOmega_EPOCY[0]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [+-]");
-    mass2Pions_VS_massOmega_EPOCY[0]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_EPOCY[0]->Write();
-
-    mass2Pions_VS_massOmega_EPOCY[1]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [+0]");
-    mass2Pions_VS_massOmega_EPOCY[1]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_EPOCY[1]->Write();
-
-    mass2Pions_VS_massOmega_EPOCY[2]->GetXaxis()->SetTitle("IM #pi^{+} #pi^{-} #gamma #gamma (GeV/c^{2}) [-0]");
-    mass2Pions_VS_massOmega_EPOCY[2]->GetYaxis()->SetTitle("Counts");
-    mass2Pions_VS_massOmega_EPOCY[2]->Write();
 //endtodo
     
     out->Close();
