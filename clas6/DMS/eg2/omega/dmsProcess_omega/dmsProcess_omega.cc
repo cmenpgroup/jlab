@@ -16,6 +16,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
     int BankIndex_part[5];
     
     bool cutPi0Mass;
+    bool cutPipPimMass;
     bool cutZDiff_ElectronNPion;
     bool cutZDiff_ElectronPPion;
     bool cutZDiff;
@@ -192,6 +193,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
         
         // Initialize the cuts
         cutPi0Mass = false;
+        cutPipPimMass = false;
         cutZDiff_ElectronNPion = false;
         cutZDiff_ElectronPPion = false;
         cutZDiff = false;
@@ -974,22 +976,23 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             Pl_VS_IMOmega[Vz_index]->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
             OpAng_VS_IMOmega[Vz_index]->Fill(Omega.M(), TwoPhotonAngle); // variable = 2 photon opening angle
 
-            /*
-                1 - pi+ pi-
-                2 - pi+ pi0
-                3 - pi- pi0
-            */
-
-            if(TwoPion.M() < 0.48 || TwoPion.M() > 0.51) {
-                mass2Pions_VS_massOmega_EPC[0]->Fill(TwoPion.M(), Omega.M()); // electron and photon cuts
-                mass2Pions_VS_massOmega_EPC[1]->Fill(pipPi0.M(), Omega.M()); // electron and photon cuts
-                mass2Pions_VS_massOmega_EPC[2]->Fill(pimPi0.M(), Omega.M()); // electron and photon cuts
-            }
-
             // set the cuts
             cutPi0Mass = myCuts.Check_MassPi0(TwoPhoton.M()); // pi0 mass cut
             cutQSquared = myCuts.Check_QSquared(Qsq); // Q^2 cut
             cutW = myCuts.Check_Wcut(W); // W cut
+            cutPipPimMass = myCuts.Check_MassPipPim(TwoPion.M()); // pi+ pi- inv. mass cut
+            
+            /*
+             1 - pi+ pi-
+             2 - pi+ pi0
+             3 - pi- pi0
+             */
+            
+            if(cutPipPimMass) {
+                mass2Pions_VS_massOmega_EPC[0]->Fill(TwoPion.M(), Omega.M()); // electron and photon cuts
+                mass2Pions_VS_massOmega_EPC[1]->Fill(pipPi0.M(), Omega.M()); // electron and photon cuts
+                mass2Pions_VS_massOmega_EPC[2]->Fill(pimPi0.M(), Omega.M()); // electron and photon cuts
+            }
             
             cutZDiff_ElectronNPion = myCuts.Check_Zdiff_ElecPim(elecNPionZVertDiff); // e-,pi- z-vertex matching cut
             cutZDiff_ElectronPPion = myCuts.Check_Zdiff_ElecPip(elecPPionZVertDiff); // e-,pi+ z-vertex matching cut
@@ -1099,7 +1102,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass) {
             }
             
              // applying all cuts
-            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW);
+            cutsAll = (cutPi0Mass && cutZDiff && cutQSquared && cutOpAng_ElecPhoton && cutW && cutPipPimMass);
             if(cutsAll){
                 ctr_omegaID++;
                 IMOmega[Vz_index]->Fill(Omega.M(),8);

@@ -13,6 +13,7 @@ EG2Cuts::EG2Cuts()
     CutsLabel.push_back("BetaPhoton");
     CutsLabel.push_back("Wcut");
     CutsLabel.push_back("ElectronR");
+    CutsLabel.push_back("MassPipPim");
     CutsLabel.push_back("MassOmega");
     CutsLabel.push_back("MassOmega_sideband");
     
@@ -41,6 +42,9 @@ EG2Cuts::EG2Cuts()
     
     RangeBetaPhoton.push_back(0.95); // Lower limit on photon beta
     RangeBetaPhoton.push_back(1.05); // Upper limit photon beta
+
+    RangeMassPipPim.push_back(0.48); // Lower limit on pi+ pi- inv. mass
+    RangeMassPipPim.push_back(0.51); // Upper limit on pi+ pi- inv. mass
     
     RangeOpAng_ElecPhoton.push_back(12.0); // Lower limit on opening angle between e- and photon (in degrees)
     RangeOpAng_ElecPhoton.push_back(180.0); // Upper limit on opening angle between e- and photon (in degrees)
@@ -74,6 +78,14 @@ bool EG2Cuts::Check_MassPi0(double mass)
 	bool ret = (mass >= this->Get_MassPi0_lo() && mass < this->Get_MassPi0_hi()) ? true : false;
 	
 	return ret;
+}
+
+// check the cut on pi0 mass
+bool EG2Cuts::Check_MassPipPim(double mass)
+{
+    bool ret = (mass < this->Get_MassPipPim_lo() || mass > this->Get_MassPipPim_hi()) ? true : false;
+    
+    return ret;
 }
 
 // check the cut on Q^2
@@ -153,6 +165,8 @@ void EG2Cuts::Print_Cuts()
             cout << "[" << this->Get_Zdiff_ElecPip_lo() << "," << this->Get_Zdiff_ElecPip_hi() << "] (cm)" << endl;
         }else if (this->Get_CutsLabel(ii).compare("MassPi0")==0) {
             cout << "[" << this->Get_MassPi0_lo() << "," << this->Get_MassPi0_hi() << "] (GeV/c^2)" << endl;
+        }else if (this->Get_CutsLabel(ii).compare("MassPipPim")==0) {
+            cout << "[" << this->Get_MassPipPim_lo() << "," << this->Get_MassPipPim_hi() << "] (GeV/c^2)"<<endl;
         }else if (this->Get_CutsLabel(ii).compare("QSquared")==0) {
             cout << "[" << this->Get_QSquared_lo() << "," << this->Get_QSquared_hi() << "] (GeV^2)" << endl;
         }else if (this->Get_CutsLabel(ii).compare("Wcut")==0) {

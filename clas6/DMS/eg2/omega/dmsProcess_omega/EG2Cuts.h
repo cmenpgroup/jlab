@@ -11,6 +11,7 @@ class EG2Cuts
     vector<double> RangeZdiff_ElecPim;
     vector<double> RangeZdiff_ElecPip;
     vector<double> RangeMassPi0;
+    vector<double> RangeMassPipPim;
     vector<double> RangeQSquared;
     vector<double> RangeOpAng_ElecPhoton;
     vector<double> RangeBetaPhoton;
@@ -28,6 +29,8 @@ public:
     double Get_Zdiff_ElecPip_hi() {return RangeZdiff_ElecPip[1];};
     double Get_MassPi0_lo() {return RangeMassPi0[0];};
     double Get_MassPi0_hi() {return RangeMassPi0[1];};
+    double Get_MassPipPim_lo() {return RangeMassPipPim[0];};
+    double Get_MassPipPim_hi() {return RangeMassPipPim[1];};
     double Get_QSquared_lo() {return RangeQSquared[0];};
     double Get_QSquared_hi() {return RangeQSquared[1];};
     double Get_BetaPhoton_lo() {return RangeBetaPhoton[0];};
@@ -45,6 +48,7 @@ public:
     bool Check_Zdiff_ElecPim(double zdiff);
     bool Check_Zdiff_ElecPip(double zdiff);
     bool Check_MassPi0(double mass);
+    bool Check_MassPipPim(double mass);
     bool Check_QSquared(double Qsq);
     bool Check_OpAng_ElecPhoton(double OpAng);
     bool Check_Wcut(double W);
