@@ -482,7 +482,7 @@ void PhotonID::SetCut_PhotonECinTimesECout_All()
 void PhotonID::SetCut_Photon_All()
 {
 //    cuts_photID = (this->GetCut_PhotonECinTimesECout_All() && this->GetCut_PhotonTiming_All() && this->GetCut_PhotonECfid_All() && this->GetCut_PhotonMom_All() && this->GetCut_PhotonBeta_All());
-    cuts_photID = (this->GetCut_PhotonTiming_All() && this->GetCut_PhotonECfid_All() && this->GetCut_PhotonMom_All() && this->GetCut_PhotonBeta_All());
+    cuts_photID = (this->GetCut_PhotonTiming_All() && this->GetCut_PhotonECfid_All() && this->GetCut_PhotonMom_All() && this->GetCut_PhotonBeta_All() && this->GetCut_PhotonSCMsq_All());
 
 }
 
