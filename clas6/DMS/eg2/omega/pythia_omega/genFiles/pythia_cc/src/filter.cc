@@ -49,13 +49,10 @@ bool Filter::Cut()
     //loop over tracks
     for(int i=0; i<trk.Ntracks; i++){
         if(trk.ks[i]==this->GetKScut()){
-            switch(trk.type[i]){
-                case this->GetPartType(0): nElectron++; break;
-                case this->GetPartType(1): nPip++; break;
-                case this->GetPartType(2): nPim++; break;
-                case this->GetPartType(3): nGamma++; break;
-                default: break;
-            }
+            if(trk.type[i]==this->GetPartType(0)) nElectron++;
+            if(trk.type[i]==this->GetPartType(1)) nPip++;
+            if(trk.type[i]==this->GetPartType(2)) nPim++;
+            if(trk.type[i]==this->GetPartType(3)) nGamma++;
         }
     }
     ret = (nElectron>=this->GetPartQty(0) && nPip>=this->GetPartQty(1) && nPim>=this->GetPartQty(2) && nGamma>=this->GetPartQty(3));
