@@ -73,7 +73,7 @@ bool Filter::Cut()
 //        ret = ret && (this->GetPartCtr(j)==this->GetPartQty(j));
 //    }
     
-    ret = (partCtr[0]>=this->GetPartQty(0) && partCtr[1]>=this->GetPartQty(1) && partCtr[2]>=this->GetPartQty(2) && partCtr[3]>=this->GetPartQty(3));
+    ret = (this->GetPartCtr(0)>=this->GetPartQty(0) && this->GetPartCtr(1)>=this->GetPartQty(1) && this->GetPartCtr(2)>=this->GetPartQty(2) && this->GetPartCtr(3)>=this->GetPartQty(3));
 
     this->ZeroPartCtr();
     
