@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
 
   // filter initialization
   Filter *filt = new Filter();
-  cout<<"Test A"<<endl;
     
   // event generation
   cout<<"start event generation."<<endl;

@@ -25,8 +25,8 @@ void Filter::init()
     partQty.push_back(1);
     partQty.push_back(2);
     
-    partCtr = partType;
-    partCtr.clear();
+    unsigned int n = partType.size();
+    partCtr.assign(n,0);
     
     if(this->CheckPartSize()){ // check that the particle lists have the same sizes
         cout<<"*********************************************"<<endl;
