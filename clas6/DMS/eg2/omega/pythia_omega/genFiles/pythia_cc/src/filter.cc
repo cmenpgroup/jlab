@@ -25,19 +25,30 @@ void Filter::init()
     partQty.push_back(1);
     partQty.push_back(2);
     
-    cout<<"Size "<<partType.size()<<"\t"<<partQty.size()<<endl;
+    partCtr = partType;
+    partCtr.clear();
     
-    cout<<"*********************************************"<<endl;
-    cout<<"Initialize the event filter"<<endl;
-    cout<<"Particle list:"<<endl;
-    cout<<"Type\t Quantity"<<endl;
-    for(int i=0; i<partType.size(); i++){
-        cout<<partType[i]<<"\t"<<partQty[i]<<endl;
+    if(this->CheckPartSize()){ // check that the particle lists have the same sizes
+        cout<<"*********************************************"<<endl;
+        cout<<"Initialize the event filter"<<endl;
+        cout<<"Particle list:"<<endl;
+        cout<<"Type\t Quantity"<<endl;
+    
+        for(unsigned int i=0; i<partType.size(); i++){
+            cout<<partType[i]<<"\t"<<partQty[i]<<"\t"<<partCtr[i]<<endl;
+        }
+        cout<<"*********************************************"<<endl;
+    }else{
+        cout<<"Filter::init, Mismatch in partType and partQty vectors"<<endl;
+        exit 0;
     }
-    cout<<"*********************************************"<<endl;
-
 }
 
+bool Filter::CheckPartSize()
+{
+    bool ret = (this->Get_nPartType()==this->Get_nPartQty()) ? true : false;
+    return ret;
+}
 
 bool Filter::Cut()
 {
@@ -48,6 +59,11 @@ bool Filter::Cut()
     int nPim = 0;
     int nGamma = 0;
     
+    if(!this->CheckPartSize()){ // check that the particle lists have the same sizes
+        cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
+        exit 0;
+    }
+           
     //loop over tracks
     for(int i=0; i<trk.Ntracks; i++){
         if(trk.ks[i]==this->GetKScut()){
@@ -57,6 +73,7 @@ bool Filter::Cut()
             if(trk.type[i]==this->GetPartType(3)) nGamma++;
         }
     }
+    
     ret = (nElectron>=this->GetPartQty(0) && nPip>=this->GetPartQty(1) && nPim>=this->GetPartQty(2) && nGamma>=this->GetPartQty(3));
     return ret;
 }

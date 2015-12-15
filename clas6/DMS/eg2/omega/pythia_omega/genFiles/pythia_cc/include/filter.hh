@@ -6,8 +6,9 @@
 class Filter
 {
     int KScut;
-    vector<int> partType;
-    vector<int> partQty;
+    vector<int> partType; // list of final particles
+    vector<int> partQty;  // list of the number of each final particle
+    vector<int> partCtr;  // counter for each final particle per event
     
     public:
     Filter();
@@ -18,6 +19,7 @@ class Filter
     int Get_nPartQty() {return partQty.size();};
     int GetPartType(int num) {return partType[num];};
     int GetPartQty(int num) {return partQty[num];};
+    bool CheckPartSize();
     void SetKScut(int ks);
     int GetKScut() {return KScut;};
     bool Cut();
