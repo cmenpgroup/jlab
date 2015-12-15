@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
   // filter initialization
   Filter *filt;
+    cout<<"Test A"<<endl;
     filt->init();
 
   int ctr_filter = 0; // counter for filtered events
