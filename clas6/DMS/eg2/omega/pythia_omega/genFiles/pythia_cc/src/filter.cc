@@ -28,6 +28,9 @@ void Filter::init()
     unsigned int n = partType.size();
     partCtr.assign(n,0);
     
+    vector<int>blah;
+    blah.assign(n,0);
+    
     if(this->CheckPartSize()){ // check that the particle lists have the same sizes
         cout<<"*********************************************"<<endl;
         cout<<"Initialize the event filter"<<endl;
@@ -35,6 +38,7 @@ void Filter::init()
         cout<<"Type\t Quantity"<<endl;
     
         for(unsigned int i=0; i<partType.size(); i++){
+            blah[i]++;
             cout<<partType[i]<<"\t"<<partQty[i]<<"\t"<<partCtr[i]<<endl;
         }
         cout<<"*********************************************"<<endl;

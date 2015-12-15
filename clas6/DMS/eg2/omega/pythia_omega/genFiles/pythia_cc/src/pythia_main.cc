@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
   cout<<"============================================"<<endl;
 
     cout<<"============================================"<<endl;
-    cout<<"Total Number of filtered event: "<<ctr_filter<<endl;
+    cout<<"Total Number of filtered events: "<<ctr_filter<<endl;
     cout<<"============================================"<<endl;
     
   out_file->Write();
