@@ -13,6 +13,8 @@ Filter::~Filter()
 void Filter::init()
 {
 
+    this->SetKScut(1);
+    
     cout<<"*********************************************"<<endl;
     cout<<"Initialize the event filter"<<endl;
     cout<<"Particle list: 11, 211, -211, 22"<<endl;
@@ -29,12 +31,10 @@ bool Filter::Cut()
     int nPip = 0;
     int nPim = 0;
     int nGamma = 0;
-
-    cout<<"Filter::Cut, Ntracks= "<<trk.Ntracks<<endl;
     
     //loop over tracks
     for(int i=0; i<trk.Ntracks; i++){
-        if(trk.ks[i]==1){
+        if(trk.ks[i]==this->GetKScut()){
             switch(trk.type[i]){
                 case 11: nElectron++; break;
                 case 211: nPip++; break;
@@ -46,5 +46,10 @@ bool Filter::Cut()
     }
     ret = (nElectron>=1 && nPip>=1 && nPim>=1 && nGamma>=2);
     return ret;
+}
+
+void Filter::SetKScut(int ks)
+{
+    this->KScut = ks;
 }
 
