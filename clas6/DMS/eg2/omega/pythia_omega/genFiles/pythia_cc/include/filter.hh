@@ -5,16 +5,22 @@
 
 class Filter
 {
- int KScut;
+    int KScut;
+    vector<int> partType;
+    vector<int> partQty;
+    
+    public:
+    Filter();
+    ~Filter();
 
- public:
-  Filter();
-  ~Filter();
-
-  void init();
-  void SetKScut(int ks);
-  int GetKScut() {return KScut;};
-  bool Cut();
+    void init();
+    int Get_nPartType() {return partType.size();};
+    int Get_nPartQty() {return partQty.size();};
+    int GetPartType(int num) {return partType[num];};
+    int GetPartQty(int num) {return partQty[num];};
+    void SetKScut(int ks);
+    int GetKScut() {return KScut;};
+    bool Cut();
 };
 
 #endif
