@@ -31,7 +31,7 @@ void Filter::init()
     cout<<"Initialize the event filter"<<endl;
     cout<<"Particle list:"<<endl;
     cout<<"Type\t Quantity"<<endl;
-    for(int i=0; partType.size(); i++){
+    for(int i=0; i<partType.size(); i++){
         cout<<partType[i]<<"\t"<<partQty[i]<<endl;
     }
     cout<<"*********************************************"<<endl;
