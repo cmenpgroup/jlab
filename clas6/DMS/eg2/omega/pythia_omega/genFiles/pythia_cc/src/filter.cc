@@ -39,6 +39,7 @@ void Filter::init()
     
         for(unsigned int i=0; i<partType.size(); i++){
             blah[i]++;
+            if(i%2) blah[i]++;
             cout<<partType[i]<<"\t"<<partQty[i]<<"\t"<<partCtr[i]<<"\t"<<blah[i]<<endl;
         }
         cout<<"*********************************************"<<endl;
