@@ -34,8 +34,7 @@ bool Filter::Cut()
     
     //loop over tracks
     for(int i=0; i<trk.Ntracks; i++){
-        cout<<"Filter::Cut, "<<i+1<<"\t"<<trk.ks[i]<<"\t"<<trk.type[i]<<"\t"<<trk.parent[i]<<endl;
-        if(trk.parent[i]==1){
+        if(trk.ks[i]==1){
             switch(trk.type[i]){
                 case 11: nElectron++; break;
                 case 211: nPip++; break;
