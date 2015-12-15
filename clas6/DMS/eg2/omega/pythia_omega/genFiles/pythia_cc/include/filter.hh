@@ -17,8 +17,11 @@ class Filter
     void init();
     int Get_nPartType() {return partType.size();};
     int Get_nPartQty() {return partQty.size();};
+    int Get_nPartCtr() {return partCtr.size();};
     int GetPartType(int num) {return partType[num];};
     int GetPartQty(int num) {return partQty[num];};
+    int GetPartCtr(int num) {return partCtr[num];};
+    void ZeroPartCtr();
     bool CheckPartSize();
     void SetKScut(int ks);
     int GetKScut() {return KScut;};
