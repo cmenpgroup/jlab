@@ -25,6 +25,8 @@ void Filter::init()
     partQty.push_back(1);
     partQty.push_back(2);
     
+    cout<<"Size "<<partType.size()<<"\t"<<partQty.size()<<endl;
+    
     cout<<"*********************************************"<<endl;
     cout<<"Initialize the event filter"<<endl;
     cout<<"Particle list:"<<endl;

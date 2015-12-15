@@ -44,13 +44,12 @@ int main(int argc, char *argv[])
   //Pythia initialization
   Pythia *py = new Pythia();
 
+  // filter initialization
+  Filter *filt = new Filter();
+  cout<<"Test A"<<endl;
+    
   // event generation
   cout<<"start event generation."<<endl;
-
-  // filter initialization
-  Filter *filt;
-    cout<<"Test A"<<endl;
-    filt->init();
 
   int ctr_filter = 0; // counter for filtered events
     
