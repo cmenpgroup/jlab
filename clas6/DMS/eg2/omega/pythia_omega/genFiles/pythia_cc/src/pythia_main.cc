@@ -50,14 +50,19 @@ int main(int argc, char *argv[])
   // filter initialization
   Filter *filt = new Filter();
 
+  int ctr_filter = 0; // counter for filtered events
+    
   for(int ie=1; ie<=rof->fNevts; ie++)
   {
     if((ie%1000) == 0) cout << "generating event : " << ie << "/" << rof->fNevts << endl;
 
     py->event(ie);
 
-    if(filt->Cut()) tr->Fill();
-
+      if(filt->Cut()){
+          tr->Fill();
+          ctr_filter++;
+      }
+      
   }//end of loop over events
 
   //...Print cross sections.
@@ -72,6 +77,10 @@ int main(int argc, char *argv[])
   cout<<"Total Number of trials: "<<pyint5_.ngen[2][0]<<endl;
   cout<<"============================================"<<endl;
 
+    cout<<"============================================"<<endl;
+    cout<<"Total Number of filtered event: "<<ctr_filter<<endl;
+    cout<<"============================================"<<endl;
+    
   out_file->Write();
   out_file->Close();
 

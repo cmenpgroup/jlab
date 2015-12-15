@@ -30,8 +30,11 @@ bool Filter::Cut()
     int nPim = 0;
     int nGamma = 0;
 
+    cout<<"Filter::Cut, Ntracks= "<<trk.Ntracks<<endl;
+    
     //loop over tracks
     for(int i=0; i<trk.Ntracks; i++){
+        cout<<"Filter::Cut, "<<i<<"\t"<<trk.type[i]<<endl;
         if(trk.type[i]==1){
             switch(trk.parent[i]){
                 case 11: nElectron++; break;
