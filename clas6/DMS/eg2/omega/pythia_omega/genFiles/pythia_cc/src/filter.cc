@@ -40,7 +40,7 @@ void Filter::init()
         cout<<"*********************************************"<<endl;
     }else{
         cout<<"Filter::init, Mismatch in partType and partQty vectors"<<endl;
-        exit 0;
+        exit(0);
     }
 }
 
@@ -61,7 +61,7 @@ bool Filter::Cut()
     
     if(!this->CheckPartSize()){ // check that the particle lists have the same sizes
         cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
-        exit 0;
+        exit(0);
     }
            
     //loop over tracks
