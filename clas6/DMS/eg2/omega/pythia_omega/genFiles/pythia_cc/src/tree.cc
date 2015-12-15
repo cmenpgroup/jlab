@@ -12,6 +12,7 @@ void initTree()
   tr->Branch("process",      &trk.process,      "process/I");
   tr->Branch("nu",           &trk.nu,           "nu/D");
 
+  tr->Branch("ks",          trk.ks,           "ks[Ntracks]/I");
   tr->Branch("type",        trk.type,         "type[Ntracks]/I");
   tr->Branch("parent",      trk.parent,       "parent[Ntracks]/I");
   tr->Branch("px",          trk.px,           "px[Ntracks]/D");
@@ -29,6 +30,7 @@ void init_trk()
 
   for(int ii=0;ii<MAX_T;ii++)
   {
+    trk.ks[ii]     = -10000;
     trk.type[ii]   = -10000;
     trk.parent[ii] = -10000;
     trk.px[ii]     = -10000;

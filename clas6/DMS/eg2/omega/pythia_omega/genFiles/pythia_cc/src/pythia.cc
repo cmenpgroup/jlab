@@ -65,6 +65,7 @@ void Pythia::event(int ie)
   //loop over tracks
   for(int i=0; i<trk.Ntracks; i++)
   {
+    trk.ks[i]     = pyjets_.k[0][i];
     trk.type[i]   = pyjets_.k[1][i];
     trk.parent[i] = pyjets_.k[2][i];
     trk.px[i]     = pyjets_.p[0][i];

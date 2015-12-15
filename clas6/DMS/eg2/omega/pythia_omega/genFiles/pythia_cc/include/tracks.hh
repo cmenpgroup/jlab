@@ -17,6 +17,7 @@ class TRACKS
   double nu;
   double y;
 
+  int    ks[MAX_T];      //
   int    type[MAX_T];    //
   int    parent[MAX_T];  //
   double px[MAX_T];      //
