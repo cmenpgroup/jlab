@@ -15,15 +15,15 @@ void Filter::init()
 
     this->SetKScut(1);
     
-    partType.pushback(11);
-    partType.pushback(211);
-    partType.pushback(-211);
-    partType.pushback(22);
+    partType.push_back(11);
+    partType.push_back(211);
+    partType.push_back(-211);
+    partType.push_back(22);
 
-    partQty.pushback(1);
-    partQty.pushback(1);
-    partQty.pushback(1);
-    partQty.pushback(2);
+    partQty.push_back(1);
+    partQty.push_back(1);
+    partQty.push_back(1);
+    partQty.push_back(2);
     
     cout<<"*********************************************"<<endl;
     cout<<"Initialize the event filter"<<endl;
