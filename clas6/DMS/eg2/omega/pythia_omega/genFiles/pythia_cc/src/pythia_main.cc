@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
   cout<<"start event generation."<<endl;
 
   // filter initialization
-  Filter *filt = new Filter();
+  Filter *filt;
+    filt->init();
 
   int ctr_filter = 0; // counter for filtered events
     
