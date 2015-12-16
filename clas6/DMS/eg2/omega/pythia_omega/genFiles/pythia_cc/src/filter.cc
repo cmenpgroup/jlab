@@ -44,12 +44,14 @@ void Filter::init()
     }
 }
 
+// check that the particle typ and paricle quantity have the same size vectors
 bool Filter::CheckPartSize()
 {
     bool ret = (this->Get_nPartType()==this->Get_nPartQty()) ? true : false;
     return ret;
 }
 
+// check that the event has the particle final state topology
 bool Filter::Cut()
 {
     int i, j;
@@ -62,30 +64,31 @@ bool Filter::Cut()
 
     this->ZeroPartCtr();  // zero each element of the vector for the particle counter
     
-    //loop over tracks
+    //loop over tracks and count up the number of final state particles
     for(i=0; i<trk.Ntracks; i++){
-        if(trk.ks[i]==this->GetKScut()){
-            for(j=0; j<this->Get_nPartType(); j++){
+        if(trk.ks[i]==this->GetKScut()){ // check for particle state
+            for(j=0; j<this->Get_nPartType(); j++){  // loop over PID
                 if(trk.type[i]==this->GetPartType(j)) partCtr[j]++;
             }
         }
     }
     
-    cout<<"Filter::Cut, Start"<<endl;
+    // loop over the particle list
     for(j=0; j<this->Get_nPartQty(); j++){
-        ret = (this->GetPartCtr(j)>=this->GetPartQty(j));
-        cout<<"Filter::Cut, "<<ret<<"\t"<<this->GetPartCtr(j)<<"\t"<<this->GetPartQty(j)<<endl;
-        if(!ret) return ret;
+        ret = (this->GetPartCtr(j)>=this->GetPartQty(j)); // check paricle tally against user-defined topology
+        if(!ret) return ret;  // if match is false, exit
     }
     
     return ret;
 }
 
+// set the pythia KS parameter
 void Filter::SetKScut(int ks)
 {
     this->KScut = ks;
 }
 
+// set the particle counter to zero
 void Filter::ZeroPartCtr()
 {
     unsigned int n = this->Get_nPartCtr();
