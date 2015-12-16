@@ -53,7 +53,7 @@ bool Filter::CheckPartSize()
 bool Filter::Cut()
 {
     int i, j;
-    bool ret = false;
+    bool ret = true;
     
     if(!this->CheckPartSize()){ // check that the particle lists have the same sizes
         cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
@@ -69,6 +69,7 @@ bool Filter::Cut()
         }
     }
     
+    cout<<"Filter::Cut, Start"<<endl;
     for(j=0; j<this->Get_nPartQty(); j++){
         cout<<"Filter::Cut, "<<ret<<"\t"<<this->GetPartCtr(j)<<"\t"<<this->GetPartQty(j)<<endl;
         ret = ret && (this->GetPartCtr(j)>=this->GetPartQty(j));
