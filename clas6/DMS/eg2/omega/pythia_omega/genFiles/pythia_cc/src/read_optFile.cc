@@ -119,12 +119,12 @@ void ReadOptFile::dump_optfile()
     }else{
         cout << "Event selection.................................. ";
         for (i=0; i<fPartList.size(); i++){
-            cout<<fPartList[i]<<"\t";
+            cout<<fPartList[i]<<" ";
         }
         cout<<endl;
         cout << "Event particle quantities........................ ";
         for (i=0; i<fPartQty.size(); i++){
-            cout<<fPartQty[i]<<"\t";
+            cout<<fPartQty[i]<<" ";
         }
         cout<<endl;
     }
