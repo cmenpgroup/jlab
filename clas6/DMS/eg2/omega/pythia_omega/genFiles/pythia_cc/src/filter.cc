@@ -69,11 +69,11 @@ bool Filter::Cut()
         }
     }
     
-//    for(j=0; j<this->Get_nPartQty(); j++){
-//        ret = ret && (this->GetPartCtr(j)==this->GetPartQty(j));
-//    }
+    for(j=0; j<this->Get_nPartQty(); j++){
+        ret = ret && (this->GetPartCtr(j)>=this->GetPartQty(j));
+    }
     
-    ret = (this->GetPartCtr(0)>=this->GetPartQty(0) && this->GetPartCtr(1)>=this->GetPartQty(1) && this->GetPartCtr(2)>=this->GetPartQty(2) && this->GetPartCtr(3)>=this->GetPartQty(3));
+//    ret = (this->GetPartCtr(0)>=this->GetPartQty(0) && this->GetPartCtr(1)>=this->GetPartQty(1) && this->GetPartCtr(2)>=this->GetPartQty(2) && this->GetPartCtr(3)>=this->GetPartQty(3));
 
     this->ZeroPartCtr();
     
