@@ -13,6 +13,11 @@ SET EVENTS 1000
 //Number of events per ntuple
 SET   EVTSPERNTP  10000
 
+//Particle selection to write out the event
+SET   PARTLIST  11 211 -211 22
+
+//Quantity of each particle in PARTLIST to select the event
+SET   PARTQTY 1 1 1 2
 
 /////////////////////////////
 //Pythia parameters 
