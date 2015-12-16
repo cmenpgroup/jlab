@@ -118,12 +118,12 @@ void ReadOptFile::dump_optfile()
         cout << "No event selection specified.  All events will be written to the output file" <<endl;
     }else{
         cout << "Event selection.................................. ";
-        if (i; i<fPartList.size(); i++){
+        for (i; i<fPartList.size(); i++){
             cout<<fPartList[i]<<"\t";
         }
         cout<<endl;
         cout << "Event particle quantities........................ ";
-        if (i; i<fPartQty.size(); i++){
+        for (i; i<fPartQty.size(); i++){
             cout<<fPartQty[i]<<"\t";
         }
         cout<<endl;
