@@ -70,6 +70,7 @@ bool Filter::Cut()
     }
     
     for(j=0; j<this->Get_nPartQty(); j++){
+        cout<<"Filter::Cut, "<<ret<<"\t"<<this->GetPartCtr(j)<<"\t"<<this->GetPartQty(j)<<endl;
         ret = ret && (this->GetPartCtr(j)>=this->GetPartQty(j));
     }
     
