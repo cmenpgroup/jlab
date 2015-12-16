@@ -1,6 +1,7 @@
 #include "filter.hh"
 #include "funcs.hh"
 #include "tracks.hh"
+#include "read_optFile.hh"
 
 Filter::Filter()
 {
@@ -15,15 +16,17 @@ void Filter::init()
 
     this->SetKScut(1);
     
-    partType.push_back(11);
-    partType.push_back(211);
-    partType.push_back(-211);
-    partType.push_back(22);
+    partType = rof->fPartList;
+//    partType.push_back(11);
+//    partType.push_back(211);
+//    partType.push_back(-211);
+//    partType.push_back(22);
 
-    partQty.push_back(1);
-    partQty.push_back(1);
-    partQty.push_back(1);
-    partQty.push_back(2);
+    partQty = rof->fPartQty;
+//    partQty.push_back(1);
+//    partQty.push_back(1);
+//    partQty.push_back(1);
+//    partQty.push_back(2);
     
     unsigned int n = partType.size();
     partCtr.assign(n,0);
@@ -32,6 +35,7 @@ void Filter::init()
         cout<<"*********************************************"<<endl;
         cout<<"Initialize the event filter"<<endl;
         cout<<"Particle list:"<<endl;
+        cout<<"--------------"<<endl;
         cout<<"Type\t Quantity"<<endl;
     
         for(unsigned int i=0; i<partType.size(); i++){
@@ -57,6 +61,8 @@ bool Filter::Cut()
     int i, j;
     bool ret = true;
     
+    if(this->Get_nPartType()==0) return ret; // skip if no particles selected
+        
     if(!this->CheckPartSize()){ // check that the particle lists have the same sizes
         cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
         exit(0);

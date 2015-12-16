@@ -20,6 +20,8 @@ class ReadOptFile
   int    fAt;
   int    fZt;
   int    fNevtsPerNtp;
+  vector<int> fPartList;
+  vector<int> fPartQty;
  
   ReadOptFile & operator=(const ReadOptFile &rhs);
 

@@ -74,6 +74,30 @@ int ReadOptFile::read_optfile()
   fNevtsPerNtp = itmp1[0];
   itmp1.clear();
 
+  //List of particles to select events
+  get_opt("SET",   "PARTLIST",  itmp1);
+  if(itmp1.size() == 0)
+  {
+    cerr<<"PARTLIST: missing data "<<itmp1.size() <<endl; ir = -1; exit(0);
+  }
+  fPartList = itmp1;
+  itmp1.clear();
+
+  //List of particles to select events
+  get_opt("SET",   "PARTQTY",  itmp1);
+  if(itmp1.size() == 0)
+  {
+    cerr<<"PARTQTY: missing data "<<itmp1.size() <<endl; ir = -1; exit(0);
+  }
+  fPartQty = itmp1;
+  itmp1.clear();
+    
+  if(fPartList.size()!=fPartQty.size()){
+    cerr<<"PARTLIST VS PARTQTY: data does not match "<<fPartList.size()<<"\t"<<fPartQty.size()<<endl;
+    ir = -1;
+    exit(0);
+  }
+    
   dump_optfile();
 
   // passing all pythia parameters
