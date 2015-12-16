@@ -16,30 +16,21 @@ void Filter::init()
 
     this->SetKScut(1);
     
-    partType = rof->fPartList;
-//    partType.push_back(11);
-//    partType.push_back(211);
-//    partType.push_back(-211);
-//    partType.push_back(22);
-
-    partQty = rof->fPartQty;
-//    partQty.push_back(1);
-//    partQty.push_back(1);
-//    partQty.push_back(1);
-//    partQty.push_back(2);
+    partType = rof->fPartList; // list of particle for event selection
+    partQty = rof->fPartQty; // list of particle quantities for event selection
     
     unsigned int n = partType.size();
-    partCtr.assign(n,0);
+    partCtr.assign(n,0); // zero the particle counters
     
     if(this->CheckPartSize()){ // check that the particle lists have the same sizes
         cout<<"*********************************************"<<endl;
         cout<<"Initialize the event filter"<<endl;
         cout<<"Particle list:"<<endl;
         cout<<"--------------"<<endl;
-        cout<<"Type\t Quantity"<<endl;
+        cout<<"Type \t Quantity"<<endl;
     
         for(unsigned int i=0; i<partType.size(); i++){
-            cout<<partType[i]<<"\t"<<partQty[i]<<endl;
+            cout<<partType[i]<<" \t "<<partQty[i]<<endl;
         }
         cout<<"*********************************************"<<endl;
     }else{
