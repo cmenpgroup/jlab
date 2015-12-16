@@ -75,20 +75,12 @@ int ReadOptFile::read_optfile()
   itmp1.clear();
 
   //List of particles to select events
-  get_opt("SET",   "PARTLIST",  itmp1);
-  if(itmp1.size() == 0)
-  {
-    cerr<<"PARTLIST: missing data "<<itmp1.size() <<endl; ir = -1; exit(0);
-  }
+  get_opt("SET",   "PARTLIST", itmp1);
   fPartList = itmp1;
   itmp1.clear();
 
   //List of particles to select events
   get_opt("SET",   "PARTQTY",  itmp1);
-  if(itmp1.size() == 0)
-  {
-    cerr<<"PARTQTY: missing data "<<itmp1.size() <<endl; ir = -1; exit(0);
-  }
   fPartQty = itmp1;
   itmp1.clear();
     
@@ -113,13 +105,29 @@ int ReadOptFile::read_optfile()
 
 void ReadOptFile::dump_optfile()
 {
+  unsigned int i;
+    
   cout << "Reading option file.............................  " << optfile << endl;
-
   cout << "Beam Type set to................................  " << fLtype  << endl;
   cout << "Beam Energy set to..............................  " << fEe     << " GeV" << endl;
   cout << "Events to generate set to.......................  " << fNevts << endl;
   cout << "Target A and Z set to...........................  " << fAt <<", "<< fZt << endl;
-  cout<<"Number of events per root ntuple set to...........  " << fNevtsPerNtp << endl;
+  cout << "Number of events per root ntuple set to.........  " << fNevtsPerNtp << endl;
+    
+    if (fPartList.size()==0) {
+        cout << "No event selection specified.  All events will be written to the output file" <<endl;
+    }else{
+        cout << "Event selection.................................. ";
+        if (i; i<fPartList.size(); i++){
+            cout<<fPartList[i]<<"\t";
+        }
+        cout<<endl;
+        cout << "Event particle quantities........................ ";
+        if (i; i<fPartQty.size(); i++){
+            cout<<fPartQty[i]<<"\t";
+        }
+        cout<<endl;
+    }
 
   cout << "Reading input file  DONE WITH SUCCESS " << endl;
 }
