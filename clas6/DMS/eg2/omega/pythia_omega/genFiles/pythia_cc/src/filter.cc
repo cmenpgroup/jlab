@@ -59,7 +59,9 @@ bool Filter::Cut()
         cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
         exit(0);
     }
-           
+
+    this->ZeroPartCtr();  // zero each element of the vector for the particle counter
+    
     //loop over tracks
     for(i=0; i<trk.Ntracks; i++){
         if(trk.ks[i]==this->GetKScut()){
@@ -71,13 +73,10 @@ bool Filter::Cut()
     
     cout<<"Filter::Cut, Start"<<endl;
     for(j=0; j<this->Get_nPartQty(); j++){
+        ret = (this->GetPartCtr(j)>=this->GetPartQty(j));
         cout<<"Filter::Cut, "<<ret<<"\t"<<this->GetPartCtr(j)<<"\t"<<this->GetPartQty(j)<<endl;
-        ret = ret && (this->GetPartCtr(j)>=this->GetPartQty(j));
+        if(!ret) return ret;
     }
-    
-//    ret = (this->GetPartCtr(0)>=this->GetPartQty(0) && this->GetPartCtr(1)>=this->GetPartQty(1) && this->GetPartCtr(2)>=this->GetPartQty(2) && this->GetPartCtr(3)>=this->GetPartQty(3));
-
-    this->ZeroPartCtr();
     
     return ret;
 }
