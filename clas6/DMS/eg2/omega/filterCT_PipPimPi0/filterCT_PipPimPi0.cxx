@@ -166,25 +166,16 @@ int main(int argc, char **argv)
         }else{
             nRows = input->GetNRows("EVNT");
         }
-
-        if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
         
         if(nRows>0){
-            cout<<"Particle "<< t->Id(0,kind) <<" "<<t->GetCategorizationGSIM(0)<<endl;
-            if(kind==1){
-                if(t->GetCategorizationGSIM(0)){
-                    myKine.nElec++;
-//                    cout<<"Found electron"<<endl;
-                }
-            }else{
-                if(t->GetCategorizationMin(0) == "electron"){
-                    myKine.nElec++;
-//                    cout<<"Found electron"<<endl;
-                }
+            cout<<"Particle "<< t->Id(0,kind) <<" "<<t->GetCategorizationParticle(0,kind)<<endl;
+            if(t->GetCategorizationParticle(0, kind)){
+                myKine.nElec++;
+                if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
             }
             for (j = 1; j < nRows; j++) {
                 tempPid = t -> Id(j,kind);
-                cout<<"Particle "<< tempPid <<" "<<t->GetCategorizationGSIM(j)<<endl;
+                cout<<"Particle "<< tempPid <<" "<<t->GetCategorizationParticle(j,kind)<<endl;
 
                 if(tempPid == GetPID("PiPlus",kind)){
                     myKine.nPip++;
@@ -195,18 +186,9 @@ int main(int argc, char **argv)
                     if(myKine.nPim>0 && myKine.nPim<=MAX_PIMINUS) partIndex.push_back(j);
                 }
                 
-                if(kind==1){
-                    if(t->GetCategorizationGSIM(j) == "gamma"){
-                        myKine.nGam++;
-                        if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
-//                        cout<<"Found gamma"<<endl;
-                    }
-                }else{
-                    if(t->GetCategorizationMin(j) == "gamma"){
-                        myKine.nGam++;
-                        if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
-//                        cout<<"Found gamma"<<endl;
-                    }
+                if(t->GetCategorizationParticle(j, kind) == "gamma"){
+                    myKine.nGam++;
+                    if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
                 }
             }
 	    	topology = (myKine.nElec>0 && myKine.nPip>0 && myKine.nPim>0 && myKine.nGam>=MAX_PHOTONS); // check event topology
