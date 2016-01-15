@@ -162,9 +162,11 @@ int main(int argc, char **argv)
         if(kind==1){
             nRows = input->GetNRows("GSIM");
             if(tempPid == GetPID("Electron",kind)) myKine.nElec++;
+            cout<<"Found electron"<<endl;
         }else{
             nRows = input->GetNRows("EVNT");
             if(t->GetCategorizationMin(0) == "electron") myKine.nElec++;
+            cout<<"Found electron"<<endl;
         }
 
         if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
@@ -189,11 +191,13 @@ int main(int argc, char **argv)
                     if(t->GetCategorizationGSIM(j) == "gamma"){
                         myKine.nGam++;
                         if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
+                        cout<<"Found gamma"<<endl;
                     }
                 }else{
                     if(t->GetCategorizationMin(j) == "gamma"){
                         myKine.nGam++;
                         if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
+                        cout<<"Found gamma"<<endl;
                     }
                 }
             }
