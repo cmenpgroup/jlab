@@ -168,7 +168,7 @@ int main(int argc, char **argv)
         }
         
         if(nRows>0){
-            cout<<"Particle "<< t->Id(0,kind) <<" "<<t->GetCategorizationParticle(0,kind)<<endl;
+            cout<<"Particle 0 "<< t->Id(0,kind) <<" "<<t->GetCategorizationParticle(0,kind)<<endl;
             if(t->GetCategorizationParticle(0, kind)){
                 myKine.nElec++;
                 if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
