@@ -160,23 +160,27 @@ int main(int argc, char **argv)
         topology = false;
         
         cout<<"Event "<<k+1<<endl;
-        
-        cout<<"Particle "<< t->Id(0,kind) <<endl;
 
         if(kind==1){
             nRows = input->GetNRows("GSIM");
-            if(tempPid == GetPID("Electron",kind)) myKine.nElec++;
-            cout<<"Found electron"<<endl;
         }else{
             nRows = input->GetNRows("EVNT");
-            if(t->GetCategorizationMin(0) == "electron") myKine.nElec++;
-            cout<<"Found electron"<<endl;
         }
 
         if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
         
         if(nRows>0){
-	    	for (j = 1; j < nRows; j++) {
+            cout<<"Particle "<< t->Id(0,kind) <<endl;
+            if(kind==1){
+                nRows = input->GetNRows("GSIM");
+                if(tempPid == GetPID("Electron",kind)) myKine.nElec++;
+                cout<<"Found electron"<<endl;
+            }else{
+                nRows = input->GetNRows("EVNT");
+                if(t->GetCategorizationMin(0) == "electron") myKine.nElec++;
+                cout<<"Found electron"<<endl;
+            }
+            for (j = 1; j < nRows; j++) {
                 tempPid = t -> Id(j,kind);
                 cout<<"Particle "<< tempPid <<endl;
 
