@@ -170,21 +170,21 @@ int main(int argc, char **argv)
         if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
         
         if(nRows>0){
-            cout<<"Particle "<< t->Id(0,kind) <<endl;
+            cout<<"Particle "<< t->Id(0,kind) <<" "<<t->GetCategorizationGSIM(0)<<endl;
             if(kind==1){
                 if(t->GetCategorizationGSIM(0)){
                     myKine.nElec++;
-                    cout<<"Found electron"<<endl;
+//                    cout<<"Found electron"<<endl;
                 }
             }else{
                 if(t->GetCategorizationMin(0) == "electron"){
                     myKine.nElec++;
-                    cout<<"Found electron"<<endl;
+//                    cout<<"Found electron"<<endl;
                 }
             }
             for (j = 1; j < nRows; j++) {
                 tempPid = t -> Id(j,kind);
-                cout<<"Particle "<< tempPid <<endl;
+                cout<<"Particle "<< tempPid <<" "<<t->GetCategorizationGSIM(j)<<endl;
 
                 if(tempPid == GetPID("PiPlus",kind)){
                     myKine.nPip++;
@@ -199,13 +199,13 @@ int main(int argc, char **argv)
                     if(t->GetCategorizationGSIM(j) == "gamma"){
                         myKine.nGam++;
                         if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
-                        cout<<"Found gamma"<<endl;
+//                        cout<<"Found gamma"<<endl;
                     }
                 }else{
                     if(t->GetCategorizationMin(j) == "gamma"){
                         myKine.nGam++;
                         if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
-                        cout<<"Found gamma"<<endl;
+//                        cout<<"Found gamma"<<endl;
                     }
                 }
             }
