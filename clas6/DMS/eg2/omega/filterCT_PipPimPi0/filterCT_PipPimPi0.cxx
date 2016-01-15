@@ -172,13 +172,15 @@ int main(int argc, char **argv)
         if(nRows>0){
             cout<<"Particle "<< t->Id(0,kind) <<endl;
             if(kind==1){
-                nRows = input->GetNRows("GSIM");
-                if(tempPid == GetPID("Electron",kind)) myKine.nElec++;
-                cout<<"Found electron"<<endl;
+                if(t->GetCategorizationGSIM(0)){
+                    myKine.nElec++;
+                    cout<<"Found electron"<<endl;
+                }
             }else{
-                nRows = input->GetNRows("EVNT");
-                if(t->GetCategorizationMin(0) == "electron") myKine.nElec++;
-                cout<<"Found electron"<<endl;
+                if(t->GetCategorizationMin(0) == "electron"){
+                    myKine.nElec++;
+                    cout<<"Found electron"<<endl;
+                }
             }
             for (j = 1; j < nRows; j++) {
                 tempPid = t -> Id(j,kind);
