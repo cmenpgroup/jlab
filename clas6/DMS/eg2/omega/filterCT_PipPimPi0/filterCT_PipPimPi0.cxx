@@ -55,15 +55,15 @@ int main(int argc, char **argv)
     extern int optind;
     
     int i, j, k;
-    int nRows, kind, tempPid;
+    int nRows, tempPid;
     int photonCtr;
     int candCtr = 0;
     int dEvents = 1000; // increment of events for processing print statement
     int MaxEvents = 0; // max. number of events to process
     int nfiles = 0; // number of processed files
+    int kind = 0; // initialize bank index for EVNT data
     
     bool bBatchMode = false;    // quiet mode
-    bool simul_key = false;
 
     char *inFile;
     string outFile = "PipPimPi0.root";
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
             case 'o': outFile = optarg; break;
             case 'M': MaxEvents = atoi(optarg); break;
             case 'D': dEvents = atoi(optarg); break;
-            case 'S': simul_key = true; break;
+            case 'S': kind = 1; break;
             case 'i': bBatchMode = true; break;
             case 'h':
                 PrintUsage(argv[0]);
@@ -152,30 +152,30 @@ int main(int argc, char **argv)
     		cerr << k << "\r";
     	}
 
-        if(simul_key){
-            kind = 1;
-            nRows = input->GetNRows("GSIM");
-        }else{
-            kind = 0;
-            nRows = input->GetNRows("EVNT");
-        }
+        myKine.nElec = 0;
+        myKine.nPip = 0;
+        myKine.nPim = 0;
+        myKine.nGam = 0;
+        partIndex.clear();
+        topology = false;
         
+        if(kind==1){
+            nRows = input->GetNRows("GSIM");
+            if(tempPid == GetPID("Electron",kind)) myKine.nElec++;
+        }else{
+            nRows = input->GetNRows("EVNT");
+            if(t->GetCategorizationMin(0) == "electron") myKine.nElec++;
+        }
+
+        if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
+
         cout<<"Event "<<k+1<<endl;
         
         if(nRows>0){
-      		myKine.nElec = 0;
-      		myKine.nPip = 0;
-	    	myKine.nPim = 0;
-	    	myKine.nGam = 0;
-	    	partIndex.clear();
-	    	topology = false;
-	    	for (j = 0; j < nRows; j++) {
+	    	for (j = 1; j < nRows; j++) {
                 tempPid = t -> Id(j,kind);
                 cout<<"Particle "<< tempPid <<endl;
-                if(tempPid == GetPID("Electron",kind)){
-                    myKine.nElec++;
-                    if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(j);
-                }
+
                 if(tempPid == GetPID("PiPlus",kind)){
                     myKine.nPip++;
                     if(myKine.nPip>0 && myKine.nPip<=MAX_PIPLUS) partIndex.push_back(j);
@@ -184,9 +184,17 @@ int main(int argc, char **argv)
                     myKine.nPim++;
                     if(myKine.nPim>0 && myKine.nPim<=MAX_PIMINUS) partIndex.push_back(j);
                 }
-                if(tempPid == GetPID("Photon",kind)){
-                    myKine.nGam++;
-                    if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
+                
+                if(kind==1){
+                    if(t->GetCategorizationGSIM(j) == "gamma"){
+                        myKine.nGam++;
+                        if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
+                    }
+                }else{
+                    if(t->GetCategorizationMin(j) == "gamma"){
+                        myKine.nGam++;
+                        if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
+                    }
                 }
             }
 	    	topology = (myKine.nElec>0 && myKine.nPip>0 && myKine.nPim>0 && myKine.nGam>=MAX_PHOTONS); // check event topology
@@ -200,7 +208,7 @@ int main(int argc, char **argv)
 	       		myKine.Xb = t -> Xb(kind);
         		myKine.W = t -> W(kind);
 
-                if(simul_key){
+                if(kind==1){
                     myKine.Xcorr = t->X(0, kind);
                     myKine.Ycorr = t->Y(0, kind);
                     myKine.Zcorr = t->Z(0, kind);
@@ -213,7 +221,7 @@ int main(int argc, char **argv)
 
 	    		photonCtr = 0;
         		while (!partIndex.empty()) {
-		    		i = partIndex.back(); // retrieve EVNT index for each particle
+		    		i = partIndex.back(); // retrieve EVNT/GSIM index for each particle
                     partIndex.pop_back(); // erase last entry in the list
 
                     myPart.Sector = t->Sector(kind);
@@ -258,7 +266,7 @@ int main(int argc, char **argv)
                     myPart.CCnphe = 0;
                     myPart.TimeCorr4 = 0;
                     
-                    if(simul_key == false){
+                    if(kind == 0){
                         myPart.ECtot = TMath::Max(t->Etot(i),t->Ein(i)+t->Eout(i));
                         myPart.ECin = t->Ein(i);
                         myPart.ECout = t->Eout(i);
