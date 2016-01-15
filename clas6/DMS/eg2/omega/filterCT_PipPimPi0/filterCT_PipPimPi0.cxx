@@ -159,6 +159,10 @@ int main(int argc, char **argv)
         partIndex.clear();
         topology = false;
         
+        cout<<"Event "<<k+1<<endl;
+        
+        cout<<"Particle "<< t->Id(0,kind) <<endl;
+
         if(kind==1){
             nRows = input->GetNRows("GSIM");
             if(tempPid == GetPID("Electron",kind)) myKine.nElec++;
@@ -170,8 +174,6 @@ int main(int argc, char **argv)
         }
 
         if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
-
-        cout<<"Event "<<k+1<<endl;
         
         if(nRows>0){
 	    	for (j = 1; j < nRows; j++) {
