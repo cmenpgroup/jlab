@@ -70,7 +70,8 @@ int main(int argc, char **argv)
     
     bool topology = false;
     vector<int> partIndex;
-
+    vector<int> partID;
+    
     TVector3 *vert;
     TVector3 *ECxyz = new TVector3(0.0,0.0,0.0);
     TVector3 *ECuvw;
@@ -157,6 +158,7 @@ int main(int argc, char **argv)
         myKine.nPim = 0;
         myKine.nGam = 0;
         partIndex.clear();
+        partID.clear();
         topology = false;
         
         cout<<"Event "<<k+1<<endl;
@@ -169,9 +171,12 @@ int main(int argc, char **argv)
         
         if(nRows>0){
             cout<<"Particle 0 "<< t->Id(0,kind) <<" "<<t->GetCategorizationParticle(0,kind)<<endl;
-            if(t->GetCategorizationParticle(0, kind)){
+            if(t->GetCategorizationParticle(0, kind) == "electron"){
                 myKine.nElec++;
-                if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS) partIndex.push_back(0);
+                if(myKine.nElec>0 && myKine.nElec<=MAX_ELECTRONS){
+                    partIndex.push_back(0);
+                    partID.push_back(GetPID("Electron",kind));
+                }
             }
             for (j = 1; j < nRows; j++) {
                 tempPid = t -> Id(j,kind);
@@ -179,19 +184,28 @@ int main(int argc, char **argv)
 
                 if(tempPid == GetPID("PiPlus",kind)){
                     myKine.nPip++;
-                    if(myKine.nPip>0 && myKine.nPip<=MAX_PIPLUS) partIndex.push_back(j);
+                    if(myKine.nPip>0 && myKine.nPip<=MAX_PIPLUS){
+                        partIndex.push_back(j);
+                        partID.push_back(GetPID("PiPlus",kind));
+                    }
                 }
                 if(tempPid == GetPID("PiMinus",kind)){
                     myKine.nPim++;
-                    if(myKine.nPim>0 && myKine.nPim<=MAX_PIMINUS) partIndex.push_back(j);
+                    if(myKine.nPim>0 && myKine.nPim<=MAX_PIMINUS){
+                        partIndex.push_back(j);
+                        partID.push_back(GetPID("PiMinus",kind));
+                    }
                 }
                 
                 if(t->GetCategorizationParticle(j, kind) == "gamma"){
                     myKine.nGam++;
-                    if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS) partIndex.push_back(j);
+                    if(myKine.nGam>0 && myKine.nGam<=MAX_PHOTONS){
+                        partIndex.push_back(j);
+                        partID.push_back(GetPID("Photon",kind));
+                    }
                 }
             }
-	    	topology = (myKine.nElec>0 && myKine.nPip>0 && myKine.nPim>0 && myKine.nGam>=MAX_PHOTONS); // check event topology
+	    	topology = (myKine.nElec>0 && myKine.nPip>0 && myKine.nPim>0 && myKine.nGam>=MAX_PHOTONS && partIndex.size()==partID.size()); // check event topology
 
 	    	if(topology && t->Q2(kind) > 1. && t->W(kind) > 2. && t->Nu(kind)/5.015 < 0.85) {
                 candCtr++;
@@ -221,7 +235,8 @@ int main(int argc, char **argv)
                     myPart.Sector = t->Sector(kind);
                     myPart.Charge = t->Charge(kind);
                     myPart.Beta = t->Betta(kind);
-                    myPart.Pid = t->Id(i,kind);
+                    myPart.Pid = partID.back(); // retrieve PID
+                    partID.pop_back(); // erase last entry in the list
                     myPart.Mom = t->Momentum(i,kind);
                     myPart.Px = t->Px(i, kind);
                     myPart.Py = t->Py(i, kind);
