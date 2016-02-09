@@ -70,6 +70,7 @@ void Pythia::event(int ie)
   trk.process = pypars_.msti[0];
   trk.nu      = rof->fEe - pyjets_.p[3][2];
 
+    cout<<"Start event"<<endl;
   //loop over tracks
   for(int i=0; i<trk.Ntracks; i++)
   {
@@ -84,7 +85,8 @@ void Pythia::event(int ie)
     trk.E[i]      = pyjets_.p[3][i];
    
       cout<<"Testing: "<<trk.ks[i]<<" "<<trk.type[i]<<" "<<trk.parent[i]<<endl;
-    if(trk.type[i]==pdg_elec()){
+    if(trk.type[i]==pdg_elec() && trk.ks[i]==1){
+        cout<<"Found electron"<<endl;
         Electron.SetPxPyPzE(trk.px[i],trk.py[i],trk.pz[i],trk.E[i]);
     }
   }
