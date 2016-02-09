@@ -19,6 +19,9 @@ SET   PARTLIST  11 211 -211 22
 //Quantity of each particle in PARTLIST to select the event
 SET   PARTQTY 1 1 1 2
 
+//Q^2 cut lower and upper limits
+SET   Q2 1.0 1E+8
+
 /////////////////////////////
 //Pythia parameters 
 //////////////////////////////
