@@ -20,6 +20,8 @@ class ReadOptFile
   int    fAt;
   int    fZt;
   int    fNevtsPerNtp;
+  double fQ2lo;
+  double fQ2hi;
   vector<int> fPartList;
   vector<int> fPartQty;
  

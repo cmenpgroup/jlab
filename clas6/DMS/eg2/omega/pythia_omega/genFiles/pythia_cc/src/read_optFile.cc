@@ -89,6 +89,21 @@ int ReadOptFile::read_optfile()
     ir = -1;
     exit(0);
   }
+
+  //Q2 cut limits
+  get_opt("SET", "Q2", dtmp2);
+  if(dtmp2.size() != 2){
+    cerr<<"Q^2: missing data "<< dtmp2.size() << endl; ir = -1; exit(0);
+  }
+  fQ2lo = dtmp2[0];
+  fQ2hi = dtmp2[1];
+  dtmp2.clear();
+  if(fQ2lo > fQ2hi){
+    cerr<<"Q^2 limits are out of range"<<endl;ir = -1; exit(0);
+  }
+  if(fQ2lo<0.0 || fQ2hi<0.0){
+    cerr<<"Q^2 limits must be positive"<<endl;ir = -1; exit(0);
+  }
     
   dump_optfile();
 
@@ -113,6 +128,7 @@ void ReadOptFile::dump_optfile()
   cout << "Events to generate set to.......................  " << fNevts << endl;
   cout << "Target A and Z set to...........................  " << fAt <<", "<< fZt << endl;
   cout << "Number of events per root ntuple set to.........  " << fNevtsPerNtp << endl;
+  cout << "Q^2 cut limits set to...........................  " << fQ2lo <<", "<< fQ2hi << endl;
     
     if (fPartList.size()==0) {
         cout << "No event selection specified.  All events will be written to the output file" <<endl;

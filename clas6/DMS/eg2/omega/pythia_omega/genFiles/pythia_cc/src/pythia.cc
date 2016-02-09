@@ -70,7 +70,6 @@ void Pythia::event(int ie)
   trk.process = pypars_.msti[0];
   trk.nu      = rof->fEe - pyjets_.p[3][2];
 
-    cout<<"Start event"<<endl;
   //loop over tracks
   for(int i=0; i<trk.Ntracks; i++)
   {
@@ -84,12 +83,10 @@ void Pythia::event(int ie)
     trk.p[i]      = sqrt(sqr(trk.px[i])+sqr(trk.py[i])+sqr(trk.pz[i]));
     trk.E[i]      = pyjets_.p[3][i];
    
-      cout<<"Testing: "<<trk.ks[i]<<" "<<trk.type[i]<<" "<<trk.parent[i]<<endl;
-    if(trk.type[i]==pdg_elec() && trk.ks[i]==1){
-        cout<<"Found electron"<<endl;
+    if(trk.type[i]==pdg_elec() && trk.ks[i]==1){ // save final scattered electron 4-vector
         Electron.SetPxPyPzE(trk.px[i],trk.py[i],trk.pz[i],trk.E[i]);
     }
   }
-  BeamMinusElectron = Beam - Electron;
-  trk.Q2 = -BeamMinusElectron.Mag2();
+  BeamMinusElectron = Beam - Electron; // 4-vector for difference between beam and scattered electrons
+  trk.Q2 = -BeamMinusElectron.Mag2(); // calculate the event Q^2
 }

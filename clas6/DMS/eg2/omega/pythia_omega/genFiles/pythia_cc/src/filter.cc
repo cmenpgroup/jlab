@@ -16,6 +16,9 @@ void Filter::init()
 
     this->SetKScut(1);
     
+    this->SetQ2cut_lo(rof->fQ2lo);
+    this->SetQ2cut_hi(rof->fQ2hi);
+    
     partType = rof->fPartList; // list of particle for event selection
     partQty = rof->fPartQty; // list of particle quantities for event selection
     
@@ -52,28 +55,33 @@ bool Filter::Cut()
     int i, j;
     bool ret = true;
     
-    if(this->Get_nPartType()==0) return ret; // skip if no particles selected
-        
-    if(!this->CheckPartSize()){ // check that the particle lists have the same sizes
-        cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
-        exit(0);
-    }
-
-    this->ZeroPartCtr();  // zero each element of the vector for the particle counter
+    if(trk.Q2>=this->GetQ2cut_lo()  && trk.Q2<this->GetQ2cut_hi()){ // cut on Q^2
     
-    //loop over tracks and count up the number of final state particles
-    for(i=0; i<trk.Ntracks; i++){
-        if(trk.ks[i]==this->GetKScut()){ // check for particle state
-            for(j=0; j<this->Get_nPartType(); j++){  // loop over PID
-                if(trk.type[i]==this->GetPartType(j)) partCtr[j]++;
+        if(this->Get_nPartType()==0) return ret; // skip if no particles selected
+        
+        if(!this->CheckPartSize()){ // check that the particle lists have the same sizes
+            cout<<"Filter::Cut, Mismatch in partType and partQty vectors"<<endl;
+            exit(0);
+        }
+
+        this->ZeroPartCtr();  // zero each element of the vector for the particle counter
+    
+        //loop over tracks and count up the number of final state particles
+        for(i=0; i<trk.Ntracks; i++){
+            if(trk.ks[i]==this->GetKScut()){ // check for particle state
+                for(j=0; j<this->Get_nPartType(); j++){  // loop over PID
+                    if(trk.type[i]==this->GetPartType(j)) partCtr[j]++;
+                }
             }
         }
-    }
     
-    // loop over the particle list
-    for(j=0; j<this->Get_nPartQty(); j++){
-        ret = (this->GetPartCtr(j)>=this->GetPartQty(j)); // check paricle tally against user-defined topology
-        if(!ret) return ret;  // if match is false, exit
+        // loop over the particle list
+        for(j=0; j<this->Get_nPartQty(); j++){
+            ret = (this->GetPartCtr(j)>=this->GetPartQty(j)); // check paricle tally against user-defined topology
+            if(!ret) return ret;  // if match is false, exit
+        }
+    }else{ // outside the Q^2 cut
+        ret = false;
     }
     
     return ret;
@@ -83,6 +91,18 @@ bool Filter::Cut()
 void Filter::SetKScut(int ks)
 {
     this->KScut = ks;
+}
+
+// set the Q^2 cut lower limit
+void Filter::SetQ2cut_lo(double Q2)
+{
+    this->Q2cut_lo = Q2;
+}
+
+// set the Q^2 cut upper limit
+void Filter::SetQ2cut_hi(double Q2)
+{
+    this->Q2cut_hi = Q2;
 }
 
 // set the particle counter to zero
