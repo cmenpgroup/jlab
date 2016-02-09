@@ -6,6 +6,7 @@
 void   help_mess();
 double m_prot();
 double m_elec();
+int pdg_elec();
 double pi();
 double sqr(double);
 double todeg(double);

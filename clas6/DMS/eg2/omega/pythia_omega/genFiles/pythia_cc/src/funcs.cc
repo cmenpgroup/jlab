@@ -9,6 +9,7 @@ void help_mess()
 
 double m_prot() {return 0.93827;}
 double m_elec() {return 0.00051;}
+int pdg_elec() {return 11;}
 double pi() {return 3.14159265359;}
 double sqr(double x) {return x*x;}
 double todeg(double a) {return a*180./pi();}

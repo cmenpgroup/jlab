@@ -83,7 +83,7 @@ void Pythia::event(int ie)
     trk.p[i]      = sqrt(sqr(trk.px[i])+sqr(trk.py[i])+sqr(trk.pz[i]));
     trk.E[i]      = pyjets_.p[3][i];
       
-    if(trk.type[i]==11){
+    if(trk.type[i]==pdg_elec()){
         Electron.SetPxPyPzE(trk.px[i],trk.py[i],trk.pz[i],trk.E[i]);
     }
   }
