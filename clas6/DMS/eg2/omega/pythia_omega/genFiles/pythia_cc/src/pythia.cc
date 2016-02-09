@@ -82,7 +82,8 @@ void Pythia::event(int ie)
 
     trk.p[i]      = sqrt(sqr(trk.px[i])+sqr(trk.py[i])+sqr(trk.pz[i]));
     trk.E[i]      = pyjets_.p[3][i];
-      
+   
+      cout<<"Testing: "<<trk.ks[i]<<" "<<trk.type[i]<<" "<<trk.parent[i]<<endl;
     if(trk.type[i]==pdg_elec()){
         Electron.SetPxPyPzE(trk.px[i],trk.py[i],trk.pz[i],trk.E[i]);
     }
