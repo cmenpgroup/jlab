@@ -15,6 +15,7 @@ class TRACKS
   int    tarZ;           //
   int    process;        //
   double nu;
+  double Q2;             // event Q^2
   double y;
 
   int    ks[MAX_T];      //

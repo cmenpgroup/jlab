@@ -63,7 +63,7 @@ void Pythia::event(int ie)
   TLorentzVector Electron;
   TLorentzVector BeamMinusElectron;
 
-  Double elecM = m_elec();
+  double elecM = m_elec();
   Beam.SetXYZM(0.0,0.0,rof->fEe,elecM);
     
   trk.Ntracks = pyjets_.n;
