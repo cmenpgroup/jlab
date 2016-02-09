@@ -3,6 +3,7 @@
 #include "funcs.hh"
 #include "tracks.hh"
 #include "read_optFile.hh"
+#include "root.hh"
 
 Pythia::Pythia()
 {
@@ -58,6 +59,13 @@ void Pythia::event(int ie)
     break;    
   }
 
+  TLorentzVector Beam;
+  TLorentzVector Electron;
+  TLorentzVector BeamMinusElectron;
+
+  Double elecM = m_elec();
+  Beam.SetXYZM(0.0,0.0,rof->fEe,elecM);
+    
   trk.Ntracks = pyjets_.n;
   trk.process = pypars_.msti[0];
   trk.nu      = rof->fEe - pyjets_.p[3][2];
@@ -74,6 +82,11 @@ void Pythia::event(int ie)
 
     trk.p[i]      = sqrt(sqr(trk.px[i])+sqr(trk.py[i])+sqr(trk.pz[i]));
     trk.E[i]      = pyjets_.p[3][i];
-
+      
+    if(trk.type[i]==11){
+        Electron.SetPxPyPzE(trk.px[i],trk.py[i],trk.pz[i],trk.E[i]);
+    }
   }
+  BeamMinusElectron = Beam - Electron;
+  trk.Q2 = -BeamMinusElectron.Mag2();
 }
