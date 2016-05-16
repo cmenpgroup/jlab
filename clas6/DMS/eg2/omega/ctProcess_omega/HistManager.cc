@@ -513,6 +513,10 @@ void HistManager::BookHist()
         sprintf(hname,"IMOmega_AllCuts_ME_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
         IMOmega_AllCuts_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
+        
+        sprintf(hname,"IMOmega_VS_VirtualPhotonAngle_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega vs. #theta(#omega - #gamma^{*}), %s",myTgt.Get_Label(i).c_str());
+        IMOmega_VS_VirtualPhotonAngle[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 180.0, 0.0, 180.0);
     }
     
     for(i=0; i < 5; i++) {
@@ -1029,7 +1033,7 @@ void HistManager::WriteHist(string RootFile){
         EChit_M4_VS_scMsq[i]->Write();
     }
     
-    // create a directory for electron ID
+    // create a directory for omega ID
     TDirectory *cdTgt[myTgt.Get_nIndex()];
     
     for(i=0; i<myTgt.Get_nIndex(); i++){
@@ -1179,6 +1183,10 @@ void HistManager::WriteHist(string RootFile){
         IMOmega_AllCuts_ME[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
         IMOmega_AllCuts_ME[i]->GetYaxis()->SetTitle("Mixing Method");
         IMOmega_AllCuts_ME[i]->Write();
+
+        IMOmega_VS_VirtualPhotonAngle[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        IMOmega_VS_VirtualPhotonAngle[i]->GetYaxis()->SetTitle("#theta(#omega - #gamma^{*})");
+        IMOmega_VS_VirtualPhotonAngle[i]->Write();
     }
     
     out->cd();

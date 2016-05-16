@@ -237,7 +237,6 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass, bool print
 		myHistManager.GetElecZVert()->Fill(elec_vert.Z()); // fill electron z vertex histogram
 		myHistManager.GetElecZVert_VS_Phi()->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert.Z()); // fill electron z vertex vs phi histogram
         myHistManager.GetElecZVert_VS_Phi_Corr()->Fill(elec.Phi() * TMath::RadToDeg(),elec_vert_corr.Z()); // fill electron z vertex vs phi histogram
-
         
         myHistManager.GetHMx(Vz_index)->Fill(Mx); // histogram for Mx
         myHistManager.GetHW(Vz_index)->Fill(W); // histogram for W
@@ -609,6 +608,8 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass, bool print
                 myHistManager.GetPtSq_Omega_AllCuts(Vz_index)->Fill(Omega.Perp2());
 
                 myHistManager.GetXvert_VS_Yvert_AllCuts(Vz_index)->Fill(elec_vert.X(), elec_vert.Y());
+
+                myHistManager.GetIMOmega_VS_VirtualPhotonAngle(Vz_index)->Fill(Omega.M(),Omega.Angle(BeamMinusElectron.Vect())*TMath::RadToDeg());
                 
                 if(myCuts.GetCut_MassPi0()) {
                     // EPC - electron, photon, pion, omega cuts

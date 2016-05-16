@@ -160,6 +160,7 @@ private:
     TH2D *IMOmega_ZVertCut_ME[3];
     TH2D *IMOmega_QsqCut_ME[3];
     TH2D *IMOmega_AllCuts_ME[3];
+    TH2D *IMOmega_VS_VirtualPhotonAngle[3];
 
     TH2D *RelativityOpAngPhotonsA;
     TH2D *RelativityOpAngPhotonsB;
@@ -351,6 +352,8 @@ public:
     TH2D* GetIMOmega_QsqCut_ME(int index) { return IMOmega_QsqCut_ME[index]; };
     TH2D* GetIMOmega_AllCuts_ME(int index) { return IMOmega_AllCuts_ME[index]; };
 
+    TH2D* GetIMOmega_VS_VirtualPhotonAngle(int index) { return IMOmega_VS_VirtualPhotonAngle[index]; };
+    
     TH2D* GetRelativityOpAngPhotonsA() { return RelativityOpAngPhotonsA; };
     TH2D* GetRelativityOpAngPhotonsB() { return RelativityOpAngPhotonsB; };
     TH1D* GetGammaPi0() { return GammaPi0; };
