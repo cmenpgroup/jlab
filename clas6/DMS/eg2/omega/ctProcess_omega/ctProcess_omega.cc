@@ -17,7 +17,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass, bool print
     bool cuts_PipPim;
     bool cuts_Photons;
     
-	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle;
+	double TwoPhotonAngle, elecPhoton1Angle, elecPhoton2Angle, PairsAngle;
     double Qsq, nu, Mx, z_fracEnergy, W;
     double sinHalfTheta;
     
@@ -416,7 +416,7 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass, bool print
             myHistManager.GetQ2_VS_IMOmega(Vz_index)->Fill(Qsq, Omega.M()); // variable = Q^2
             myHistManager.GetPt_VS_IMOmega(Vz_index)->Fill(Omega.Pt(), Omega.M()); // variable = omega trans. mom.
             myHistManager.GetPl_VS_IMOmega(Vz_index)->Fill(Omega.Pz(), Omega.M()); // variable = omega long. mom.
-            myHistManager.GetOpAng_VS_IMOmega(Vz_index)->Fill(Omega.M(), TwoPhotonAngle); // variable = 2 photon opening angle
+            myHistManager.GetOpAng_VS_IMOmega(Vz_index)->Fill(TwoPhotonAngle, Omega.M()); // variable = 2 photon opening angle
 
             // set the cuts
             myCuts.SetCut_MassPi0(TwoPhoton.M()); // pi0 mass cut
@@ -609,7 +609,15 @@ int process (string inFile, int MaxEvents, int dEvents, int targMass, bool print
 
                 myHistManager.GetXvert_VS_Yvert_AllCuts(Vz_index)->Fill(elec_vert.X(), elec_vert.Y());
 
-                myHistManager.GetIMOmega_VS_VirtualPhotonAngle(Vz_index)->Fill(Omega.M(),Omega.Angle(BeamMinusElectron.Vect())*TMath::RadToDeg());
+                myHistManager.GetVirtualPhotonAngle_VS_IMOmega_AllCuts(Vz_index)->Fill(BeamMinusElectron.Theta()*TMath::RadToDeg(),Omega.M());
+                myHistManager.GetOpAngVPomega_VS_IMOmega_AllCuts(Vz_index)->Fill(Omega.Angle(BeamMinusElectron.Vect())*TMath::RadToDeg(),Omega.M());
+                myHistManager.GetPt_VS_IMOmega_AllCuts(Vz_index)->Fill(Omega.Pt(),Omega.M());
+                myHistManager.GetPl_VS_Pt_AllCuts(Vz_index)->Fill(Omega.Pz(),Omega.Pt());
+                
+                PairsAngle = TMath::RadToDeg()*TwoPhoton.Angle(TwoPion.Vect());
+                
+                myHistManager.GetOpAng_VS_IMOmega_AllCuts(Vz_index)->Fill(TwoPhotonAngle, Omega.M()); // variable = 2 photon opening angle
+                myHistManager.GetOpAngPairs_VS_IMOmega_AllCuts(Vz_index)->Fill(PairsAngle, Omega.M()); // variable = angular difference between 2 photons and 2 pions
                 
                 if(myCuts.GetCut_MassPi0()) {
                     // EPC - electron, photon, pion, omega cuts

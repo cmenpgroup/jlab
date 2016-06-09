@@ -448,7 +448,7 @@ void HistManager::BookHist()
         
 		sprintf(hname,"OpAng_VS_IMOmega_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Opening Angle vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
-		OpAng_VS_IMOmega[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 100, 0., 100.);
+		OpAng_VS_IMOmega[i] = new TH2D(hname, htitle, 100, 0., 100., nIMomega, IMomegaLo, IMomegaHi);
         
 		sprintf(hname,"MissMom_%s",myTgt.Get_Label(i).c_str());
 		sprintf(htitle,"Missing Momentum, %s",myTgt.Get_Label(i).c_str());
@@ -514,9 +514,29 @@ void HistManager::BookHist()
         sprintf(htitle,"Reconstructed Mass of #omega - All Cuts, Mixed Evt, %s",myTgt.Get_Label(i).c_str());
         IMOmega_AllCuts_ME[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, nME_Methods, -0.5, nME_Methods-0.5);
         
-        sprintf(hname,"IMOmega_VS_VirtualPhotonAngle_%s",myTgt.Get_Label(i).c_str());
+        sprintf(hname,"VirtualPhotonAngle_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega vs. #theta(#gamma^{*}), %s",myTgt.Get_Label(i).c_str());
+        VirtualPhotonAngle_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 180.0, 0.0, 180.0, nIMomega, IMomegaLo, IMomegaHi);
+
+        sprintf(hname,"OpAngVPomega_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
         sprintf(htitle,"Reconstructed Mass of #omega vs. #theta(#omega - #gamma^{*}), %s",myTgt.Get_Label(i).c_str());
-        IMOmega_VS_VirtualPhotonAngle[i] = new TH2D(hname, htitle, nIMomega, IMomegaLo, IMomegaHi, 180.0, 0.0, 180.0);
+        OpAngVPomega_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 60.0, 0.0, 60.0, nIMomega, IMomegaLo, IMomegaHi);
+        
+        sprintf(hname,"Pt_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Reconstructed Mass of #omega vs. Trans. Momentum, %s",myTgt.Get_Label(i).c_str());
+        Pt_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 200, 0.0, 2.0, nIMomega, IMomegaLo, IMomegaHi);
+
+        sprintf(hname,"Pl_VS_Pt_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"#omega Long. Mom. vs Trans. Mom., %s",myTgt.Get_Label(i).c_str());
+        Pl_VS_Pt_AllCuts[i] = new TH2D(hname, htitle, 500, 0., 5., 200, 0.0, 2.0);
+        
+        sprintf(hname,"OpAng_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"Opening Angle vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
+        OpAng_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 100, 0., 100., nIMomega, IMomegaLo, IMomegaHi);
+        
+        sprintf(hname,"OpAngPairs_VS_IMOmega_AllCuts_%s",myTgt.Get_Label(i).c_str());
+        sprintf(htitle,"(#gamma #gamma, #pi^{+} #pi^{-}) Opening Angle vs Reconstructed Mass of #omega, %s",myTgt.Get_Label(i).c_str());
+        OpAngPairs_VS_IMOmega_AllCuts[i] = new TH2D(hname, htitle, 100, 0., 100., nIMomega, IMomegaLo, IMomegaHi);
     }
     
     for(i=0; i < 5; i++) {
@@ -1116,8 +1136,8 @@ void HistManager::WriteHist(string RootFile){
         Pl_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
 		Pl_VS_IMOmega[i]->Write();
 		
-        OpAng_VS_IMOmega[i]->GetXaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
-        OpAng_VS_IMOmega[i]->GetYaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
+        OpAng_VS_IMOmega[i]->GetXaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
+        OpAng_VS_IMOmega[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
         OpAng_VS_IMOmega[i]->Write();
         
         MissMom[i]->GetXaxis()->SetTitle("Missing Momentum (GeV/c)");
@@ -1184,9 +1204,29 @@ void HistManager::WriteHist(string RootFile){
         IMOmega_AllCuts_ME[i]->GetYaxis()->SetTitle("Mixing Method");
         IMOmega_AllCuts_ME[i]->Write();
 
-        IMOmega_VS_VirtualPhotonAngle[i]->GetXaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
-        IMOmega_VS_VirtualPhotonAngle[i]->GetYaxis()->SetTitle("#theta(#omega - #gamma^{*})");
-        IMOmega_VS_VirtualPhotonAngle[i]->Write();
+        VirtualPhotonAngle_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("#theta(#gamma^{*})");
+        VirtualPhotonAngle_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        VirtualPhotonAngle_VS_IMOmega_AllCuts[i]->Write();
+
+        OpAngVPomega_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("#theta(#omega - #gamma^{*})");
+        OpAngVPomega_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        OpAngVPomega_VS_IMOmega_AllCuts[i]->Write();
+        
+        Pt_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("P_{T} (GeV/c)");
+        Pt_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#pi^{+} #pi^{-} #gamma #gamma Inv. Mass (GeV/c^{2})");
+        Pt_VS_IMOmega_AllCuts[i]->Write();
+        
+        Pl_VS_Pt_AllCuts[i]->GetXaxis()->SetTitle("Longitudinal Momentum (GeV/c)");
+        Pl_VS_Pt_AllCuts[i]->GetYaxis()->SetTitle("Transverse Momentum (GeV/c)");
+        Pl_VS_Pt_AllCuts[i]->Write();
+        
+        OpAng_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("Opening Angle between #gamma_{1} and #gamma_{2} (deg.)");
+        OpAng_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        OpAng_VS_IMOmega_AllCuts[i]->Write();
+
+        OpAngPairs_VS_IMOmega_AllCuts[i]->GetXaxis()->SetTitle("Opening Angle between #gamma #gamma and #pi^{+} #pi^{-} (deg.)");
+        OpAngPairs_VS_IMOmega_AllCuts[i]->GetYaxis()->SetTitle("#omega Inv. Mass (GeV/c^{2})");
+        OpAngPairs_VS_IMOmega_AllCuts[i]->Write();
     }
     
     out->cd();

@@ -160,8 +160,14 @@ private:
     TH2D *IMOmega_ZVertCut_ME[3];
     TH2D *IMOmega_QsqCut_ME[3];
     TH2D *IMOmega_AllCuts_ME[3];
-    TH2D *IMOmega_VS_VirtualPhotonAngle[3];
-
+    
+    TH2D *VirtualPhotonAngle_VS_IMOmega_AllCuts[3];
+    TH2D *OpAngVPomega_VS_IMOmega_AllCuts[3];
+    TH2D *Pt_VS_IMOmega_AllCuts[3];
+    TH2D *Pl_VS_Pt_AllCuts[3];
+    TH2D *OpAng_VS_IMOmega_AllCuts[3];
+    TH2D *OpAngPairs_VS_IMOmega_AllCuts[3];
+    
     TH2D *RelativityOpAngPhotonsA;
     TH2D *RelativityOpAngPhotonsB;
     TH1D *GammaPi0;
@@ -352,7 +358,12 @@ public:
     TH2D* GetIMOmega_QsqCut_ME(int index) { return IMOmega_QsqCut_ME[index]; };
     TH2D* GetIMOmega_AllCuts_ME(int index) { return IMOmega_AllCuts_ME[index]; };
 
-    TH2D* GetIMOmega_VS_VirtualPhotonAngle(int index) { return IMOmega_VS_VirtualPhotonAngle[index]; };
+    TH2D* GetVirtualPhotonAngle_VS_IMOmega_AllCuts(int index) { return VirtualPhotonAngle_VS_IMOmega_AllCuts[index]; };
+    TH2D* GetOpAngVPomega_VS_IMOmega_AllCuts(int index) { return OpAngVPomega_VS_IMOmega_AllCuts[index]; };
+    TH2D* GetPt_VS_IMOmega_AllCuts(int index) { return Pt_VS_IMOmega_AllCuts[index]; };
+    TH2D* GetPl_VS_Pt_AllCuts(int index) { return Pl_VS_Pt_AllCuts[index]; };
+    TH2D* GetOpAng_VS_IMOmega_AllCuts(int index) { return OpAng_VS_IMOmega_AllCuts[index]; };
+    TH2D* GetOpAngPairs_VS_IMOmega_AllCuts(int index) { return OpAngPairs_VS_IMOmega_AllCuts[index]; };
     
     TH2D* GetRelativityOpAngPhotonsA() { return RelativityOpAngPhotonsA; };
     TH2D* GetRelativityOpAngPhotonsB() { return RelativityOpAngPhotonsB; };
