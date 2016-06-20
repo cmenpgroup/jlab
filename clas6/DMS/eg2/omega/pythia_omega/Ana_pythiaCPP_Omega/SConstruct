@@ -1,0 +1,5 @@
+import os
+env = Environment(ENV = os.environ)
+env.ParseConfig('root-config --cflags --glibs')
+t = env.Program(target='Ana_pythiaCPP_Omega', source=['Ana_pythiaCPP_Omega.cc', 'HistManager_pythiaCPP_Omega.cc', 'PartComb_pythiaCPP_Omega.cc', 'PDG_pythiaCPP_Omega.cc'])
+Default(t)
