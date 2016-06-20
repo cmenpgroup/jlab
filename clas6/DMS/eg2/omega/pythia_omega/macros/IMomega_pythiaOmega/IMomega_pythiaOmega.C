@@ -9,63 +9,80 @@
 //--------------------------------------------------------------
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 
-gROOT->Reset();   // start from scratch
+//gROOT->Reset();   // start from scratch
 
 Float_t Lmar = 0.125;
 Float_t Rmar = 0.125;
 Float_t yoff = 1.5;
 
-const Int_t NUM_HISTS = 12;
-
-char* title[NUM_HISTS] = {
-    "N(#pi^{+})>=1 && N(#pi^{-})>=1 && N(#pi^{0})>=1",
-    "N(#pi^{+})==1 && N(#pi^{-})==1 && N(#pi^{0})==1",
-    "N(#pi^{+})>=1 && N(#pi^{-})>=1 && N(#gamma)>=2",
-    "N(#pi^{+})==1 && N(#pi^{-})==1 && N(#gamma)==2",
-    "N(#pi^{+})>=1 && N(#pi^{-})>=1 && N(#pi^{0})>=1 && #omega",
-    "N(#pi^{+})==1 && N(#pi^{-})==1 && N(#pi^{0})==1 && #omega",
-    "N(#pi^{+})>=1 && N(#pi^{-})>=1 && N(#gamma)>=2 && #omega",
-    "N(#pi^{+})==1 && N(#pi^{-})==1 && N(#gamma)==2 && #omega",
-    "N(#pi^{+})>=1 && N(#pi^{-})>=1 && N(#pi^{0})>=1 && !#omega",
-    "N(#pi^{+})==1 && N(#pi^{-})==1 && N(#pi^{0})==1 && !#omega",
-    "N(#pi^{+})>=1 && N(#pi^{-})>=1 && N(#gamma)>=2 && !#omega",
-    "N(#pi^{+})==1 && N(#pi^{-})==1 && N(#gamma)==2 && !#omega",
+class PartComb
+{
+    vector<string> LabelPartComb;
+    
+public:
+    PartComb();
+    Int_t Get_nPartComb() {return LabelPartComb.size();};
+    string Get_PartComb(int num) {return LabelPartComb[num];};
 };
 
-void IMomega_pythiaOmega_all(char *fAna)
+PartComb::PartComb()
+{
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPi0>=1");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPi0==1");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPhoton>=2");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPhoton==2");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPi0>=1 && nOmega>=1");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPi0==1 && nOmega==1");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPhoton>=2 && nOmega>=1");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPhoton==2 && nOmega==1");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPi0>=1 && nOmega==0");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPi0==1 && nOmega==0");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPhoton>=2 && nOmega==0");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPhoton==2 && nOmega==0");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPi0>=1 && nOmega==0 && nEta==0");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPi0==1 && nOmega==0 && nEta==0");
+    LabelPartComb.push_back("nPip>=1 && nPim>=1 && nPhoton>=2 && nOmega==0 && nEta==0");
+    LabelPartComb.push_back("nPip==1 && nPim==1 && nPhoton==2 && nOmega==0 && nEta==0");
+}
+
+void IMomega_pythiaOmega_all(string fAna)
 {
     Int_t i;
 	char OutCan[100];
     char strname[100];
     
+    PartComb myComb;
+    const Int_t nHists = myComb.Get_nPartComb();
+    
 	// Canvas to plot histogram
 	TCanvas *c1 = new TCanvas("c1","c1",0,0,1400,800);
-	c1->SetBorderMode(1);  //Bordermode (-1=down, 0 = no border, 1=up)
+    c1->SetBorderMode(1);  //Bordermode (-1=down, 0 = no border, 1=up)
 	c1->SetBorderSize(5); 
 	gStyle->SetOptStat(0);
-	c1->SetFillStyle(4000);
-    c1->Divide(4,3);
+    c1->SetFillStyle(4000);
+    c1->Divide(4,4);
     
 	// data files contain the trees
-	printf("Analyzing file %s\n",fAna);  
-	TFile *fm = new TFile(fAna,"READ");
-	
+	printf("Analyzing file %s\n",fAna.c_str());
+    TFile *fm = new TFile(fAna.c_str(),"READ");
+    
 	gPad->SetLeftMargin(Lmar);
 	gPad->SetRightMargin(Rmar);
 	gPad->SetFillColor(0);
     
 	TH2D *h2D = (TH2D*)fm->Get("hIMomega");
-    TH1D *h1D[NUM_HISTS];
+    TH1D *h1D[nHists];
     
-    for(i=1; i<=NUM_HISTS; i++){
+    for(i=1; i<=nHists; i++){
         c1->cd(i);
+        h2D->Draw();
         sprintf(strname,"hIMomega_px_%i_%i",i,i);
         h1D[i] = (TH1D*)h2D->ProjectionX(strname,i,i,"");
-        h1D[i]->SetTitle(title[i-1]);
+        h1D[i]->SetTitle(myComb.Get_PartComb(i-1).c_str());
         h1D[i]->GetXaxis()->CenterTitle();
-        h1D[i]->GetXaxis()->SetTitle("Particles per event");
+        h1D[i]->GetXaxis()->SetTitle("Invariant Mass (GeV/c^{2})");
         h1D[i]->GetYaxis()->CenterTitle();
         h1D[i]->GetYaxis()->SetTitle("Counts");
         h1D[i]->GetYaxis()->SetTitleOffset(yoff);
@@ -81,13 +98,16 @@ void IMomega_pythiaOmega_all(char *fAna)
 	c1->Print(OutCan);
 }
 
-void IMomega_pythiaOmega_single(char *fAna, Int_t chan = 1)
+void IMomega_pythiaOmega_single(string fAna, Int_t chan = 1)
 {
     Int_t i;
     char OutCan[100];
     char strname[100];
     
-    if(chan<=0 || chan>NUM_HISTS){
+    PartComb myComb;
+    Int_t nHists = myComb.Get_nPartComb();
+    
+    if(chan<=0 || chan>nHists){
         cout<<"Incorrect channel "<<chan<<endl;
         exit(0);
     }
@@ -100,8 +120,8 @@ void IMomega_pythiaOmega_single(char *fAna, Int_t chan = 1)
     c1->SetFillStyle(4000);
     
     // data files contain the trees
-    printf("Analyzing file %s\n",fAna);
-    TFile *fm = new TFile(fAna,"READ");
+    printf("Analyzing file %s\n",fAna.c_str());
+    TFile *fm = new TFile(fAna.c_str(),"READ");
     
     gPad->SetLeftMargin(Lmar);
     gPad->SetRightMargin(Rmar);
@@ -112,9 +132,9 @@ void IMomega_pythiaOmega_single(char *fAna, Int_t chan = 1)
     
     sprintf(strname,"hIMomega_px_%i_%i",chan,chan);
     h1D = (TH1D*)h2D->ProjectionX(strname,chan,chan,"");
-    h1D->SetTitle(title[chan-1]);
+    h1D->SetTitle(myComb.Get_PartComb(chan-1).c_str());
     h1D->GetXaxis()->CenterTitle();
-    h1D->GetXaxis()->SetTitle("Particles per event");
+    h1D->GetXaxis()->SetTitle("Invariant Mass (GeV/c^{2})");
     h1D->GetYaxis()->CenterTitle();
     h1D->GetYaxis()->SetTitle("Counts");
     h1D->GetYaxis()->SetTitleOffset(yoff);
